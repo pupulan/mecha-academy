@@ -227,12 +227,23 @@ section.pick{background:var(--paper);border-radius:var(--r);padding:16px 18px;ma
 .opt.pic.group{aspect-ratio:auto;min-height:96px}
 .opt.pic.group .emo{font-size:clamp(1.5rem,4vw,2.2rem);line-height:1.3;letter-spacing:.04em;text-align:center;word-break:break-all}
 .opt.wrong.pic{opacity:.3}
-.kid .vis{font-size:clamp(2.2rem,5vw,3.2rem)}
+.kid .vis{font-size:clamp(2.6rem,10vw,3.4rem);line-height:1.15}
+.kid .vis .grp{padding:4px 8px}
 .kid .feedback b{font-size:1.5rem}
 @media (max-width:820px){
   .tiers.kid,.older .tiers{grid-template-columns:1fr}
   .kid .opts.pics{grid-template-columns:repeat(3,1fr)}
   .kid .opts.pics.n2{grid-template-columns:repeat(2,1fr)}
+  /* 手機上讓題目和選項不用捲動就看得到 */
+  .stage.kid .hangar{padding:10px 12px 0}
+  .stage.kid .bot{width:min(100%,150px)}
+  .stage.kid .energy{margin:6px 0 8px}
+  .stage.kid .energy .cell{height:12px}
+  .stage.kid .lift{height:20px;margin:0 -12px}
+  .stage.kid .console{padding:14px 14px 16px}
+  .kid .opt{min-height:66px;font-size:1.5rem}
+  .kid .qtext{margin:4px 0 2px}
+  .kid .vis{margin:4px 0}
 }
 
 @media (prefers-reduced-motion:reduce){
