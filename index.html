@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>變形機甲學園</title>
 <meta name="description" content="3–6 歲為主的變形機甲學習遊戲：聽題目、點圖片，答對就補能量，五格集滿車子變成機器人。">
-<meta name="theme-color" content="#2B3A5C">
+<meta name="theme-color" content="#4B4441">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -19,9 +19,14 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
 <style>
 :root{
-  --sky:#D9EEFB; --sky2:#B4DAF2; --ink:#16233B; --ink2:#4B5B7A; --steel:#2B3A5C; --steel2:#3B4D77;
-  --hazard:#FFC72C; --hazard2:#E0A800; --paper:#FFFFFF; --paper2:#EEF5FB; --line:#C4D6E6;
-  --good:#1F9C58; --good2:#DFF5E8; --bad:#D8391F; --bad2:#FBE3DD; --focus:#2E5BFF; --glow:#7FE3FF;
+  /* 莫蘭迪暖色：奶油沙為底，霧黃與藕粉當雙主色，機庫是暖炭色 */
+  --sky:#F1EAE1; --sky2:#E6DACE; --tint:#EFE2DE;
+  --ink:#3D3733; --ink2:#7E736B;
+  --steel:#4B4441; --steel2:#5E5551; --steel3:#39332F; --steelD:#2A2523;
+  --hazard:#E4B75C; --hazard2:#C39840;
+  --rose:#D2938F; --rose2:#B87975; --rose3:#F3E3DF;
+  --paper:#FDFAF6; --paper2:#F3EBE1; --line:#DFD2C4;
+  --good:#7C9A6B; --good2:#E7EEDF; --bad:#C0705C; --bad2:#F5E2DB; --focus:#5B7BA6; --glow:#9CC6C0;
   --fd:'LXGW WenKai TC','Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif;
   --fb:'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif;
   --fn:'Baloo 2','Noto Sans TC',sans-serif;
@@ -30,7 +35,11 @@
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--sky);color:var(--ink);font-family:var(--fb);min-height:100vh;line-height:1.5;
-  background-image:radial-gradient(ellipse at 15% -10%,#fff 0,rgba(255,255,255,0) 45%),linear-gradient(180deg,var(--sky) 0%,var(--sky2) 100%);background-attachment:fixed}
+  background-image:
+    radial-gradient(ellipse at 12% -8%,rgba(255,252,246,.95) 0,rgba(255,252,246,0) 46%),
+    radial-gradient(ellipse at 88% 8%,var(--tint) 0,rgba(239,226,222,0) 40%),
+    linear-gradient(180deg,var(--sky) 0%,var(--sky2) 100%);
+  background-attachment:fixed}
 button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 button:focus-visible,[tabindex]:focus-visible{outline:4px solid var(--focus);outline-offset:3px}
 h1,h2,h3{margin:0;font-family:var(--fd);font-weight:700;text-wrap:balance;line-height:1.25}
@@ -38,7 +47,7 @@ p{margin:0}
 .wrap{max-width:1100px;margin:0 auto;padding:14px 16px 48px}
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 0 16px}
 .logo{display:flex;align-items:center;gap:10px;font-family:var(--fd);font-weight:700;font-size:1.3rem;letter-spacing:.06em}
-.logo .badge{width:40px;height:40px;border-radius:11px;background:var(--steel);display:grid;place-items:center;color:var(--hazard);font-family:var(--fn);font-weight:800;font-size:1.05rem;box-shadow:inset 0 -3px 0 rgba(0,0,0,.35),0 2px 0 #1a2540}
+.logo .badge{width:40px;height:40px;border-radius:11px;background:var(--steel);display:grid;place-items:center;color:var(--hazard);font-family:var(--fn);font-weight:800;font-size:1.05rem;box-shadow:inset 0 -3px 0 rgba(0,0,0,.3),0 2px 0 var(--steelD)}
 .tools{display:flex;gap:8px}
 .iconbtn{width:44px;height:44px;border-radius:12px;background:var(--paper);box-shadow:0 2px 0 var(--line);display:grid;place-items:center;font-size:1.15rem}
 .iconbtn:active{transform:translateY(2px);box-shadow:none}
@@ -55,7 +64,7 @@ section.pick{background:var(--paper);border-radius:var(--r);padding:16px 18px;ma
 .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .tier{border:3px solid var(--line);border-radius:14px;padding:12px 14px;text-align:left;background:var(--paper2);transition:transform .15s,border-color .15s}
 .tier:hover{transform:translateY(-2px)}
-.tier.on{border-color:var(--hazard);background:#FFF8DF}
+.tier.on{border-color:var(--hazard);background:#FBF1DC}
 .tier b{font-family:var(--fd);font-size:1.15rem;display:block}
 .tier .age{font-family:var(--fn);color:var(--ink2);font-weight:700;letter-spacing:.03em}
 .tier small{display:block;color:var(--ink2);margin-top:6px;font-size:.85rem;line-height:1.4}
@@ -63,11 +72,11 @@ section.pick{background:var(--paper);border-radius:var(--r);padding:16px 18px;ma
 .sub{border:3px solid var(--line);border-radius:14px;padding:14px 8px;background:var(--paper2);font-family:var(--fd);font-size:1.15rem;display:flex;flex-direction:column;align-items:center;gap:4px;transition:transform .15s,border-color .15s}
 .sub .ico{font-size:1.8rem;line-height:1}
 .sub:hover{transform:translateY(-2px)}
-.sub.on{border-color:var(--hazard);background:#FFF8DF}
+.sub.on{border-color:var(--hazard);background:#FBF1DC}
 .bots{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
 .botcard{border:3px solid var(--line);border-radius:14px;padding:10px 8px 10px;background:var(--paper2);display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;transition:transform .15s,border-color .15s}
 .botcard:hover{transform:translateY(-2px)}
-.botcard.on{border-color:var(--hazard);background:#FFF8DF}
+.botcard.on{border-color:var(--hazard);background:#FBF1DC}
 .botcard .mini{width:100%;aspect-ratio:240/150}
 .botcard .mini svg{width:100%;height:100%}
 .botcard b{font-family:var(--fd);font-size:1.15rem}
@@ -77,7 +86,7 @@ section.pick{background:var(--paper);border-radius:var(--r);padding:16px 18px;ma
 .botcard.locked .lock{position:absolute;inset:0;display:grid;place-items:center;font-size:1.6rem;border-radius:11px;background:rgba(255,255,255,.35)}
 .botcard.locked .lock span{font-size:.72rem;background:var(--ink);color:#fff;padding:2px 8px;border-radius:99px;margin-top:2px;font-weight:700}
 .go{display:flex;justify-content:center;margin:18px 0 8px}
-.bigbtn{font-family:var(--fd);font-weight:700;font-size:1.5rem;letter-spacing:.12em;background:var(--hazard);color:var(--ink);padding:16px 44px;border-radius:99px;box-shadow:0 5px 0 var(--hazard2),0 10px 20px rgba(22,35,59,.15);transition:transform .1s,box-shadow .1s}
+.bigbtn{font-family:var(--fd);font-weight:700;font-size:1.5rem;letter-spacing:.12em;background:var(--hazard);color:var(--ink);padding:16px 44px;border-radius:99px;box-shadow:0 5px 0 var(--hazard2),0 10px 20px rgba(61,55,51,.15);transition:transform .1s,box-shadow .1s}
 .bigbtn:hover{transform:translateY(-1px)}
 .bigbtn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--hazard2)}
 .bigbtn.ghost{background:var(--paper);box-shadow:0 5px 0 var(--line);font-size:1.15rem;padding:12px 26px}
@@ -98,7 +107,7 @@ section.pick{background:var(--paper);border-radius:var(--r);padding:16px 18px;ma
 /* ---------- play screen ---------- */
 .stage{display:grid;grid-template-columns:minmax(280px,.9fr) 1.1fr;gap:16px;align-items:start}
 .hangar{position:relative;border-radius:20px;overflow:hidden;background:
-  linear-gradient(180deg,#324569 0%,#22314F 70%,#1B2740 100%);color:#fff;padding:14px 14px 0;box-shadow:0 12px 30px rgba(22,35,59,.25)}
+  linear-gradient(180deg,var(--steel2) 0%,var(--steel3) 68%,var(--steelD) 100%);color:#fff;padding:14px 14px 0;box-shadow:0 12px 30px rgba(61,55,51,.25)}
 .hangar::before{content:"";position:absolute;inset:0;background:
   repeating-linear-gradient(90deg,rgba(255,255,255,.04) 0 2px,transparent 2px 40px),
   repeating-linear-gradient(0deg,rgba(255,255,255,.04) 0 2px,transparent 2px 40px);pointer-events:none}
@@ -110,15 +119,15 @@ section.pick{background:var(--paper);border-radius:var(--r);padding:16px 18px;ma
 .bot svg{width:100%;height:100%;overflow:visible}
 .bot .glowring{position:absolute;left:50%;top:60%;width:70%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(127,227,255,.35) 0,rgba(127,227,255,0) 65%);opacity:0;transition:opacity .6s;z-index:-1}
 .bot.s5 .glowring{opacity:1;animation:breathe 2.4s ease-in-out infinite}
-.lift{position:relative;height:30px;margin:0 -14px;background:repeating-linear-gradient(-45deg,var(--hazard) 0 14px,#1B2740 14px 28px);border-top:4px solid #0f1727}
-.lift::after{content:"";position:absolute;left:0;right:0;top:-14px;height:10px;background:#5F6F91;border-radius:2px;box-shadow:0 2px 0 #0f1727}
+.lift{position:relative;height:30px;margin:0 -14px;background:repeating-linear-gradient(-45deg,var(--hazard) 0 14px,var(--steelD) 14px 28px);border-top:4px solid var(--steelD)}
+.lift::after{content:"";position:absolute;left:0;right:0;top:-14px;height:10px;background:#8A7F78;border-radius:2px;box-shadow:0 2px 0 var(--steelD)}
 .energy{display:flex;gap:6px;align-items:center;margin:10px 0 12px;position:relative}
-.energy .lab{font-family:var(--fn);font-weight:800;font-size:.75rem;letter-spacing:.14em;color:#B7C6E2;margin-right:4px}
+.energy .lab{font-family:var(--fn);font-weight:800;font-size:.75rem;letter-spacing:.14em;color:#CFC4BC;margin-right:4px}
 .cell{flex:1;height:16px;border-radius:5px;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.18);transition:background .3s,box-shadow .3s}
 .cell.on{background:var(--glow);border-color:#fff;box-shadow:0 0 12px var(--glow)}
 .bot.s5 ~ .energy .cell.on{animation:pulse 1.2s ease-in-out infinite}
 .sparkle{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--hazard);pointer-events:none;animation:spark 1.1s ease-out forwards;z-index:2}
-.console{background:var(--paper);border-radius:20px;padding:18px 18px 20px;box-shadow:0 1px 0 var(--line),0 12px 30px rgba(22,35,59,.08);position:relative}
+.console{background:var(--paper);border-radius:20px;padding:18px 18px 20px;box-shadow:0 1px 0 var(--line),0 12px 30px rgba(61,55,51,.08);position:relative}
 .console .bar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
 .chip{font-family:var(--fn);font-weight:800;font-size:.85rem;letter-spacing:.06em;padding:4px 12px;border-radius:99px;background:var(--paper2);color:var(--steel)}
 .chip.sub{background:var(--steel);color:#fff;font-family:var(--fb);font-weight:700}
@@ -150,8 +159,8 @@ section.pick{background:var(--paper);border-radius:var(--r);padding:16px 18px;ma
 .feedback.bad{background:var(--bad2);border:2px solid var(--bad)}
 .feedback b{font-family:var(--fd);font-size:1.25rem;display:block}
 .feedback p{color:var(--ink2);font-size:.95rem;margin-top:2px}
-.feedback .next{font-family:var(--fd);font-weight:700;font-size:1.1rem;background:var(--ink);color:#fff;padding:10px 20px;border-radius:99px;box-shadow:0 4px 0 #050a15}
-.feedback .next:active{transform:translateY(3px);box-shadow:0 1px 0 #050a15}
+.feedback .next{font-family:var(--fd);font-weight:700;font-size:1.1rem;background:var(--steel);color:#fff;padding:10px 20px;border-radius:99px;box-shadow:0 4px 0 var(--steelD)}
+.feedback .next:active{transform:translateY(3px);box-shadow:0 1px 0 var(--steelD)}
 
 /* ---------- result ---------- */
 .result{display:grid;grid-template-columns:minmax(260px,.9fr) 1.1fr;gap:16px;align-items:stretch}
@@ -163,7 +172,7 @@ section.pick{background:var(--paper);border-radius:var(--r);padding:16px 18px;ma
 .report .nums div{background:var(--paper2);border-radius:12px;padding:10px 12px}
 .report .nums b{font-family:var(--fn);font-size:1.7rem;display:block;line-height:1.1;color:var(--steel)}
 .report .nums span{font-size:.8rem;color:var(--ink2)}
-.unlock{background:#FFF8DF;border:2px dashed var(--hazard2);border-radius:12px;padding:10px 14px;font-weight:700}
+.unlock{background:var(--rose3);border:2px dashed var(--rose2);border-radius:12px;padding:10px 14px;font-weight:700}
 .report .acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:auto}
 .review{margin-top:16px;background:var(--paper);border-radius:var(--r);padding:14px 18px;box-shadow:0 1px 0 var(--line)}
 .review h3{font-size:1.05rem;margin-bottom:8px}
@@ -248,7 +257,7 @@ section.pick{background:var(--paper);border-radius:var(--r);padding:16px 18px;ma
 
 /* ---------- 收藏庫 ---------- */
 .iconbtn.trophy{position:relative}
-.iconbtn.trophy .cnt{position:absolute;top:-4px;right:-4px;background:var(--hazard);color:var(--ink);font-family:var(--fn);font-weight:800;font-size:.7rem;min-width:19px;height:19px;border-radius:99px;display:grid;place-items:center;box-shadow:0 0 0 2px var(--sky)}
+.iconbtn.trophy .cnt{position:absolute;top:-4px;right:-4px;background:var(--rose);color:#fff;color:var(--ink);font-family:var(--fn);font-weight:800;font-size:.7rem;min-width:19px;height:19px;border-radius:99px;display:grid;place-items:center;box-shadow:0 0 0 2px var(--paper)}
 .collhead{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin:6px 0 18px}
 .collhead h1{font-size:clamp(1.7rem,3.6vw,2.4rem)}
 .collhead .lede{color:var(--ink2);margin-top:6px;max-width:32em}
@@ -256,8 +265,8 @@ section.pick{background:var(--paper);border-radius:var(--r);padding:16px 18px;ma
 .collstats .stat{background:var(--paper);border-radius:12px;padding:10px 16px;box-shadow:0 1px 0 var(--line);text-align:center}
 .shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
 .trophy-card{background:var(--paper);border-radius:18px;padding:14px;box-shadow:0 1px 0 var(--line);display:flex;flex-direction:column;gap:10px;cursor:pointer;transition:transform .15s,box-shadow .15s}
-.trophy-card:hover{transform:translateY(-3px);box-shadow:0 1px 0 var(--line),0 10px 24px rgba(22,35,59,.12)}
-.trophy-card .tstage{position:relative;border-radius:12px;background:linear-gradient(180deg,#324569,#1B2740);padding:10px 0 6px;overflow:hidden}
+.trophy-card:hover{transform:translateY(-3px);box-shadow:0 1px 0 var(--line),0 10px 24px rgba(61,55,51,.12)}
+.trophy-card .tstage{position:relative;border-radius:12px;background:linear-gradient(180deg,var(--steel2),var(--steelD));padding:10px 0 6px;overflow:hidden}
 .trophy-card .tstage::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 2px,transparent 2px 34px),repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 2px,transparent 2px 34px)}
 .trophy-card .bot{position:relative;width:min(100%,170px);margin:0 auto;aspect-ratio:240/260;z-index:1}
 .trophy-card .bot svg{width:100%;height:100%;overflow:visible}
@@ -285,6 +294,67 @@ section.pick{background:var(--paper);border-radius:var(--r);padding:16px 18px;ma
   .trophy-card .bot{width:min(100%,150px)}
 }
 
+/* ---------- 誰在玩 ---------- */
+.mechip{display:flex;align-items:center;gap:6px;background:var(--rose3);border-radius:99px;padding:6px 14px 6px 8px;font-family:var(--fd);font-weight:700;font-size:1rem;box-shadow:0 2px 0 var(--line);margin-right:auto;margin-left:4px}
+.mechip span{font-size:1.25rem;line-height:1}
+.mechip:active{transform:translateY(2px);box-shadow:none}
+.whohead{margin:10px 0 18px}
+.whohead h1{font-size:clamp(1.7rem,4vw,2.6rem)}
+.whohead .lede{color:var(--ink2);margin-top:8px;max-width:34em}
+.whogrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;align-items:stretch}
+.who{background:var(--paper);border:3px solid var(--line);border-radius:18px;padding:18px 14px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;transition:transform .15s,border-color .15s}
+.who:hover{transform:translateY(-3px);border-color:var(--steel2)}
+.who.on{border-color:var(--rose);background:var(--rose3)}
+.who .wav{font-size:3rem;line-height:1.1}
+.who b{font-family:var(--fd);font-size:1.35rem}
+.who small{color:var(--ink2);font-size:.85rem}
+.who .wsub{font-size:.78rem;opacity:.8}
+.who.add{cursor:default;border-style:dashed;gap:10px;justify-content:center}
+.who.add:hover{transform:none;border-color:var(--line)}
+.who.add.full{color:var(--ink2);font-size:.9rem}
+.avpick{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;width:100%}
+.av{font-size:1.35rem;line-height:1;padding:5px 0;border-radius:9px;background:var(--paper2);transition:transform .1s}
+.av:hover{transform:scale(1.15)}
+.av.on{background:var(--rose);box-shadow:0 0 0 2px var(--rose2)}
+.nameinput{width:100%;font:inherit;font-family:var(--fd);font-size:1.1rem;text-align:center;padding:10px;border-radius:11px;border:2px solid var(--line);background:var(--paper2);color:var(--ink)}
+.nameinput:focus{outline:3px solid var(--focus);outline-offset:1px}
+.xfer{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:10px}
+.xcol h3{font-size:1rem;margin-bottom:4px}
+.xhint{font-size:.82rem;color:var(--ink2);margin-bottom:8px;line-height:1.5}
+.qrbox{background:#fff;border-radius:12px;padding:10px;display:inline-block;min-height:60px;margin-bottom:8px;font-size:.8rem;color:var(--ink2)}
+.qrbox img,.qrbox canvas{display:block}
+.codebox{width:100%;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.76rem;padding:8px;border-radius:10px;border:2px solid var(--line);background:var(--paper2);color:var(--ink);resize:vertical;margin-bottom:8px}
+.copied{font-size:.8rem;color:var(--good);margin-left:8px;font-weight:700}
+.dellink{text-decoration:underline;color:var(--bad);margin-right:10px}
+/* ---------- 有新版本 ---------- */
+.upbar{position:fixed;left:50%;bottom:16px;transform:translate(-50%,140%);z-index:50;display:flex;align-items:center;gap:12px;
+  background:var(--steel);color:#fff;border-radius:16px;padding:12px 14px 12px 16px;box-shadow:0 12px 34px rgba(61,55,51,.4);
+  width:min(560px,calc(100vw - 24px));transition:transform .45s cubic-bezier(.34,1.3,.64,1)}
+.upbar.in{transform:translate(-50%,0)}
+.updot{flex:none;width:10px;height:10px;border-radius:50%;background:var(--hazard);box-shadow:0 0 0 4px rgba(228,183,92,.28);animation:pulse 1.6s ease-in-out infinite}
+.uptext{flex:1;min-width:0}
+.uptext b{font-family:var(--fd);font-size:1.05rem;display:block}
+.uptext small{color:#CFC4BC;font-size:.82rem}
+.upbtn{flex:none;font-family:var(--fd);font-weight:700;font-size:1rem;background:var(--hazard);color:var(--ink);padding:9px 18px;border-radius:99px;box-shadow:0 3px 0 var(--hazard2)}
+.upbtn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--hazard2)}
+.upbtn:disabled{opacity:.7}
+.upx{flex:none;width:30px;height:30px;border-radius:50%;color:#CFC4BC;font-size:1rem}
+.upx:hover{background:rgba(255,255,255,.12)}
+@media (max-width:820px){
+  .xfer{grid-template-columns:1fr}
+  .whogrid{grid-template-columns:repeat(2,1fr)}
+  .mechip{font-size:.9rem;padding:5px 11px 5px 7px}
+}
+
+/* ---------- 聽音題 ---------- */
+.hearbox{display:flex;align-items:center;gap:14px;background:var(--paper2);border-radius:14px;padding:12px 16px;margin:10px 0 4px}
+.hearbtn{flex:none;width:60px;height:60px;border-radius:50%;background:var(--steel);color:var(--hazard);font-size:1.5rem;display:grid;place-items:center;box-shadow:0 4px 0 var(--steelD);transition:transform .1s}
+.hearbtn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--steelD)}
+.hearlab{font-family:var(--fd);font-size:1.1rem;line-height:1.3}
+.hearlab small{display:block;font-family:var(--fb);font-size:.8rem;color:var(--ink2);margin-top:2px}
+.kid .hearbtn{width:72px;height:72px;font-size:1.8rem}
+.kid .hearlab{font-size:1.25rem}
+
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition-duration:.01ms!important}
 }
@@ -305,6 +375,9 @@ section.pick{background:var(--paper);border-radius:var(--r);padding:16px 18px;ma
   /* 四個工具按鈕之後，標題要縮小才不會擠成兩行 */
   .top{gap:8px}
   .logo{font-size:1rem;gap:8px;white-space:nowrap}
+  .logo .ltext{display:none}
+  .mechip{margin-left:2px;font-size:.85rem}
+  .whogrid{grid-template-columns:1fr}
   .logo .badge{width:34px;height:34px;border-radius:9px;font-size:.9rem}
   .tools{gap:6px}
   .iconbtn{width:38px;height:38px;border-radius:10px;font-size:1rem}
@@ -317,11 +390,11 @@ section.pick{background:var(--paper);border-radius:var(--r);padding:16px 18px;ma
 <script>
 /* ================= 資料 ================= */
 const BOTS=[
-  {id:'flash',   name:'閃電', type:'car',   c1:'#FFC72C', c2:'#23262B', c3:'#FFFFFF', tag:'黃色跑車', blurb:'跑得最快的偵察兵，最喜歡算數。'},
-  {id:'ironpeak',name:'鐵岳', type:'truck', c1:'#E23D28', c2:'#2E5BFF', c3:'#C9CED6', tag:'紅藍大卡車', blurb:'隊長，最有力氣，記得每一條路。'},
-  {id:'gale',    name:'疾風', type:'jet',   c1:'#DDE3EA', c2:'#E23D28', c3:'#23262B', tag:'戰鬥機', blurb:'飛得最高，看得最遠。'},
-  {id:'rotor',   name:'旋翼', type:'heli',  c1:'#4C9A2A', c2:'#23262B', c3:'#BFE3A5', tag:'直升機', blurb:'救援專家，哪裡需要就去哪裡。'},
-  {id:'bulwark', name:'巨盾', type:'tank',  c1:'#B5A06B', c2:'#5A4D2B', c3:'#E8DFC4', tag:'坦克', blurb:'最穩的守護者，什麼都擋得住。'},
+  {id:'flash',   name:'閃電', type:'car',   c1:'#F0BF52', c2:'#33302D', c3:'#FFFDF8', tag:'黃色跑車', blurb:'跑得最快的偵察兵，最喜歡算數。'},
+  {id:'ironpeak',name:'鐵岳', type:'truck', c1:'#D2503C', c2:'#4A6FC4', c3:'#C9CED6', tag:'紅藍大卡車', blurb:'隊長，最有力氣，記得每一條路。'},
+  {id:'gale',    name:'疾風', type:'jet',   c1:'#DFDAD2', c2:'#D2503C', c3:'#23262B', tag:'戰鬥機', blurb:'飛得最高，看得最遠。'},
+  {id:'rotor',   name:'旋翼', type:'heli',  c1:'#6E9A55', c2:'#33302D', c3:'#CBDDBA', tag:'直升機', blurb:'救援專家，哪裡需要就去哪裡。'},
+  {id:'bulwark', name:'巨盾', type:'tank',  c1:'#B5A47C', c2:'#5C5138', c3:'#E6DCC6', tag:'坦克', blurb:'最穩的守護者，什麼都擋得住。'},
 ];
 const TIERS=[
   {id:0,name:'小小駕駛員',age:'3–4 歲',icon:'🐣',opts:3,round:5,kid:true,desc:'聽聲音找圖片：數到 5、比大小、顏色形狀、動物與日常物品'},
@@ -331,8 +404,9 @@ const TIERS=[
 ];
 const SUBJECTS=[
   {id:'math',name:'數學',kid:'數一數',icon:'🔢'},
-  {id:'zh',name:'國語',kid:'聽聽看',icon:'📖'},
+  {id:'zh',name:'國語',kid:'認字念念看',icon:'📖'},
   {id:'sci',name:'自然常識',kid:'為什麼',icon:'🔬'},
+  {id:'mus',name:'音樂',kid:'聽聽看',icon:'🎵'},
   {id:'geo',name:'地理歷史',kid:'認識世界',icon:'🗺️'},
 ];
 const MIX={id:'mix',name:'混合挑戰',kid:'四科通通來',icon:'⚡'};
@@ -946,6 +1020,144 @@ function math2(){ // 10–12
 }
 const MATH=[math34,math56,math1,math2];
 
+/* ================= 音樂：給正在學音樂的小朋友 ================= */
+const NOTE={C3:130.81,D3:146.83,E3:164.81,F3:174.61,G3:196.00,A3:220.00,B3:246.94,
+  C4:261.63,D4:293.66,E4:329.63,F4:349.23,G4:392.00,A4:440.00,B4:493.88,
+  C5:523.25,D5:587.33,E5:659.25,F5:698.46,G5:783.99,A5:880.00};
+const SOLFA=[['C4','Do'],['D4','Re'],['E4','Mi'],['F4','Fa'],['G4','Sol'],['A4','La'],['B4','Si'],['C5','高音 Do']];
+/* 播放一串音：[[音名或頻率, 長度秒], ...] */
+function playSeq(seq){
+  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume()}catch(e){}
+  let t=.05;
+  seq.forEach(([n,d])=>{const f=typeof n==='number'?n:NOTE[n];tone(f,t,d,'sine',true);t+=d+.08});
+}
+const snd=seq=>({seq});
+function mkS(q,ans,wrong,why,sound,read){const o=mk(q,ans,wrong,why,'',read);o.sound=sound;return o}
+
+/* 靜態的音樂知識題 */
+const MUSBANK={
+t34:[
+ ['哪一個是鋼琴？',[P('🎹','鋼琴'),P('🥁','鼓'),P('🎸','吉他')]],
+ ['哪一個是鼓？',[P('🥁','鼓'),P('🎺','小號'),P('🎻','小提琴')]],
+ ['哪一個是小提琴？',[P('🎻','小提琴'),P('🎹','鋼琴'),P('🥁','鼓')]],
+ ['哪一個是吉他？',[P('🎸','吉他'),P('🎷','薩克斯風'),P('🥁','鼓')]],
+ ['唱歌要用身體的哪裡？',[P('👄','嘴巴'),P('👀','眼睛'),P('🦵','腳')],'我們用嘴巴唱歌。'],
+ ['聽音樂要用什麼？',[P('👂','耳朵'),P('👃','鼻子'),P('🖐️','手')],'耳朵用來聽。'],
+ ['打鼓要用什麼？',[P('🖐️','手'),P('👀','眼睛'),P('👃','鼻子')],'用手或鼓棒敲鼓。'],
+ ['哪一個是音符？',[P('🎵','音符'),P('❤️','愛心'),P('⭐','星星')],'音符是寫音樂用的符號。'],
+],
+t56:[
+ ['唱名的第一個是什麼？',['Do','Mi','Sol'],'Do Re Mi Fa Sol La Si。'],
+ ['Do 的後面是什麼？',['Re','Mi','Fa'],'Do、Re、Mi 依序往上。'],
+ ['Re 的後面是什麼？',['Mi','Do','Sol'],''],
+ ['Mi 的後面是什麼？',['Fa','Sol','Re'],''],
+ ['Sol 的後面是什麼？',['La','Fa','Si'],''],
+ ['唱名一共有幾個？',['七個','三個','十個'],'Do Re Mi Fa Sol La Si，七個。'],
+ ['鋼琴的鍵盤有什麼顏色？',['黑色和白色','紅色和藍色','全部都是白色'],'','🎹'],
+ ['小提琴要怎麼演奏？',['用弓拉弦','用手打','用嘴巴吹'],'','🎻'],
+ ['笛子要怎麼演奏？',['用嘴巴吹','用弓拉','用腳踩'],'','🪈'],
+ ['鼓要怎麼演奏？',['敲打','吹氣','拉弦'],'','🥁'],
+ ['一首歌裡最大聲的地方，我們說它？',['很強','很弱','很慢'],'強弱是音樂的表情。'],
+ ['指揮家在樂團裡做什麼？',['帶大家一起演奏','賣票','打掃'],'指揮決定快慢和強弱。','🧑‍🎤'],
+],
+t1:[
+ ['五線譜有幾條線？',['5 條','4 條','6 條','3 條'],'五線譜由五條平行線組成。'],
+ ['高音譜號畫在五線譜的哪裡？',['最前面','最後面','中間','下面'],'譜號決定每條線代表哪個音。'],
+ ['一個全音符等於幾拍？（4/4 拍）',['4 拍','2 拍','1 拍','8 拍'],'全音符最長。'],
+ ['一個二分音符等於幾拍？（4/4 拍）',['2 拍','4 拍','1 拍','半拍'],''],
+ ['一個四分音符等於幾拍？（4/4 拍）',['1 拍','2 拍','4 拍','半拍'],'四分音符是最常見的一拍。'],
+ ['一個八分音符等於幾拍？（4/4 拍）',['半拍','1 拍','2 拍','4 拍'],'兩個八分音符合起來是一拍。'],
+ ['4/4 拍表示每小節有幾拍？',['4 拍','3 拍','2 拍','8 拍'],'上面的 4 是每小節的拍數。'],
+ ['3/4 拍最常見的是什麼舞曲？',['圓舞曲（華爾滋）','進行曲','搖滾樂','探戈'],'圓舞曲是三拍子。'],
+ ['唱名 Do 對應的音名是？',['C','A','D','G'],'Do Re Mi = C D E。'],
+ ['唱名 Sol 對應的音名是？',['G','C','E','A'],'C D E F G = Do Re Mi Fa Sol。'],
+ ['音名 A 對應的唱名是？',['La','Do','Mi','Sol'],''],
+ ['鋼琴屬於哪一類樂器？',['鍵盤樂器','弦樂器','管樂器','打擊樂器'],'鋼琴同時也有敲擊弦的構造。'],
+ ['小提琴、大提琴屬於哪一類？',['弦樂器','管樂器','鍵盤樂器','打擊樂器'],''],
+ ['長笛、單簧管屬於哪一類？',['管樂器','弦樂器','鍵盤樂器','打擊樂器'],''],
+ ['鼓、鈴鼓、三角鐵屬於哪一類？',['打擊樂器','弦樂器','管樂器','鍵盤樂器'],''],
+ ['休止符代表什麼？',['不要出聲，安靜','大聲一點','快一點','重複一次'],'休息也是音樂的一部分。'],
+ ['小節線的作用是什麼？',['把音樂分成一小節一小節','表示要停止','表示要大聲','表示要重複'],''],
+ ['反覆記號叫我們做什麼？',['再演奏一次','停下來','變大聲','變慢'],''],
+],
+t2:[
+ ['C 大調音階有幾個升降記號？',['0 個','1 個','2 個','3 個'],'C 大調全部是白鍵。'],
+ ['升記號（♯）表示什麼？',['把音升高半音','把音降低半音','把音變長','把音變大聲'],''],
+ ['降記號（♭）表示什麼？',['把音降低半音','把音升高半音','把音變短','把音變小聲'],''],
+ ['還原記號（♮）表示什麼？',['取消升降，回到原來的音','重複一次','停止','加快'],''],
+ ['力度記號 p 表示什麼？',['弱','強','中強','很強'],'p 是義大利文 piano，弱。'],
+ ['力度記號 f 表示什麼？',['強','弱','中弱','很弱'],'f 是 forte，強。'],
+ ['力度記號 mf 表示什麼？',['中強','中弱','很強','很弱'],'mezzo forte，中強。'],
+ ['漸強記號（<）表示什麼？',['聲音慢慢變大','聲音慢慢變小','速度變快','速度變慢'],'crescendo。'],
+ ['速度術語 Allegro 是什麼意思？',['快板','慢板','行板','急板'],''],
+ ['速度術語 Andante 是什麼意思？',['行板（走路的速度）','很快','很慢','非常快'],''],
+ ['速度術語 Adagio 是什麼意思？',['慢板','快板','中板','急板'],''],
+ ['大三和弦由哪三個音組成？',['根音、大三度、純五度','根音、二度、四度','三個相鄰的音','任意三個音'],'例如 C 大三和弦是 Do Mi Sol。'],
+ ['C 大三和弦的三個音是？',['Do Mi Sol','Do Re Mi','Do Fa La','Re Fa La'],''],
+ ['Do 到 Mi 是幾度音程？',['三度','二度','四度','五度'],'Do Re Mi，數三個音名。'],
+ ['Do 到 Sol 是幾度音程？',['五度','三度','四度','八度'],'Do Re Mi Fa Sol。'],
+ ['一個八度裡有幾個半音？',['12 個','7 個','8 個','5 個'],'包含黑鍵和白鍵。'],
+ ['大調音階的音程排列是？',['全全半全全全半','全全全半全全半','半全全全半全全','全半全半全半全'],'這是大調的關鍵特徵。'],
+ ['小調聽起來通常給人什麼感覺？',['比較憂傷','比較明亮歡樂','沒有感覺','很吵'],'大調明亮，小調憂傷。'],
+ ['4/4 拍的下面那個 4 代表什麼？',['以四分音符為一拍','每小節四拍','要演奏四次','四個聲部'],'上面是拍數，下面是拍子的單位。'],
+ ['管弦樂團中，通常坐在最前面的是哪一組？',['弦樂器','打擊樂器','銅管樂器','木管樂器'],'小提琴在指揮的左前方。'],
+],
+};
+
+/* 聽音題：真的會發出聲音 */
+function hearQ(tier){
+  const t=pick(tier<=1?['high','high','same','count','fastslow','loud']:['high','same','count','solfa','solfa','updown','interval']);
+  if(t==='high'){
+    const keys=['C4','D4','E4','G4','A4','C5','E5','G5'];
+    let i=R(0,3),j=R(4,7);const first=Math.random()<.5;
+    const a=first?keys[j]:keys[i], b=first?keys[i]:keys[j];
+    return mkS('聽聽看，哪一個聲音比較高？',first?'第一個':'第二個',[first?'第二個':'第一個'],
+      '聲音比較高的，聽起來比較尖、比較亮。',snd([[a,.55],[b,.55]]),'聽聽看，哪一個聲音比較高');
+  }
+  if(t==='same'){
+    const keys=['C4','D4','E4','F4','G4','A4'];const a=pick(keys);
+    const same=Math.random()<.5;const b=same?a:pick(keys.filter(k=>k!==a));
+    return mkS('聽聽看，這兩個聲音一樣嗎？',same?'一樣':'不一樣',[same?'不一樣':'一樣'],
+      same?'兩個是同一個音。':'兩個是不同的音。',snd([[a,.5],[b,.5]]),'聽聽看，這兩個聲音一樣嗎');
+  }
+  if(t==='count'){
+    const n=R(2,tier<=1?4:6);
+    return mkS('聽聽看，一共敲了幾下？',String(n),distract(n,tier<=1?2:3,1,8),
+      '一邊聽一邊在心裡數。',snd(Array.from({length:n},()=>['G4',.16])),'聽聽看，一共敲了幾下');
+  }
+  if(t==='fastslow'){
+    const fast=Math.random()<.5;const d=fast?.14:.42;
+    return mkS('聽聽看，這段是快還是慢？',fast?'快':'慢',[fast?'慢':'快'],
+      '音和音之間隔得近就是快。',snd(Array.from({length:5},()=>['E4',d])),'聽聽看，這段是快還是慢');
+  }
+  if(t==='loud'){
+    const up=Math.random()<.5;const seq=[['C4',.3],['E4',.3],['G4',.3],['C5',.3]];
+    return mkS('聽聽看，聲音是往上爬還是往下走？',up?'往上':'往下',[up?'往下':'往上'],
+      '往上就是聲音越來越高。',snd(up?seq:seq.slice().reverse()),'聽聽看，聲音是往上爬還是往下走');
+  }
+  if(t==='updown'){
+    const up=Math.random()<.5;const seq=[['C4',.28],['D4',.28],['E4',.28],['F4',.28],['G4',.28]];
+    return mkS('聽聽看，這個音階是上行還是下行？',up?'上行':'下行',[up?'下行':'上行','原地不動'],
+      '上行是越來越高，下行是越來越低。',snd(up?seq:seq.slice().reverse()),'聽聽看，這個音階是上行還是下行');
+  }
+  if(t==='solfa'){
+    const n=R(0,4);const [key,name]=SOLFA[n];
+    const wrongs=shuffle(SOLFA.filter((x,i)=>i!==n&&i<6)).slice(0,tier<=1?2:3).map(x=>x[1]);
+    return mkS('先聽 Do，再聽第二個音。第二個是什麼？',name,wrongs,
+      'Do Re Mi Fa Sol La Si 依序往上。',snd([['C4',.45],[key,.7]]),'先聽 Do，再聽第二個音，第二個是什麼');
+  }
+  const pairs=[[['C4','E4'],'三度'],[['C4','G4'],'五度'],[['C4','C5'],'八度'],[['C4','D4'],'二度'],[['C4','F4'],'四度']];
+  const p=pick(pairs);const wrongs=shuffle(pairs.filter(x=>x[1]!==p[1])).slice(0,3).map(x=>x[1]);
+  return mkS('聽聽看，這兩個音相差幾度？',p[1],wrongs,'從低音數到高音，含頭含尾。',snd([[p[0][0],.5],[p[0][1],.5]]),'聽聽看，這兩個音相差幾度');
+}
+const MUSTIER=['t34','t56','t1','t2'];
+function musicQ(tier){
+  // 一半聽音、一半樂理知識
+  if(Math.random()<(tier===0?.55:.45))return hearQ(tier);
+  const list=MUSBANK[MUSTIER[tier]];const x=pick(list);
+  return mk(x[0],x[1][0],x[1].slice(1),x[2]||'',x[3]||'');
+}
+
 const norm=o=>typeof o==='string'?{t:o,say:o}:o;
 function fromBank(subj,tier){
   return shuffle(BANK[subj][tier]).map(x=>mk(x[0],x[1][0],x[1].slice(1),x[2]||'',x[3]||''));
@@ -954,22 +1166,24 @@ function buildRound(subj,tier){
   const n=TIERS[tier].round;const qs=[];
   const tag=(q,id)=>{q.subj=id;return q};
   if(subj==='math'){while(qs.length<n)qs.push(tag(MATH[tier](),'math'))}
+  else if(subj==='mus'){while(qs.length<n)qs.push(tag(musicQ(tier),'mus'))}
   else if(subj==='mix'){
     const pool={zh:fromBank('zh',tier),sci:fromBank('sci',tier),geo:fromBank('geo',tier)};
-    const order=['math','zh','sci','geo'];
-    for(let i=0;i<n;i++){const k=order[i%4];qs.push(k==='math'?tag(MATH[tier](),'math'):tag(pool[k].pop(),k))}
+    const order=['math','zh','sci','mus','geo'];
+    for(let i=0;i<n;i++){const k=order[i%5];
+      qs.push(k==='math'?tag(MATH[tier](),'math'):k==='mus'?tag(musicQ(tier),'mus'):tag(pool[k].pop(),k))}
   }else{const b=fromBank(subj,tier);while(qs.length<n)qs.push(tag(b[qs.length%b.length],subj))}
   return qs.map(q=>{const opts=q.opts.map(norm);const idx=shuffle(opts.map((_,i)=>i));return{...q,opts:idx.map(i=>opts[i]),ans:idx.indexOf(q.ans)}});
 }
 /* ================= SVG 機甲 ================= */
 function vehicleSVG(b){
-  const {type,c1,c2,c3}=b;const W='#23262B',RIM='#C9CED6',G='#7FE3FF';
+  const {type,c1,c2,c3}=b;const W='#33302D',RIM='#CFC7BD',G='#9CC6C0';
   const wheel=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${W}"/><circle cx="${x}" cy="${y}" r="${r*.45}" fill="${RIM}"/>`;
   if(type==='car')return `
    <path d="M18 152 L18 132 Q18 122 30 120 L62 114 L86 92 Q92 86 102 86 L150 86 Q160 86 168 92 L196 114 L222 120 Q232 122 232 132 L232 152 Z" fill="${c1}"/>
    <polygon points="94,92 148,92 166,112 80,112" fill="${G}"/>
    <rect x="18" y="134" width="214" height="8" fill="${c2}" opacity=".55"/>
-   <rect x="218" y="124" width="10" height="9" rx="2" fill="#FFF3B0"/>
+   <rect x="218" y="124" width="10" height="9" rx="2" fill="#F7E9BC"/>
    <rect x="22" y="124" width="10" height="9" rx="2" fill="#E23D28"/>
    ${wheel(64,154,17)}${wheel(186,154,17)}`;
   if(type==='truck')return `
@@ -979,7 +1193,7 @@ function vehicleSVG(b){
    <rect x="204" y="110" width="30" height="42" rx="4" fill="${c1}"/>
    <rect x="152" y="88" width="50" height="26" rx="3" fill="${G}"/>
    <rect x="224" y="118" width="10" height="26" rx="2" fill="${RIM}"/>
-   <rect x="144" y="58" width="7" height="24" fill="#9AA3B2"/>
+   <rect x="144" y="58" width="7" height="24" fill="#A69C90"/>
    ${wheel(40,154,15)}${wheel(100,154,15)}${wheel(170,154,15)}${wheel(214,154,15)}`;
   if(type==='jet')return `
    <polygon points="90,124 160,124 212,168 56,168" fill="${c2}"/>
@@ -1000,20 +1214,20 @@ function vehicleSVG(b){
    <rect x="72" y="172" width="100" height="5" rx="2" fill="${W}"/>`;
   return `
    <rect x="24" y="146" width="192" height="34" rx="17" fill="${W}"/>
-   ${[46,76,106,136,166,196].map(x=>`<circle cx="${x}" cy="163" r="10" fill="#8A929F"/>`).join('')}
+   ${[46,76,106,136,166,196].map(x=>`<circle cx="${x}" cy="163" r="10" fill="#9A9084"/>`).join('')}
    <polygon points="30,146 52,116 198,116 222,146" fill="${c1}"/>
    <rect x="84" y="90" width="72" height="28" rx="8" fill="${c2}"/>
-   <rect x="150" y="98" width="82" height="9" rx="3" fill="#5C6371"/>
+   <rect x="150" y="98" width="82" height="9" rx="3" fill="#6B6259"/>
    <rect x="108" y="84" width="22" height="8" rx="3" fill="${c3}"/>`;
 }
 function robotSVG(b){
-  const {type,c1,c2,c3}=b;const W='#23262B',RIM='#C9CED6',G='#7FE3FF';
+  const {type,c1,c2,c3}=b;const W='#33302D',RIM='#CFC7BD',G='#9CC6C0';
   let acc='';
   if(type==='car')acc=`<circle cx="72" cy="90" r="13" fill="${W}"/><circle cx="72" cy="90" r="6" fill="${RIM}"/><circle cx="168" cy="90" r="13" fill="${W}"/><circle cx="168" cy="90" r="6" fill="${RIM}"/><rect x="104" y="96" width="32" height="6" rx="2" fill="${c3}"/>`;
-  if(type==='truck')acc=`<rect x="66" y="52" width="9" height="32" rx="2" fill="#9AA3B2"/><rect x="165" y="52" width="9" height="32" rx="2" fill="#9AA3B2"/><rect x="100" y="126" width="40" height="8" rx="2" fill="${RIM}"/>`;
+  if(type==='truck')acc=`<rect x="66" y="52" width="9" height="32" rx="2" fill="#A69C90"/><rect x="165" y="52" width="9" height="32" rx="2" fill="#A69C90"/><rect x="100" y="126" width="40" height="8" rx="2" fill="${RIM}"/>`;
   if(type==='jet')acc=`<polygon points="86,96 24,142 86,132" fill="${c2}"/><polygon points="154,96 216,142 154,132" fill="${c2}"/><rect x="112" y="24" width="16" height="16" rx="3" fill="${c2}"/>`;
   if(type==='heli')acc=`<rect x="44" y="26" width="152" height="6" rx="3" fill="${W}"/><rect x="116" y="30" width="8" height="12" fill="${W}"/><rect x="60" y="150" width="120" height="5" rx="2" fill="${W}"/>`;
-  if(type==='tank')acc=`<rect x="172" y="118" width="60" height="11" rx="3" fill="#5C6371"/><rect x="60" y="124" width="22" height="30" rx="4" fill="${c3}"/><rect x="104" y="128" width="32" height="6" rx="2" fill="${c3}"/>`;
+  if(type==='tank')acc=`<rect x="172" y="118" width="60" height="11" rx="3" fill="#6B6259"/><rect x="60" y="124" width="22" height="30" rx="4" fill="${c3}"/><rect x="104" y="128" width="32" height="6" rx="2" fill="${c3}"/>`;
   return `<g class="robot">
    <g class="p p-legs">
     <rect x="94" y="164" width="24" height="58" rx="6" fill="${c1}"/><rect x="122" y="164" width="24" height="58" rx="6" fill="${c1}"/>
@@ -1049,11 +1263,20 @@ const botSVG=b=>`<svg viewBox="0 0 240 260" aria-label="${b.name}機甲"><g clas
 const miniSVG=b=>`<svg viewBox="10 60 220 130" aria-hidden="true">${vehicleSVG(b)}</svg>`;
 
 /* ================= 存檔 ================= */
-const KEY='mecha-academy-v2';
-let save={rounds:0,completed:0,stars:0,best:{},subj:{},collection:{},tier:0,sound:true,read:true};
-try{const s=JSON.parse(localStorage.getItem(KEY));if(s)save={...save,...s}}catch(e){}
-const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(save))}catch(e){}};
 const today=()=>{const d=new Date();return d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate()};
+const KEY='mecha-academy-v3', OLDKEY='mecha-academy-v2';
+const AVATARS=['🦖','🐰','🐱','🦊','🐼','🦁','🐧','🦄','🐢','🐝','🚀','⭐','🐙','🦋'];
+const MAXP=6;
+const blank=()=>({rounds:0,completed:0,stars:0,best:{},subj:{},collection:{},tier:0,sound:true,read:true});
+/* DB 裝這台裝置上的所有小朋友；save 永遠指向目前這一位的進度 */
+let DB={v:3,active:'',profiles:{}};
+let save=blank();
+const persist=()=>{try{if(DB.active&&DB.profiles[DB.active])DB.profiles[DB.active].data=save;localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}};
+const newId=()=>'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+const profileList=()=>Object.entries(DB.profiles).map(([id,p])=>({id,...p}));
+const cur=()=>DB.profiles[DB.active]||{name:'小駕駛員',avatar:'🦖'};
+const pickAvatar=()=>{const used=Object.values(DB.profiles).map(p=>p.avatar);return AVATARS.find(a=>!used.includes(a))||AVATARS[0]};
+
 /* 收藏庫：每台解鎖的機甲記錄拿到的日期、出過幾次任務、最好成績、累積能量 */
 function ensureCollection(){
   save.collection=save.collection||{};let changed=false;
@@ -1061,11 +1284,36 @@ function ensureCollection(){
     save.collection[b.id]={at:today(),plays:0,stars:save.best[b.id]||0,energy:0};changed=true}});
   if(changed)persist();
 }
-ensureCollection();
+function loadDB(){
+  try{const raw=JSON.parse(localStorage.getItem(KEY));if(raw&&raw.profiles)DB={...DB,...raw}}catch(e){}
+  if(!Object.keys(DB.profiles).length){
+    // 從舊版的單人存檔搬過來，不讓任何人掉進度
+    let old=null;try{old=JSON.parse(localStorage.getItem(OLDKEY))}catch(e){}
+    if(old&&(old.completed||old.rounds||old.stars)){
+      const id=newId();DB.profiles[id]={name:'小駕駛員',avatar:'🦖',at:today(),data:{...blank(),...old}};DB.active=id;
+    }
+  }
+  if(!DB.profiles[DB.active])DB.active='';
+  if(DB.active){save=DB.profiles[DB.active].data;ensureCollection()}
+}
+function useProfile(id){
+  if(!DB.profiles[id])return;
+  DB.active=id;save=DB.profiles[id].data;persist();ensureCollection();
+}
+function addProfile(name,avatar){
+  const id=newId();
+  DB.profiles[id]={name:(name||'').trim()||'小駕駛員',avatar:avatar||pickAvatar(),at:today(),data:blank()};
+  DB.active=id;save=DB.profiles[id].data;persist();ensureCollection();return id;
+}
+function removeProfile(id){
+  delete DB.profiles[id];
+  if(DB.active===id){DB.active='';save=blank()}
+  try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}
+}
 
 /* ================= 聲音 & 朗讀 ================= */
 let ac;
-function tone(f,t,dur,type){if(!save.sound)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=type||'triangle';o.frequency.value=f;g.gain.value=.0001;o.connect(g).connect(ac.destination);const s=ac.currentTime+t;g.gain.setValueAtTime(.0001,s);g.gain.exponentialRampToValueAtTime(.18,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+dur);o.start(s);o.stop(s+dur+.05)}catch(e){}}
+function tone(f,t,dur,type,force){if(!save.sound&&!force)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=type||'triangle';o.frequency.value=f;g.gain.value=.0001;o.connect(g).connect(ac.destination);const s=ac.currentTime+t;g.gain.setValueAtTime(.0001,s);g.gain.exponentialRampToValueAtTime(.18,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+dur);o.start(s);o.stop(s+dur+.05)}catch(e){}}
 const SFX={
   good(){tone(660,0,.15);tone(880,.12,.2)},
   bad(){tone(220,0,.18,'sine');tone(180,.15,.2,'sine')},
@@ -1097,7 +1345,9 @@ const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
 const isKid=()=>TIERS[sel.tier].kid;
 
 function header(){
-  return `<header class="top"><div class="logo"><span class="badge">MA</span>變形機甲學園</div>
+  const p=cur();
+  return `<header class="top"><div class="logo"><span class="badge">MA</span><span class="ltext">變形機甲學園</span></div>
+  <button class="mechip" data-act="who" title="換人玩" aria-label="目前是 ${esc(p.name)}，點一下換人"><span>${p.avatar}</span>${esc(p.name)} ▾</button>
   <div class="tools">
     <button class="iconbtn trophy" data-act="collection" title="收藏庫" aria-label="收藏庫">🏆<span class="cnt">${save.completed+1>BOTS.length?BOTS.length:save.completed+1}</span></button>
     <button class="iconbtn" data-act="read" title="朗讀題目" aria-label="朗讀題目">${save.read?'🔊':'🔇'}</button>
@@ -1136,11 +1386,13 @@ function renderStart(){
   <details class="parents"><summary>給爸媽的說明</summary><div class="body">
     <p><b>3–6 歲</b>：每次任務 5 題，題目和選項都會念出來，選項以圖片為主，小孩聽完直接點圖。答錯不會扣分，那個選項會變暗，讓孩子再試一次，所以每次任務結束時機甲一定會變形完成。星星依「第一次就答對」的題數計算：5 題三顆星、4 題兩顆星、其他一顆星。每完成一次任務解鎖下一台機甲。</p>
     <p style="margin-top:8px"><b>7–12 歲</b>：每次任務 10 題、四個選項、沒有重試。答對 5 題以上算完成任務，7 題兩顆星，9 題以上三顆星。可以用鍵盤 1–4 或 A–D 作答。</p>
-    <table><tr><th>年齡</th><th>數學</th><th>國語</th><th>地理歷史</th></tr>
-    <tr><th>3–4 歲</th><td>數到 5、哪堆比較多、比大小、找一樣的、顏色、形狀、接下來是幾</td><td>聽名字找圖、動物叫聲、身體部位、日常用品、相反詞</td><td>白天晚上、動物住哪裡、天氣與穿著、台灣國旗、職業與交通、節日</td></tr>
-    <tr><th>5–6 歲</th><td>數到 10、10 以內加減、比多少、哪堆有 N 個、分類找不同、形狀</td><td>看圖認字、認簡單的字、注音聲母、量詞、顏色、生活禮貌</td><td>東西南北、台灣是島、台北高雄的位置、玉山、節日、貓熊袋鼠的家</td></tr>
-    <tr><th>7–9 歲</th><td>100 以內加減、九九乘法、除法、錢與時間、單位換算</td><td>錯別字、量詞、成語填空、部首、的得地</td><td>台灣縣市與景點、河流山脈、原住民族、鄭成功、七大洲</td></tr>
-    <tr><th>10–12 歲</th><td>括號四則、分數、小數、面積周長、平均、百分比、因數倍數</td><td>成語意義、修辭、文言字義、詞性</td><td>台灣歷史順序、條約與年代、世界首都、地理之最</td></tr></table>
+    <p style="margin-top:8px"><b>多人共用一台裝置</b>：左上角的名字可以切換小朋友，最多 6 位，每個人的收藏庫、星星和年齡設定都是分開的。換裝置玩的話，在「誰要玩？」畫面下方有轉移碼和 QR code，掃一下就能把進度複製到另一台。</p>
+    <p style="margin-top:8px"><b>音樂科</b>：一半是會真的發出聲音的聽力題（比高低、數拍子、聽唱名、聽音程），一半是樂理知識。聽力題不受右上角音效開關影響，按 ▶ 可以重複聽。</p>
+    <table><tr><th>年齡</th><th>數學</th><th>國語</th><th>音樂</th><th>地理歷史</th></tr>
+    <tr><th>3–4 歲</th><td>數到 5、哪堆比較多、比大小、找一樣的、顏色、形狀、接下來是幾</td><td>聽名字找圖、動物叫聲、身體部位、日常用品、相反詞</td><td>高低快慢、數拍子、樂器外型與名稱</td><td>白天晚上、動物住哪裡、天氣與穿著、台灣國旗、職業與交通、節日</td></tr>
+    <tr><th>5–6 歲</th><td>數到 10、10 以內加減、比多少、哪堆有 N 個、分類找不同、形狀</td><td>看圖認字、認簡單的字、注音聲母、量詞、顏色、生活禮貌</td><td>Do Re Mi 唱名、聽音階上下行、樂器怎麼演奏</td><td>東西南北、台灣是島、台北高雄的位置、玉山、節日、貓熊袋鼠的家</td></tr>
+    <tr><th>7–9 歲</th><td>100 以內加減、九九乘法、除法、錢與時間、單位換算</td><td>錯別字、量詞、成語填空、部首、的得地</td><td>五線譜、音符時值、拍號、音名唱名對照、樂器分類</td><td>台灣縣市與景點、河流山脈、原住民族、鄭成功、七大洲</td></tr>
+    <tr><th>10–12 歲</th><td>括號四則、分數、小數、面積周長、平均、百分比、因數倍數</td><td>成語意義、修辭、文言字義、詞性</td><td>升降記號、力度速度術語、大三和弦、音程、大小調</td><td>台灣歷史順序、條約與年代、世界首都、地理之最</td></tr></table>
     <div class="stats">
       <div class="stat"><b>${save.completed}</b><span>完成任務</span></div>
       <div class="stat"><b>${save.stars}</b><span>累積星星</span></div>
@@ -1148,8 +1400,90 @@ function renderStart(){
       <div class="stat"><b>${subjRate('zh')} / ${subjRate('geo')}</b><span>國語 / 地理歷史</span></div>
     </div>
     <p style="margin-top:10px;font-size:.82rem"><b>題庫規模：</b>國語、自然常識、地理歷史共 <b>${BANK_TOTAL}</b> 題（依年齡分四級）。數學是程式即時出題，數字每次都不同，等於出不完。</p>
+    <p style="margin-top:6px;font-size:.82rem"><b>版本 ${APP_VERSION}</b>　<button data-act="checkupdate" style="text-decoration:underline">檢查有沒有新版</button><span id="upmsg" style="margin-left:6px"></span></p>
     <p style="margin-top:6px;font-size:.82rem">朗讀使用瀏覽器內建的中文語音；iPhone 或 iPad 上第一次要先按一下題目旁的喇叭。進度只存在這個瀏覽器裡。<button data-act="reset" style="text-decoration:underline;color:var(--bad)">清除全部進度</button></p>
   </div></details>`;
+}
+
+/* ================= 誰在玩：同一台裝置可以分不同小朋友 ================= */
+const b64e=str=>btoa(String.fromCharCode(...new TextEncoder().encode(str))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const b64d=str=>new TextDecoder().decode(Uint8Array.from(atob(str.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0)));
+const exportCode=id=>{const p=DB.profiles[id];return p?b64e(JSON.stringify({n:p.name,a:p.avatar,d:p.data})):''};
+const transferURL=id=>location.origin+location.pathname+'#p='+exportCode(id);
+function importCode(code){
+  try{
+    const o=JSON.parse(b64d(code.trim().replace(/^.*#p=/,'')));
+    if(!o||!o.d)return null;
+    const id=newId();
+    DB.profiles[id]={name:o.n||'小駕駛員',avatar:o.a||pickAvatar(),at:today(),data:{...blank(),...o.d}};
+    DB.active=id;save=DB.profiles[id].data;persist();ensureCollection();return DB.profiles[id];
+  }catch(e){return null}
+}
+let newAvatar=null;
+function renderProfiles(opts){
+  opts=opts||{};clearToys();
+  const list=profileList();
+  const first=!list.length;
+  newAvatar=newAvatar||pickAvatar();
+  app.innerHTML=(first?'':header())+`
+  <div class="whohead">
+    <h1>${first?'歡迎來到變形機甲學園':'誰要玩？'}</h1>
+    <p class="lede">${first?'先告訴我你叫什麼名字，我幫你開一個專屬的機甲收藏庫。':'每個小朋友都有自己的收藏庫、星星和進度，不會互相影響。'}</p>
+  </div>
+  <div class="whogrid">
+    ${list.map(p=>{const d=p.data||{};const got=Math.min((d.completed||0)+1,BOTS.length);
+      return `<button class="who ${p.id===DB.active?'on':''}" data-use="${p.id}">
+        <span class="wav">${p.avatar}</span>
+        <b>${esc(p.name)}</b>
+        <small>🏆 ${got} 台機甲・⭐ ${d.stars||0} 顆星</small>
+        <small class="wsub">${TIERS[d.tier||0].age}・${p.at||''} 開始</small>
+      </button>`}).join('')}
+    ${list.length<MAXP?`<div class="who add">
+      <div class="avpick">${AVATARS.map(a=>`<button class="av ${a===newAvatar?'on':''}" data-av="${a}" aria-label="選擇圖案 ${a}">${a}</button>`).join('')}</div>
+      <input id="newname" class="nameinput" maxlength="8" placeholder="打上名字（最多 8 個字）" value="${esc(opts.name||'')}">
+      <button class="bigbtn small" data-act="create">${first?'開始玩！':'新增這位小朋友'}</button>
+    </div>`:'<div class="who add full">已經有 6 位小朋友了，要新增請先刪除一位。</div>'}
+  </div>
+  ${first?'':`<details class="parents"><summary>換裝置玩？把進度帶過去</summary><div class="body">
+    <p>進度存在這台裝置裡，換一台就是全新的。要把某位小朋友的收藏庫搬到另一支手機或平板，用下面的轉移碼。</p>
+    <div class="xfer">
+      <div class="xcol">
+        <h3>把「${esc(cur().name)}」帶到另一台</h3>
+        <p class="xhint">用另一台裝置的相機掃這個 QR code，會直接打開遊戲並把進度複製過去。</p>
+        <div id="qrbox" class="qrbox">產生中…</div>
+        <button class="bigbtn ghost small" data-act="copycode">複製轉移碼</button>
+        <span id="copied" class="copied"></span>
+      </div>
+      <div class="xcol">
+        <h3>從另一台接收</h3>
+        <p class="xhint">把另一台複製到的轉移碼貼在這裡，會多出一位新的小朋友，原本的資料不會被蓋掉。</p>
+        <textarea id="incode" class="codebox" rows="4" placeholder="在這裡貼上轉移碼"></textarea>
+        <button class="bigbtn ghost small" data-act="paste">接收進度</button>
+        <span id="pasted" class="copied"></span>
+      </div>
+    </div>
+    <p style="margin-top:12px;font-size:.85rem">要刪除某位小朋友：
+      ${list.map(p=>`<button class="dellink" data-del="${p.id}">刪除 ${esc(p.name)}</button>`).join('')}
+    </p>
+  </div></details>`}`;
+  if(!first)drawQR();
+}
+function drawQR(){
+  const box=document.getElementById('qrbox');if(!box||!DB.active)return;
+  const url=transferURL(DB.active);
+  const go=()=>{try{box.innerHTML='';new QRCode(box,{text:url,width:180,height:180,correctLevel:QRCode.CorrectLevel.L})}
+    catch(e){box.innerHTML='<span class="xhint">這台裝置畫不出 QR code，請改用下面的「複製轉移碼」。</span>'}};
+  if(window.QRCode)return go();
+  const sc=document.createElement('script');
+  sc.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+  sc.onload=go;
+  sc.onerror=()=>{box.innerHTML='<span class="xhint">離線的時候畫不出 QR code，請改用下面的「複製轉移碼」。</span>'};
+  document.head.appendChild(sc);
+}
+async function copyText(t){
+  try{await navigator.clipboard.writeText(t);return true}
+  catch(e){try{const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.select();const ok=document.execCommand('copy');ta.remove();return ok}catch(x){return false}}
 }
 
 /* ================= 收藏庫：每台機甲都可以自由變形 ================= */
@@ -1240,10 +1574,12 @@ function renderPlay(){
     <div class="console">
       <div class="bar"><span class="chip">第 ${g.i+1} / ${n} 題</span><div class="progress">${g.qs.map((_,k)=>`<i class="${k<g.i?(g.log[k].ok?'ok':'no'):k===g.i?'cur':''}"></i>`).join('')}</div><span class="chip sub">${subjName}</span></div>
       <div class="qtext"><button class="speak" data-act="speak" aria-label="再聽一次">🔊</button><span id="qt">${esc(q.q).replace(/___/g,'<u>　　</u>')}</span></div>
+      ${q.sound?`<div class="hearbox"><button class="hearbtn" data-act="hear">▶</button><span class="hearlab">按一下聽聲音<small>可以重複聽，聽幾次都沒關係</small></span></div>`:''}
       ${q.vis?`<div class="vis">${q.vis}</div>`:''}
       <div class="opts ${pics?'pics':''} n${q.opts.length}">${q.opts.map(optHTML).join('')}</div>
       <div id="fb"></div>
     </div></div>`;
+  if(q.sound){setTimeout(()=>playSeq(q.sound.seq),t.kid?1900:700)}
   if(t.kid)setTimeout(()=>readQuestion(q),300);
 }
 function answer(k){
@@ -1266,6 +1602,7 @@ function answer(k){
     if(!bot.classList.contains('s'+s)){bot.classList.add('s'+s);document.querySelectorAll('.cell')[s-1]?.classList.add('on');document.getElementById('mode').textContent=modeLabel();
       if(s===5){SFX.transform();sparkle(bot)}else SFX.step();}
     else SFX.good();
+    if(q.subj==='mus')setTimeout(()=>playSeq([['C4',.16],['E4',.16],['G4',.16],['C5',.3]]),260);
     const praise=pick(['答對了！','太棒了！','好厲害！','就是這個！']);
     fb.innerHTML=`<div class="feedback good"><div><b>${praise}</b>${q.why?`<p>${esc(q.why)}</p>`:''}</div><button class="next" data-act="next">下一題 ▶</button></div>`;
     if(kid)speak(s===5?praise+'變形完成！':praise+(q.why||''));
@@ -1284,7 +1621,7 @@ function sparkle(host){
   for(let i=0;i<18;i++){const s=document.createElement('span');s.className='sparkle';
     s.style.left=(50+R(-22,22))+'%';s.style.top=(55+R(-15,15))+'%';
     s.style.setProperty('--dx',R(-130,130)+'px');s.style.setProperty('--dy',R(-170,-40)+'px');
-    s.style.background=pick(['#FFC72C','#7FE3FF','#fff','#FF7A59']);
+    s.style.background=pick(['#E4B75C','#9CC6C0','#FDFAF6','#D2938F']);
     host.parentElement.appendChild(s);setTimeout(()=>s.remove(),1200)}
 }
 function finish(){
@@ -1321,7 +1658,7 @@ function finish(){
   if(kid)setTimeout(()=>speak(title+(unlockedNew?'解鎖新機甲，'+unlockedNew.name:'')),600);
 }
 
-app.addEventListener('click',e=>{
+app.addEventListener('click',async e=>{
   const card=e.target.closest('.trophy-card');
   if(card&&!e.target.closest('button')&&!card.classList.contains('locked')){
     const id=card.querySelector('.bot').id.replace('toy-','');toyTransform(id);return}
@@ -1331,21 +1668,112 @@ app.addEventListener('click',e=>{
   if(b.dataset.bot){sel.bot=b.dataset.bot;renderStart();if(isKid())speak(BOTS.find(x=>x.id===sel.bot).name);return}
   if(b.dataset.opt!==undefined){answer(+b.dataset.opt);return}
   if(b.dataset.toy){toyTransform(b.dataset.toy);return}
+  if(b.dataset.use){useProfile(b.dataset.use);SFX.step();renderStart();return}
+  if(b.dataset.av){const name=(document.getElementById('newname')||{}).value||'';newAvatar=b.dataset.av;renderProfiles({name});return}
+  if(b.dataset.del){
+    const p=DB.profiles[b.dataset.del];if(!p)return;
+    if(confirm('確定要刪除「'+p.name+'」的全部進度嗎？這個動作無法復原。')){
+      removeProfile(b.dataset.del);newAvatar=null;
+      if(!DB.active&&Object.keys(DB.profiles).length)useProfile(Object.keys(DB.profiles)[0]);
+      renderProfiles();}
+    return}
   const a=b.dataset.act;
   if(a==='start'||a==='again'){SFX.step();startRound()}
   else if(a==='next')next();
   else if(a==='home'){if(g&&g.timer)clearTimeout(g.timer);g=null;clearToys();try{speechSynthesis.cancel()}catch(x){}renderStart()}
   else if(a==='collection'){if(g&&g.timer)clearTimeout(g.timer);g=null;try{speechSynthesis.cancel()}catch(x){}renderCollection()}
+  else if(a==='who'){if(g&&g.timer)clearTimeout(g.timer);g=null;try{speechSynthesis.cancel()}catch(x){}newAvatar=null;renderProfiles()}
+  else if(a==='create'){
+    const el=document.getElementById('newname');const nm=(el&&el.value||'').trim();
+    if(!nm){el&&el.focus();return}
+    addProfile(nm,newAvatar);newAvatar=null;SFX.fanfare();renderStart();
+  }
+  else if(a==='checkupdate'){
+    const tip=document.getElementById('upmsg');if(tip)tip.textContent='檢查中…';
+    if(!('serviceWorker'in navigator)){if(tip)tip.textContent='這個瀏覽器不支援自動更新，重新整理即可';return}
+    try{
+      const reg=await navigator.serviceWorker.getRegistration();
+      if(!reg){if(tip)tip.textContent='還沒安裝，重新整理就是最新版';return}
+      await reg.update();
+      setTimeout(()=>{if(tip)tip.textContent=(reg.waiting||reg.installing)?'找到新版本了！':'已經是最新版 ✓'},1200);
+    }catch(e){if(tip)tip.textContent='檢查失敗，請確認有沒有連上網路'}
+  }
+  else if(a==='copycode'){
+    const ok=await copyText(transferURL(DB.active));
+    const tip=document.getElementById('copied');if(tip)tip.textContent=ok?'已複製，貼到另一台就好':'複製失敗，請長按 QR 下方的網址手動複製';
+  }
+  else if(a==='paste'){
+    const box=document.getElementById('incode');const tip=document.getElementById('pasted');
+    const p=importCode((box&&box.value)||'');
+    if(p){SFX.fanfare();alert('已經接收「'+p.name+'」的進度！');renderStart()}
+    else if(tip)tip.textContent='這段轉移碼看不懂，請重新複製一次';
+  }
   else if(a==='speak'){readQuestion(g.qs[g.i],true)}
+  else if(a==='hear'){const q=g&&g.qs[g.i];if(q&&q.sound){try{speechSynthesis.cancel()}catch(x){}playSeq(q.sound.seq)}}
   else if(a==='read'){save.read=!save.read;persist();b.textContent=save.read?'🔊':'🔇';if(!save.read)try{speechSynthesis.cancel()}catch(x){}}
   else if(a==='sound'){save.sound=!save.sound;persist();b.textContent=save.sound?'🎵':'🚫';if(save.sound)SFX.step()}
-  else if(a==='reset'){if(confirm('確定要清除全部進度嗎？')){save={rounds:0,completed:0,stars:0,best:{},subj:{},collection:{},tier:0,sound:save.sound,read:save.read};persist();ensureCollection();renderStart()}}
+  else if(a==='reset'){if(confirm('確定要清除「'+cur().name+'」的全部進度嗎？其他小朋友不受影響。')){
+    const keep={sound:save.sound,read:save.read};save=Object.assign(blank(),keep);
+    if(DB.profiles[DB.active])DB.profiles[DB.active].data=save;
+    persist();ensureCollection();renderStart()}}
 });
 document.addEventListener('keydown',e=>{
   if(!g||g.answered)return;const k='1234abcdABCD'.indexOf(e.key);if(k<0)return;const idx=k%4;if(idx<g.qs[g.i].opts.length)answer(idx);
 });
 if('speechSynthesis'in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
-renderStart();
+
+/* ================= 有新版本時通知使用者 ================= */
+const APP_VERSION='2.2.0';
+function showUpdateBanner(apply){
+  if(document.getElementById('upbar'))return;
+  const bar=document.createElement('div');bar.id='upbar';bar.className='upbar';
+  bar.innerHTML=`<span class="updot"></span>
+    <div class="uptext"><b>有新版本了！</b><small>新的題目和功能已經準備好</small></div>
+    <button class="upbtn" id="upgo">立即更新</button>
+    <button class="upx" id="upskip" aria-label="稍後再說">✕</button>`;
+  document.body.appendChild(bar);
+  requestAnimationFrame(()=>bar.classList.add('in'));
+  document.getElementById('upgo').onclick=()=>{
+    const btn=document.getElementById('upgo');btn.textContent='更新中…';btn.disabled=true;apply();
+  };
+  document.getElementById('upskip').onclick=()=>bar.remove();
+}
+function watchForUpdates(){
+  if(!('serviceWorker'in navigator))return;
+  navigator.serviceWorker.getRegistration().then(reg=>{
+    if(!reg)return;
+    let reloading=false;
+    navigator.serviceWorker.addEventListener('controllerchange',()=>{
+      if(reloading)return;reloading=true;location.reload();
+    });
+    const offer=w=>{if(w&&w.state==='installed'&&navigator.serviceWorker.controller)
+      showUpdateBanner(()=>w.postMessage({type:'SKIP_WAITING'}))};
+    if(reg.waiting)offer(reg.waiting);
+    reg.addEventListener('updatefound',()=>{
+      const w=reg.installing;if(!w)return;
+      w.addEventListener('statechange',()=>offer(w));
+    });
+    // 每次回到遊戲、以及每 30 分鐘，都去看看有沒有新版
+    const check=()=>{if(navigator.onLine)reg.update().catch(()=>{})};
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
+    setInterval(check,30*60*1000);
+    setTimeout(check,3000);
+  }).catch(()=>{});
+}
+
+function boot(){
+  loadDB();
+  watchForUpdates();
+  // 從另一台掃 QR code 進來的：網址帶著轉移碼
+  const m=location.hash.match(/^#p=(.+)$/);
+  if(m){
+    const p=importCode(m[1]);
+    history.replaceState(null,'',location.pathname+location.search);
+    if(p){renderStart();setTimeout(()=>alert('已經把「'+p.name+'」的進度接收到這台裝置了！'),100);return}
+  }
+  if(!DB.active)renderProfiles(); else renderStart();
+}
+boot();
 </script>
 
 <script>
