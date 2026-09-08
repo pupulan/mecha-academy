@@ -1,0 +1,941 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>變形機甲學園</title>
+<meta name="description" content="3–6 歲為主的變形機甲學習遊戲：聽題目、點圖片，答對就補能量，五格集滿車子變成機器人。">
+<meta name="theme-color" content="#2B3A5C">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="機甲學園">
+<style>html{-webkit-text-size-adjust:100%}body{padding-top:env(safe-area-inset-top)}</style>
+</head>
+<body>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<style>
+:root{
+  --sky:#D9EEFB; --sky2:#B4DAF2; --ink:#16233B; --ink2:#4B5B7A; --steel:#2B3A5C; --steel2:#3B4D77;
+  --hazard:#FFC72C; --hazard2:#E0A800; --paper:#FFFFFF; --paper2:#EEF5FB; --line:#C4D6E6;
+  --good:#1F9C58; --good2:#DFF5E8; --bad:#D8391F; --bad2:#FBE3DD; --focus:#2E5BFF; --glow:#7FE3FF;
+  --fd:'LXGW WenKai TC','Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif;
+  --fb:'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif;
+  --fn:'Baloo 2','Noto Sans TC',sans-serif;
+  --r:16px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--sky);color:var(--ink);font-family:var(--fb);min-height:100vh;line-height:1.5;
+  background-image:radial-gradient(ellipse at 15% -10%,#fff 0,rgba(255,255,255,0) 45%),linear-gradient(180deg,var(--sky) 0%,var(--sky2) 100%);background-attachment:fixed}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+button:focus-visible,[tabindex]:focus-visible{outline:4px solid var(--focus);outline-offset:3px}
+h1,h2,h3{margin:0;font-family:var(--fd);font-weight:700;text-wrap:balance;line-height:1.25}
+p{margin:0}
+.wrap{max-width:1100px;margin:0 auto;padding:14px 16px 48px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 0 16px}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--fd);font-weight:700;font-size:1.3rem;letter-spacing:.06em}
+.logo .badge{width:40px;height:40px;border-radius:11px;background:var(--steel);display:grid;place-items:center;color:var(--hazard);font-family:var(--fn);font-weight:800;font-size:1.05rem;box-shadow:inset 0 -3px 0 rgba(0,0,0,.35),0 2px 0 #1a2540}
+.tools{display:flex;gap:8px}
+.iconbtn{width:44px;height:44px;border-radius:12px;background:var(--paper);box-shadow:0 2px 0 var(--line);display:grid;place-items:center;font-size:1.15rem}
+.iconbtn:active{transform:translateY(2px);box-shadow:none}
+
+/* ---------- start screen ---------- */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:center;margin-bottom:22px}
+.hero h1{font-size:clamp(1.9rem,4.5vw,2.9rem)}
+.hero .lede{font-size:1.05rem;color:var(--ink2);margin-top:10px;max-width:34em}
+.hero .art{aspect-ratio:1/1;max-height:280px;justify-self:center;width:100%;max-width:300px}
+.hero .art svg{width:100%;height:100%}
+section.pick{background:var(--paper);border-radius:var(--r);padding:16px 18px;margin-bottom:14px;box-shadow:0 1px 0 var(--line)}
+.pick h2{font-size:1.15rem;display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.pick h2 .step{font-family:var(--fn);font-size:.85rem;background:var(--steel);color:var(--hazard);border-radius:8px;padding:2px 9px;letter-spacing:.05em}
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tier{border:3px solid var(--line);border-radius:14px;padding:12px 14px;text-align:left;background:var(--paper2);transition:transform .15s,border-color .15s}
+.tier:hover{transform:translateY(-2px)}
+.tier.on{border-color:var(--hazard);background:#FFF8DF}
+.tier b{font-family:var(--fd);font-size:1.15rem;display:block}
+.tier .age{font-family:var(--fn);color:var(--ink2);font-weight:700;letter-spacing:.03em}
+.tier small{display:block;color:var(--ink2);margin-top:6px;font-size:.85rem;line-height:1.4}
+.subs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.sub{border:3px solid var(--line);border-radius:14px;padding:14px 8px;background:var(--paper2);font-family:var(--fd);font-size:1.15rem;display:flex;flex-direction:column;align-items:center;gap:4px;transition:transform .15s,border-color .15s}
+.sub .ico{font-size:1.8rem;line-height:1}
+.sub:hover{transform:translateY(-2px)}
+.sub.on{border-color:var(--hazard);background:#FFF8DF}
+.bots{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.botcard{border:3px solid var(--line);border-radius:14px;padding:10px 8px 10px;background:var(--paper2);display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;transition:transform .15s,border-color .15s}
+.botcard:hover{transform:translateY(-2px)}
+.botcard.on{border-color:var(--hazard);background:#FFF8DF}
+.botcard .mini{width:100%;aspect-ratio:240/150}
+.botcard .mini svg{width:100%;height:100%}
+.botcard b{font-family:var(--fd);font-size:1.15rem}
+.botcard small{color:var(--ink2);font-size:.8rem}
+.botcard .stars{font-size:.85rem;letter-spacing:.05em;min-height:1.2em}
+.botcard.locked{opacity:.55;filter:grayscale(.7)}
+.botcard.locked .lock{position:absolute;inset:0;display:grid;place-items:center;font-size:1.6rem;border-radius:11px;background:rgba(255,255,255,.35)}
+.botcard.locked .lock span{font-size:.72rem;background:var(--ink);color:#fff;padding:2px 8px;border-radius:99px;margin-top:2px;font-weight:700}
+.go{display:flex;justify-content:center;margin:18px 0 8px}
+.bigbtn{font-family:var(--fd);font-weight:700;font-size:1.5rem;letter-spacing:.12em;background:var(--hazard);color:var(--ink);padding:16px 44px;border-radius:99px;box-shadow:0 5px 0 var(--hazard2),0 10px 20px rgba(22,35,59,.15);transition:transform .1s,box-shadow .1s}
+.bigbtn:hover{transform:translateY(-1px)}
+.bigbtn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--hazard2)}
+.bigbtn.ghost{background:var(--paper);box-shadow:0 5px 0 var(--line);font-size:1.15rem;padding:12px 26px}
+.bigbtn.ghost:active{box-shadow:0 1px 0 var(--line)}
+.parents{background:var(--paper);border-radius:var(--r);box-shadow:0 1px 0 var(--line);margin-top:8px}
+.parents summary{cursor:pointer;padding:14px 18px;font-family:var(--fd);font-weight:700;font-size:1.05rem;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.parents summary::after{content:"＋";font-family:var(--fn);color:var(--ink2)}
+.parents[open] summary::after{content:"－"}
+.parents .body{padding:0 18px 18px;color:var(--ink2);font-size:.92rem}
+.parents table{border-collapse:collapse;width:100%;margin-top:8px;font-size:.9rem}
+.parents th,.parents td{text-align:left;padding:7px 8px;border-top:1px solid var(--line);vertical-align:top}
+.parents th{color:var(--ink);white-space:nowrap}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.stat{background:var(--paper2);border-radius:12px;padding:10px 12px}
+.stat b{display:block;font-family:var(--fn);font-size:1.5rem;color:var(--steel);line-height:1.1}
+.stat span{font-size:.8rem;color:var(--ink2)}
+
+/* ---------- play screen ---------- */
+.stage{display:grid;grid-template-columns:minmax(280px,.9fr) 1.1fr;gap:16px;align-items:start}
+.hangar{position:relative;border-radius:20px;overflow:hidden;background:
+  linear-gradient(180deg,#324569 0%,#22314F 70%,#1B2740 100%);color:#fff;padding:14px 14px 0;box-shadow:0 12px 30px rgba(22,35,59,.25)}
+.hangar::before{content:"";position:absolute;inset:0;background:
+  repeating-linear-gradient(90deg,rgba(255,255,255,.04) 0 2px,transparent 2px 40px),
+  repeating-linear-gradient(0deg,rgba(255,255,255,.04) 0 2px,transparent 2px 40px);pointer-events:none}
+.hangar .nameplate{display:flex;justify-content:space-between;align-items:baseline;position:relative}
+.hangar .nameplate b{font-family:var(--fd);font-size:1.4rem;letter-spacing:.1em}
+.hangar .nameplate span{font-size:.8rem;color:var(--glow);font-weight:700;letter-spacing:.08em}
+.hangar .mode{font-family:var(--fn);font-weight:800;font-size:.8rem;letter-spacing:.14em;color:var(--hazard);text-transform:uppercase;margin-top:2px;position:relative}
+.bot{position:relative;width:min(100%,340px);margin:0 auto;aspect-ratio:240/260;z-index:1}
+.bot svg{width:100%;height:100%;overflow:visible}
+.bot .glowring{position:absolute;left:50%;top:60%;width:70%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(127,227,255,.35) 0,rgba(127,227,255,0) 65%);opacity:0;transition:opacity .6s;z-index:-1}
+.bot.s5 .glowring{opacity:1;animation:breathe 2.4s ease-in-out infinite}
+.lift{position:relative;height:30px;margin:0 -14px;background:repeating-linear-gradient(-45deg,var(--hazard) 0 14px,#1B2740 14px 28px);border-top:4px solid #0f1727}
+.lift::after{content:"";position:absolute;left:0;right:0;top:-14px;height:10px;background:#5F6F91;border-radius:2px;box-shadow:0 2px 0 #0f1727}
+.energy{display:flex;gap:6px;align-items:center;margin:10px 0 12px;position:relative}
+.energy .lab{font-family:var(--fn);font-weight:800;font-size:.75rem;letter-spacing:.14em;color:#B7C6E2;margin-right:4px}
+.cell{flex:1;height:16px;border-radius:5px;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.18);transition:background .3s,box-shadow .3s}
+.cell.on{background:var(--glow);border-color:#fff;box-shadow:0 0 12px var(--glow)}
+.bot.s5 ~ .energy .cell.on{animation:pulse 1.2s ease-in-out infinite}
+.sparkle{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--hazard);pointer-events:none;animation:spark 1.1s ease-out forwards;z-index:2}
+.console{background:var(--paper);border-radius:20px;padding:18px 18px 20px;box-shadow:0 1px 0 var(--line),0 12px 30px rgba(22,35,59,.08);position:relative}
+.console .bar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.chip{font-family:var(--fn);font-weight:800;font-size:.85rem;letter-spacing:.06em;padding:4px 12px;border-radius:99px;background:var(--paper2);color:var(--steel)}
+.chip.sub{background:var(--steel);color:#fff;font-family:var(--fb);font-weight:700}
+.progress{display:flex;gap:4px;flex:1;min-width:120px}
+.progress i{flex:1;height:8px;border-radius:4px;background:var(--line)}
+.progress i.ok{background:var(--good)}
+.progress i.no{background:var(--bad)}
+.progress i.cur{background:var(--hazard)}
+.qtext{font-family:var(--fd);font-size:clamp(1.35rem,2.6vw,1.75rem);line-height:1.45;margin:6px 0 4px;display:flex;gap:10px;align-items:flex-start}
+.t0 .qtext{font-size:clamp(1.6rem,3.2vw,2.1rem)}
+.qtext .speak{flex:none;width:42px;height:42px;border-radius:50%;background:var(--paper2);font-size:1.2rem;display:grid;place-items:center;box-shadow:0 2px 0 var(--line);margin-top:2px}
+.qtext .speak:active{transform:translateY(2px);box-shadow:none}
+.vis{font-size:clamp(1.8rem,4vw,2.6rem);line-height:1.35;letter-spacing:.06em;margin:8px 0 6px;word-break:break-all;font-family:var(--fn)}
+.vis .vs{display:inline-block;font-family:var(--fd);font-size:.55em;color:var(--ink2);margin:0 .5em;vertical-align:middle}
+.vis .grp{display:inline-block;padding:6px 10px;border-radius:12px;background:var(--paper2);margin:3px 0}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.t0 .opts{grid-template-columns:1fr}
+.opt{min-height:64px;border:3px solid var(--line);border-radius:14px;background:var(--paper2);padding:12px 16px;font-family:var(--fd);font-size:1.3rem;text-align:left;display:flex;align-items:center;gap:12px;transition:transform .12s,border-color .12s,background .2s}
+.t0 .opt{font-size:1.6rem;min-height:72px;justify-content:center}
+.opt .key{flex:none;font-family:var(--fn);font-weight:800;font-size:.95rem;width:30px;height:30px;border-radius:50%;background:var(--paper);display:grid;place-items:center;color:var(--ink2);box-shadow:inset 0 0 0 2px var(--line)}
+.t0 .opt .key{display:none}
+.opt:hover:not(:disabled){transform:translateY(-2px);border-color:var(--steel2)}
+.opt:disabled{cursor:default}
+.opt.right{border-color:var(--good);background:var(--good2)}
+.opt.wrong{border-color:var(--bad);background:var(--bad2);animation:shake .4s}
+.opt.dim{opacity:.45}
+.feedback{margin-top:14px;border-radius:14px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;animation:pop .25s cubic-bezier(.34,1.56,.64,1)}
+.feedback.good{background:var(--good2);border:2px solid var(--good)}
+.feedback.bad{background:var(--bad2);border:2px solid var(--bad)}
+.feedback b{font-family:var(--fd);font-size:1.25rem;display:block}
+.feedback p{color:var(--ink2);font-size:.95rem;margin-top:2px}
+.feedback .next{font-family:var(--fd);font-weight:700;font-size:1.1rem;background:var(--ink);color:#fff;padding:10px 20px;border-radius:99px;box-shadow:0 4px 0 #050a15}
+.feedback .next:active{transform:translateY(3px);box-shadow:0 1px 0 #050a15}
+
+/* ---------- result ---------- */
+.result{display:grid;grid-template-columns:minmax(260px,.9fr) 1.1fr;gap:16px;align-items:stretch}
+.report{background:var(--paper);border-radius:20px;padding:22px;box-shadow:0 1px 0 var(--line);display:flex;flex-direction:column;gap:14px}
+.report h2{font-size:clamp(1.6rem,3vw,2.2rem)}
+.starrow{font-size:3rem;letter-spacing:.1em;line-height:1}
+.starrow .off{opacity:.25}
+.report .nums{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.report .nums div{background:var(--paper2);border-radius:12px;padding:10px 12px}
+.report .nums b{font-family:var(--fn);font-size:1.7rem;display:block;line-height:1.1;color:var(--steel)}
+.report .nums span{font-size:.8rem;color:var(--ink2)}
+.unlock{background:#FFF8DF;border:2px dashed var(--hazard2);border-radius:12px;padding:10px 14px;font-weight:700}
+.report .acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:auto}
+.review{margin-top:16px;background:var(--paper);border-radius:var(--r);padding:14px 18px;box-shadow:0 1px 0 var(--line)}
+.review h3{font-size:1.05rem;margin-bottom:8px}
+.review ol{margin:0;padding-left:1.3em;color:var(--ink2);font-size:.92rem}
+.review li{margin:4px 0}
+.review li b{color:var(--ink)}
+
+@keyframes pop{from{transform:scale(.9);opacity:0}to{transform:none;opacity:1}}
+@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 6px var(--glow)}50%{box-shadow:0 0 18px #fff}}
+@keyframes breathe{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.12)}}
+@keyframes spark{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
+@keyframes pose{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(-6px) rotate(-1.5deg)}}
+@keyframes idle{0%{transform:translateY(0)}100%{transform:translateY(-3px)}}
+
+/* ---------- transformation ---------- */
+.bot .veh{transform-origin:120px 140px;transition:transform .8s cubic-bezier(.4,0,.2,1),opacity .5s}
+.bot:not(.s1):not(.showrobot) svg{animation:idle 1.8s ease-in-out infinite alternate}
+.bot .p{opacity:0;transition:transform .7s cubic-bezier(.34,1.56,.64,1),opacity .35s}
+.bot .p-legs{transform:translateY(60px)}
+.bot .p-torso{transform:scale(.3);transform-origin:120px 115px}
+.bot .p-armL{transform:translate(-60px,20px) rotate(-40deg);transform-origin:74px 92px}
+.bot .p-armR{transform:translate(60px,20px) rotate(40deg);transform-origin:166px 92px}
+.bot .p-head{transform:translateY(50px) scale(.4);transform-origin:120px 58px}
+.bot .p-acc{transform:scale(.5);transform-origin:120px 100px}
+.bot.s1 .veh{transform:translateY(-34px)}
+.bot.s1 .p-legs{opacity:1;transform:none}
+.bot.s2 .veh{transform:translateY(-80px) scale(.5);opacity:.45}
+.bot.s2 .p-torso{opacity:1;transform:none}
+.bot.s3 .veh{opacity:.12;transform:translateY(-110px) scale(.35)}
+.bot.s3 .p-armL,.bot.s3 .p-armR{opacity:1;transform:none}
+.bot.s4 .veh{opacity:0;transform:translateY(-140px) scale(.15)}
+.bot.s4 .p-head{opacity:1;transform:none}
+.bot.s5 .p-acc{opacity:1;transform:none}
+.bot.s5 .robot{animation:pose 1.6s ease-in-out infinite alternate;transform-origin:120px 200px}
+.bot.showrobot .veh{opacity:0}
+.bot.showrobot .p{opacity:1;transform:none}
+
+
+/* ---------- 3–6 歲 ---------- */
+.tiers.kid{grid-template-columns:1fr 1fr}
+.tier{display:flex;gap:12px;align-items:flex-start}
+.tier .ticon{font-size:2.2rem;line-height:1;flex:none;margin-top:2px}
+.older{margin-top:10px}
+.older summary{cursor:pointer;font-size:.9rem;color:var(--ink2);font-weight:700;padding:6px 2px;list-style:none}
+.older summary::before{content:"▸ ";font-family:var(--fn)}
+.older[open] summary::before{content:"▾ "}
+.older .tiers{margin-top:8px;grid-template-columns:1fr 1fr}
+.sub small{font-size:.78rem;color:var(--ink2);font-weight:400;font-family:var(--fb)}
+.kid .qtext{font-size:clamp(1.7rem,3.4vw,2.2rem)}
+.kid .qtext .speak{width:52px;height:52px;font-size:1.5rem}
+.kid .opts{grid-template-columns:1fr}
+.kid .opt{font-size:1.7rem;min-height:80px;justify-content:center;padding:14px 20px}
+.kid .opt .key{display:none}
+.opts.pics{grid-template-columns:repeat(3,1fr)}
+.opts.pics.n2{grid-template-columns:repeat(2,1fr)}
+.opt.pic{aspect-ratio:1/1;min-height:0;justify-content:center;align-items:center;padding:8px}
+.opt.pic .emo{font-size:clamp(3rem,9vw,4.6rem);line-height:1;font-family:var(--fn)}
+.opt.pic.big .emo{font-size:clamp(4rem,11vw,5.6rem)}
+.opt.pic.small .emo{font-size:clamp(1.8rem,5vw,2.6rem)}
+.opt.pic.group{aspect-ratio:auto;min-height:96px}
+.opt.pic.group .emo{font-size:clamp(1.5rem,4vw,2.2rem);line-height:1.3;letter-spacing:.04em;text-align:center;word-break:break-all}
+.opt.wrong.pic{opacity:.3}
+.kid .vis{font-size:clamp(2.2rem,5vw,3.2rem)}
+.kid .feedback b{font-size:1.5rem}
+@media (max-width:820px){
+  .tiers.kid,.older .tiers{grid-template-columns:1fr}
+  .kid .opts.pics{grid-template-columns:repeat(3,1fr)}
+  .kid .opts.pics.n2{grid-template-columns:repeat(2,1fr)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition-duration:.01ms!important}
+}
+@media (max-width:820px){
+  .hero{grid-template-columns:1fr}
+  .hero .art{max-height:200px;max-width:220px;order:-1}
+  .tiers{grid-template-columns:1fr}
+  .subs{grid-template-columns:repeat(2,1fr)}
+  .bots{grid-template-columns:repeat(3,1fr)}
+  .stage,.result{grid-template-columns:1fr}
+  .bot{width:min(100%,250px)}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .opts{grid-template-columns:1fr}
+}
+@media (max-width:480px){
+  .bots{grid-template-columns:repeat(2,1fr)}
+  .wrap{padding:10px 10px 40px}
+  .logo{font-size:1.1rem}
+}
+</style>
+
+<div class="wrap" id="app"></div>
+
+<script>
+/* ================= 資料 ================= */
+const BOTS=[
+  {id:'flash',   name:'閃電', type:'car',   c1:'#FFC72C', c2:'#23262B', c3:'#FFFFFF', tag:'黃色跑車', blurb:'跑得最快的偵察兵，最喜歡算數。'},
+  {id:'ironpeak',name:'鐵岳', type:'truck', c1:'#E23D28', c2:'#2E5BFF', c3:'#C9CED6', tag:'紅藍大卡車', blurb:'隊長，最有力氣，記得每一條路。'},
+  {id:'gale',    name:'疾風', type:'jet',   c1:'#DDE3EA', c2:'#E23D28', c3:'#23262B', tag:'戰鬥機', blurb:'飛得最高，看得最遠。'},
+  {id:'rotor',   name:'旋翼', type:'heli',  c1:'#4C9A2A', c2:'#23262B', c3:'#BFE3A5', tag:'直升機', blurb:'救援專家，哪裡需要就去哪裡。'},
+  {id:'bulwark', name:'巨盾', type:'tank',  c1:'#B5A06B', c2:'#5A4D2B', c3:'#E8DFC4', tag:'坦克', blurb:'最穩的守護者，什麼都擋得住。'},
+];
+const TIERS=[
+  {id:0,name:'小小駕駛員',age:'3–4 歲',icon:'🐣',opts:3,round:5,kid:true,desc:'聽聲音找圖片：數到 5、比大小、顏色形狀、動物與日常物品'},
+  {id:1,name:'見習駕駛員',age:'5–6 歲',icon:'🐥',opts:3,round:5,kid:true,desc:'數到 10、10 以內加減、認字與注音、方向節日、台灣和世界'},
+  {id:2,name:'王牌駕駛員',age:'7–9 歲',icon:'🦅',opts:4,round:10,desc:'加減乘除、時間與錢、量詞成語、台灣縣市與歷史人物'},
+  {id:3,name:'指揮官',age:'10–12 歲',icon:'🚀',opts:4,round:10,desc:'分數小數、面積百分比、成語修辭、世界地理與歷史順序'},
+];
+const SUBJECTS=[
+  {id:'math',name:'數學',kid:'數一數',icon:'🔢'},
+  {id:'zh',name:'國語',kid:'聽聽看',icon:'📖'},
+  {id:'geo',name:'地理歷史',kid:'認識世界',icon:'🗺️'},
+  {id:'mix',name:'混合挑戰',kid:'通通來',icon:'⚡'},
+];
+/* 選項可以是文字，也可以是圖片：P(圖, 念出來的字) */
+const P=(t,say,extra)=>({t,say,pic:true,...(extra||{})});
+const BIG=(t,say)=>({t,say,pic:true,size:'big'}), SMALL=(t,say)=>({t,say,pic:true,size:'small'});
+/* 靜態題庫：[題目, [正確, 錯1, 錯2, …], 說明, 圖示]，正確答案永遠放第一個，出題時再洗牌 */
+const KID={
+zh34:[
+ ['哪一個是貓？',[P('🐱','貓'),P('🐶','狗'),P('🐟','魚')]],
+ ['哪一個是狗？',[P('🐶','狗'),P('🐱','貓'),P('🐰','兔子')]],
+ ['哪一個是兔子？',[P('🐰','兔子'),P('🐷','豬'),P('🐔','雞')]],
+ ['哪一個是大象？',[P('🐘','大象'),P('🐭','老鼠'),P('🐰','兔子')]],
+ ['哪一個是蘋果？',[P('🍎','蘋果'),P('🍌','香蕉'),P('🍇','葡萄')]],
+ ['哪一個是香蕉？',[P('🍌','香蕉'),P('🍎','蘋果'),P('🍉','西瓜')]],
+ ['哪一個是車子？',[P('🚗','車子'),P('✈️','飛機'),P('🚢','船')]],
+ ['哪一個是飛機？',[P('✈️','飛機'),P('🚗','車子'),P('🚲','腳踏車')]],
+ ['「汪汪」是誰在叫？',[P('🐶','狗'),P('🐱','貓'),P('🐮','牛')],'狗狗會汪汪叫。'],
+ ['「喵喵」是誰在叫？',[P('🐱','貓'),P('🐶','狗'),P('🐔','雞')],'貓咪會喵喵叫。'],
+ ['「哞」是誰在叫？',[P('🐮','牛'),P('🐷','豬'),P('🐸','青蛙')],'牛會哞哞叫。'],
+ ['「呱呱」是誰在叫？',[P('🐸','青蛙'),P('🐱','貓'),P('🐘','大象')],'青蛙會呱呱叫。'],
+ ['哪一個是用來喝水的？',[P('🥤','杯子'),P('🍚','飯'),P('👟','鞋子')]],
+ ['哪一個是穿在腳上的？',[P('👟','鞋子'),P('🧢','帽子'),P('🧤','手套')]],
+ ['哪一個是戴在頭上的？',[P('🧢','帽子'),P('👟','鞋子'),P('🧦','襪子')]],
+ ['哪一個是笑笑的臉？',[P('😊','笑臉'),P('😢','哭臉'),P('😠','生氣的臉')]],
+ ['哪一個是哭哭的臉？',[P('😢','哭臉'),P('😊','笑臉'),P('😴','睡覺的臉')]],
+ ['哪一個在睡覺？',[P('😴','睡覺'),P('🏃','跑步'),P('🍽️','吃飯')]],
+ ['哪一個是小寶寶？',[P('👶','小寶寶'),P('👩','媽媽'),P('👴','爺爺')]],
+ ['哪一個是爺爺？',[P('👴','爺爺'),P('👶','小寶寶'),P('👧','小女孩')]],
+ ['我們用什麼看東西？',[P('👀','眼睛'),P('👂','耳朵'),P('👃','鼻子')],'眼睛用來看。'],
+ ['我們用什麼聽聲音？',[P('👂','耳朵'),P('👀','眼睛'),P('👄','嘴巴')],'耳朵用來聽。'],
+ ['我們用什麼聞味道？',[P('👃','鼻子'),P('👂','耳朵'),P('🖐️','手')],'鼻子用來聞。'],
+ ['「大」的相反是什麼？',['小','多','長'],'大和小是相反的。'],
+ ['「上」的相反是什麼？',['下','左','前'],'上和下是相反的。'],
+ ['「快」的相反是什麼？',['慢','高','大'],'快和慢是相反的。'],
+ ['哪一個是熱的？',[P('🔥','火'),P('🧊','冰塊'),P('❄️','雪花')]],
+ ['哪一個是冷的？',[P('🧊','冰塊'),P('🔥','火'),P('☀️','太陽')]],
+],
+zh56:[
+ ['這是什麼動物？',['貓','狗','魚'],'','🐱'],
+ ['這是什麼動物？',['狗','貓','鳥'],'','🐶'],
+ ['這是什麼水果？',['蘋果','香蕉','西瓜'],'','🍎'],
+ ['這是什麼水果？',['香蕉','蘋果','葡萄'],'','🍌'],
+ ['哪一個字是「山」？',['山','水','火'],'山有三個尖尖的。','⛰️'],
+ ['哪一個字是「水」？',['水','山','土'],'','💧'],
+ ['哪一個字是「火」？',['火','水','木'],'','🔥'],
+ ['哪一個字是「日」？',['日','月','目'],'「日」就是太陽。','☀️'],
+ ['哪一個字是「月」？',['月','日','肉'],'「月」就是月亮。','🌙'],
+ ['哪一個字是「人」？',['人','大','入'],'「人」像一個人在走路。','🚶'],
+ ['哪一個字是「口」？',['口','日','回'],'「口」就是嘴巴。','👄'],
+ ['哪一個字是「大」？',['大','太','犬'],'','🐘'],
+ ['「ㄇㄚ」是哪個字的注音？',['媽','爸','哥'],'媽的注音是 ㄇㄚ。'],
+ ['「ㄅㄚˋ」是哪個字的注音？',['爸','媽','弟'],'爸的注音是 ㄅㄚˋ。'],
+ ['「貓」的第一個注音是？',[{t:'ㄇ',say:'摸'},{t:'ㄅ',say:'波'},{t:'ㄍ',say:'哥'}],'貓，ㄇㄠ，第一個是 ㄇ。','🐱'],
+ ['「爸」的第一個注音是？',[{t:'ㄅ',say:'波'},{t:'ㄆ',say:'坡'},{t:'ㄇ',say:'摸'}],'爸，ㄅㄚˋ，第一個是 ㄅ。','👨'],
+ ['「兔」的第一個注音是？',[{t:'ㄊ',say:'特'},{t:'ㄉ',say:'得'},{t:'ㄋ',say:'訥'}],'兔，ㄊㄨˋ，第一個是 ㄊ。','🐰'],
+ ['一___小鳥',['隻','本','台'],'動物常常用「隻」來數。','🐦'],
+ ['一___書',['本','隻','杯'],'書用「本」來數。','📚'],
+ ['一___車',['台','本','隻'],'車子可以用「台」或「輛」來數。','🚗'],
+ ['我___飯。',['吃','喝','看'],'飯是用吃的。','🍚'],
+ ['我___水。',['喝','吃','跑'],'水是用喝的。','🥤'],
+ ['天上下___了。',['雨','風','山'],'下雨、下雪，都是從天上掉下來。','🌧️'],
+ ['這是什麼顏色？',['紅色','藍色','黃色'],'','🔴'],
+ ['這是什麼顏色？',['藍色','紅色','綠色'],'','🔵'],
+ ['這是什麼顏色？',['綠色','黃色','紅色'],'','🟢'],
+ ['「高」的相反是什麼？',['矮','胖','寬'],'高和矮是相反的。'],
+ ['「多」的相反是什麼？',['少','大','長'],'多和少是相反的。'],
+ ['吃飯前要先做什麼？',[P('🧼','洗手'),P('😴','睡覺'),P('📺','看電視')],'吃飯前要先洗手。'],
+ ['別人幫助你，要說什麼？',['謝謝','再見','對不起'],'別人幫忙要說謝謝。'],
+],
+geo34:[
+ ['白天天上有什麼？',[P('☀️','太陽'),P('🌙','月亮'),P('⭐','星星')],'白天有太陽。'],
+ ['晚上天上會看到什麼？',[P('🌙','月亮'),P('☀️','太陽'),P('🌈','彩虹')],'晚上看得到月亮和星星。'],
+ ['魚住在哪裡？',[P('🌊','水裡'),P('🌳','樹上'),P('🏠','房子裡')],'魚住在水裡。'],
+ ['小鳥住在哪裡？',[P('🌳','樹上'),P('🌊','水裡'),P('🕳️','洞裡')],'小鳥在樹上做窩。'],
+ ['企鵝喜歡冷，還是熱？',[P('❄️','冷'),P('🔥','熱')],'企鵝住在很冷的南極。'],
+ ['下雨天要帶什麼？',[P('☂️','雨傘'),P('🕶️','太陽眼鏡'),P('🎈','氣球')]],
+ ['太陽很大的時候要戴什麼？',[P('🧢','帽子'),P('☂️','雨傘'),P('🧣','圍巾')]],
+ ['冬天很冷要穿什麼？',[P('🧥','外套'),P('🩳','短褲'),P('🩴','拖鞋')]],
+ ['夏天很熱，可以去哪裡玩水？',[P('🏖️','海邊'),P('🏔️','雪山'),P('🏜️','沙漠')]],
+ ['哪一個是台灣的國旗？',[P('🇹🇼','台灣國旗'),P('🇯🇵','日本國旗'),P('🇺🇸','美國國旗')],'台灣的國旗是紅色的，左上角有藍天白日。'],
+ ['生病了要去找誰？',[P('👩‍⚕️','醫生'),P('👮','警察'),P('👨‍🍳','廚師')],'生病要看醫生。'],
+ ['失火了，要找哪一台車？',[P('🚒','消防車'),P('🚌','公車'),P('🚜','拖拉機')],'消防車會來滅火。'],
+ ['我們住在哪一個星球？',[P('🌍','地球'),P('🌙','月亮'),P('☀️','太陽')],'我們住在地球上。'],
+ ['過年會拿到什麼？',[P('🧧','紅包'),P('🎃','南瓜燈'),P('🎄','聖誕樹')],'過年會拿紅包。'],
+ ['中秋節晚上要看什麼？',[P('🌕','月亮'),P('☀️','太陽'),P('🌧️','下雨')],'中秋節賞月、吃月餅。'],
+ ['端午節要吃什麼？',[P('🫔','粽子'),P('🎂','蛋糕'),P('🍕','披薩')],'端午節吃粽子。'],
+ ['哪一個是台灣的動物？',[P('🐻','台灣黑熊'),P('🦘','袋鼠'),P('🐧','企鵝')],'台灣黑熊胸口有白色的 V。'],
+ ['哪一個是火車？',[P('🚆','火車'),P('🚗','車子'),P('✈️','飛機')]],
+ ['哪一個是船？',[P('🚢','船'),P('🚗','車子'),P('🚁','直升機')]],
+ ['種菜的人叫什麼？',[P('👨‍🌾','農夫'),P('👩‍⚕️','醫生'),P('👮','警察')],'農夫種菜、種稻子。'],
+ ['過馬路要看什麼燈？',[P('🚦','紅綠燈'),P('💡','電燈'),P('🔦','手電筒')],'綠燈才可以走。'],
+ ['花要什麼才會長大？',[P('💧','水'),P('🍬','糖果'),P('🧸','玩具')],'植物需要水和陽光。'],
+],
+geo56:[
+ ['太陽從哪一邊升起？',['東邊','西邊','北邊'],'太陽從東邊升起，西邊落下。','🌅'],
+ ['太陽從哪一邊下山？',['西邊','東邊','南邊'],'太陽從東邊升起，西邊落下。','🌇'],
+ ['台灣的形狀像什麼？',[P('🍠','番薯'),P('⚽','圓球'),P('🔺','三角形')],'台灣島長長的，像一顆番薯。'],
+ ['台灣是一座什麼？',['島','湖','沙漠'],'台灣四面都是海，是一座島。','🏝️'],
+ ['台北在台灣的哪一邊？',['北邊','南邊','中間'],'台北在台灣的最北邊。'],
+ ['高雄在台灣的哪一邊？',['南邊','北邊','東邊'],'高雄在台灣的南邊。'],
+ ['台灣的四面都是什麼？',[P('🌊','海'),P('⛰️','山'),P('🏜️','沙漠')],'台灣是一座島，四面都是海。'],
+ ['企鵝住在很冷的地方，那裡是？',['南極','沙漠','森林'],'企鵝住在南極。','🐧'],
+ ['貓熊的老家在哪一國？',['中國','美國','日本'],'貓熊是中國的動物。','🐼'],
+ ['袋鼠住在哪一國？',['澳洲','台灣','英國'],'袋鼠是澳洲的動物。','🦘'],
+ ['台灣最高的山是？',['玉山','阿里山','陽明山'],'玉山將近 4000 公尺高。','⛰️'],
+ ['我們住的星球叫什麼？',['地球','月球','太陽'],'我們住在地球上。','🌍'],
+ ['端午節要吃什麼？',['粽子','月餅','湯圓'],'端午節吃粽子、划龍舟。','🐉'],
+ ['中秋節要吃什麼？',['月餅','粽子','年糕'],'中秋節吃月餅、賞月。','🌕'],
+ ['過年的時候會拿到什麼？',['紅包','粽子','月餅'],'過年會拿紅包、放鞭炮。','🧧'],
+ ['台北 101 在哪個城市？',['台北','台中','台南'],'台北 101 是台北市的地標。','🏙️'],
+ ['地圖上面通常代表哪個方向？',['北','南','東'],'地圖的上面通常是北方。','🧭'],
+ ['地圖上面是北邊，那下面是哪一邊？',['南邊','東邊','西邊'],'上北、下南、左西、右東。','🧭'],
+ ['台灣的東邊是哪個大海？',['太平洋','大西洋','印度洋'],'台灣東邊是世界最大的太平洋。'],
+ ['冬天的時候，天氣會怎麼樣？',['很冷','很熱','下沙子'],'冬天冷，夏天熱。','❄️'],
+ ['一年有哪四個季節？',['春夏秋冬','早中晚夜','東西南北'],'春天、夏天、秋天、冬天。','🍂'],
+ ['台灣的中央政府在哪個城市？',['台北','高雄','台中'],'總統府在台北市。'],
+],
+};
+const OLD={
+zh:[
+[ // 4–6
+ ['這是什麼動物？',['貓','狗','魚'],'','🐱'],
+ ['這是什麼動物？',['狗','貓','鳥'],'','🐶'],
+ ['這是什麼水果？',['蘋果','香蕉','西瓜'],'','🍎'],
+ ['這是什麼水果？',['香蕉','蘋果','葡萄'],'','🍌'],
+ ['「大」的相反是什麼？',['小','多','長'],'大和小是一組相反詞。'],
+ ['「上」的相反是什麼？',['下','左','前'],'上和下是一組相反詞。'],
+ ['「快」的相反是什麼？',['慢','高','大'],'快和慢是一組相反詞。'],
+ ['「高」的相反是什麼？',['矮','胖','寬'],'高和矮是一組相反詞。'],
+ ['「ㄇㄚ」是哪個字的注音？',['媽','爸','哥'],'媽的注音是 ㄇㄚ。'],
+ ['「ㄅㄚˋ」是哪個字的注音？',['爸','媽','弟'],'爸的注音是 ㄅㄚˋ。'],
+ ['「ㄕㄢ」是哪個字的注音？',['山','水','火'],'山的注音是 ㄕㄢ。','⛰️'],
+ ['「ㄕㄨㄟˇ」是哪個字的注音？',['水','山','土'],'水的注音是 ㄕㄨㄟˇ。','💧'],
+ ['一___小鳥',['隻','本','台'],'動物常常用「隻」來數。','🐦'],
+ ['一___書',['本','隻','杯'],'書用「本」來數。','📚'],
+ ['一___車',['台','本','隻'],'車子可以用「台」或「輛」來數。','🚗'],
+ ['我___飯。',['吃','喝','看'],'飯是用吃的。','🍚'],
+ ['我___水。',['喝','吃','跑'],'水是用喝的。','🥤'],
+ ['天上下___了。',['雨','風','山'],'下雨、下雪，都是從天上掉下來。','🌧️'],
+ ['這個顏色是什麼？',['紅色','藍色','黃色'],'','🔴'],
+ ['這個顏色是什麼？',['藍色','紅色','綠色'],'','🔵'],
+ ['哪一個是數字「三」？',['三','二','五'],'三是 3。'],
+ ['哪一個是數字「五」？',['五','四','六'],'五是 5。'],
+],
+[ // 7–9
+ ['「我去公圓玩。」哪個字寫錯了？',['圓','公','玩'],'應該是「公園」的「園」。'],
+ ['「今天天氣很晴郎。」哪個字寫錯了？',['郎','晴','氣'],'應該是「晴朗」的「朗」。'],
+ ['一___魚',['條','隻','個','本'],'魚常用「條」來數。','🐟'],
+ ['一___馬',['匹','本','杯','張'],'馬用「匹」來數。','🐎'],
+ ['一___紙',['張','本','條','匹'],'紙、桌子、椅子都可以用「張」。','📄'],
+ ['一石二___',['鳥','魚','雞','狗'],'一石二鳥：做一件事得到兩種好處。'],
+ ['畫蛇添___',['足','手','頭','尾'],'畫蛇添足：多做了不必要的事，反而弄糟。'],
+ ['三心二___',['意','心','情','思'],'三心二意：想法不專一、猶豫不決。'],
+ ['守株待___',['兔','雞','鴨','鹿'],'守株待兔：不努力，只想等好運。'],
+ ['「河」的部首是什麼？',['水','可','口','丁'],'「河」是三點水，部首是「水」。'],
+ ['「花」的部首是什麼？',['艸（艹）','化','十','匕'],'「花」上面的草字頭，部首是「艸」。'],
+ ['「自己」要用哪個字？',['己','已','巳','乙'],'「己」是自己；「已」是已經。'],
+ ['他高興___跳起來。',['得','的','地','了'],'動詞後面說明結果或程度，用「得」。'],
+ ['美麗___花朵',['的','得','地','了'],'形容詞後面接名詞，用「的」。'],
+ ['「亡羊補牢」的意思是？',['出了問題趕快補救，還來得及','羊跑掉了很可惜','修理羊圈很困難','養羊要小心'],'比喻出了問題後及時補救。'],
+ ['「開心」的相似詞是？',['快樂','難過','生氣','害怕'],'開心和快樂意思相近。'],
+ ['「你吃飯了嗎___」要用哪個標點？',['？','。','！','，'],'問句結尾用問號。'],
+ ['「因為下雨，___我帶了雨傘。」',['所以','但是','雖然','如果'],'「因為……所以……」是一組。'],
+ ['「小明天天早起。」句子裡是誰早起？',['小明','天天','早上','明天'],'主詞是小明。'],
+ ['「他跑得很快。」「快」在形容什麼？',['跑的速度','他的身高','天氣','時間'],'「快」在說明跑的速度。'],
+ ['下列哪個詞和「巨大」意思相反？',['微小','龐大','高大','寬大'],'巨大和微小相反。'],
+],
+[ // 10–12
+ ['「畫龍點睛」的意思是？',['在關鍵處加上一筆，讓整體更生動','畫畫要先畫眼睛','龍的眼睛很漂亮','把事情弄得更複雜'],'比喻在關鍵處稍加點染，使全體更精彩。'],
+ ['「他像獵豹一樣快。」用了什麼修辭？',['譬喻','擬人','誇飾','排比'],'用「像」把人比作獵豹，是譬喻。'],
+ ['「風輕輕地唱著歌。」用了什麼修辭？',['擬人','譬喻','排比','設問'],'把風當成會唱歌的人，是擬人。'],
+ ['「我餓得可以吃下一頭牛。」用了什麼修辭？',['誇飾','擬人','譬喻','對偶'],'故意誇大，是誇飾。'],
+ ['文言文中「走」的意思是？',['跑','走路','站著','坐下'],'古文的「走」是跑，例如「走馬看花」。'],
+ ['「赴湯蹈火」的「湯」指的是？',['熱水','湯品','河流','蒸氣'],'古文的「湯」是熱水。'],
+ ['「兩袖清風」形容什麼？',['為官清廉','衣服很薄','天氣涼爽','走路很快'],'比喻做官清廉，沒有多餘的財物。'],
+ ['「不以為然」的意思是？',['不認同','不在意','不知道','不害怕'],'「不以為然」是不認同；「不以為意」才是不在意。'],
+ ['「首當其衝」的意思是？',['最先受到攻擊或遭遇災難','第一個衝出去','勇敢帶頭','排在第一名'],'常被誤用成「帶頭」，其實是最先受害。'],
+ ['「桌子」是什麼詞？',['名詞','動詞','形容詞','副詞'],'表示人、事、物名稱的是名詞。'],
+ ['「奔跑」是什麼詞？',['動詞','名詞','形容詞','連接詞'],'表示動作的是動詞。'],
+ ['「明察秋毫」的「秋毫」指什麼？',['極細小的東西','秋天的毛衣','秋天的風','細小的雨'],'秋毫是鳥獸秋天新長的細毛，比喻極細微的事物。'],
+ ['哪個成語有「時間過得很快」的意思？',['光陰似箭','日新月異','一日三秋','夜以繼日'],'光陰似箭：時間像箭一樣飛快。'],
+ ['「杯弓蛇影」比喻什麼？',['疑神疑鬼，自己嚇自己','杯子裡真的有蛇','影子很可怕','喝酒要小心'],'把杯中弓影誤認為蛇，比喻疑心過重。'],
+ ['「破釜沉舟」比喻什麼？',['下定決心，不留退路','船破了很危險','煮飯的鍋壞了','渡河很辛苦'],'砸鍋沉船，表示決心一戰。'],
+ ['「不脛而走」形容什麼？',['消息傳得很快','沒有腿也能走','跑步很厲害','走路不用腳'],'脛是小腿，沒有腿也能跑，比喻消息傳得快。'],
+ ['「捲土重來」的意思是？',['失敗後重新振作，再來一次','把土捲起來','搬到新的地方','整理土地'],'比喻失敗後重整力量再來。'],
+ ['「他的話讓我___。」最適合填入哪個成語？',['茅塞頓開','坐井觀天','畫蛇添足','守株待兔'],'茅塞頓開：忽然明白了。'],
+ ['「門前冷落車馬稀」的「稀」是什麼意思？',['少','稀飯','珍貴','薄'],'稀是少的意思。'],
+ ['「學而時習之，不亦說乎」的「說」讀音同哪個字？',['悅','說','稅','脫'],'這裡的「說」通「悅」，高興的意思。'],
+],
+],
+geo:[
+[ // 4–6
+ ['太陽從哪一邊升起？',['東邊','西邊','北邊'],'太陽從東邊升起，西邊落下。','🌅'],
+ ['太陽從哪一邊下山？',['西邊','東邊','南邊'],'太陽從東邊升起，西邊落下。','🌇'],
+ ['台灣的形狀像什麼？',['番薯','圓球','三角形'],'台灣島長長的，像一顆番薯。','🍠'],
+ ['台北在台灣的哪一邊？',['北邊','南邊','中間'],'台北在台灣的最北邊。'],
+ ['高雄在台灣的哪一邊？',['南邊','北邊','東邊'],'高雄在台灣的南邊。'],
+ ['台灣的四面都是什麼？',['海','山','沙漠'],'台灣是一座島，四面都是海。','🌊'],
+ ['企鵝住在很冷的地方，那裡是？',['南極','沙漠','森林'],'企鵝住在南極。','🐧'],
+ ['貓熊的老家在哪一國？',['中國','美國','日本'],'貓熊是中國的動物。','🐼'],
+ ['袋鼠住在哪一國？',['澳洲','台灣','英國'],'袋鼠是澳洲的動物。','🦘'],
+ ['台灣最高的山是？',['玉山','阿里山','陽明山'],'玉山將近 4000 公尺高。','⛰️'],
+ ['我們住的星球叫什麼？',['地球','月球','太陽'],'我們住在地球上。','🌍'],
+ ['端午節要吃什麼？',['粽子','月餅','湯圓'],'端午節吃粽子、划龍舟。','🐉'],
+ ['中秋節要吃什麼？',['月餅','粽子','年糕'],'中秋節吃月餅、賞月。','🌕'],
+ ['過年的時候會拿到什麼？',['紅包','粽子','月餅'],'過年會拿紅包、放鞭炮。','🧧'],
+ ['台北 101 在哪個城市？',['台北','台中','台南'],'台北 101 是台北市的地標。','🏙️'],
+ ['地圖上面通常代表哪個方向？',['北','南','東'],'地圖的上面通常是北方。','🧭'],
+ ['台灣的東邊是哪個大海？',['太平洋','大西洋','印度洋'],'台灣東邊是世界最大的太平洋。'],
+ ['冬天的時候，天氣會怎麼樣？',['很冷','很熱','下沙子'],'冬天冷，夏天熱。','❄️'],
+],
+[ // 7–9
+ ['日月潭在哪個縣市？',['南投縣','台北市','屏東縣','花蓮縣'],'日月潭在南投縣，是台灣最大的天然湖泊。'],
+ ['台灣最長的河流是？',['濁水溪','淡水河','高屏溪','曾文溪'],'濁水溪全長約 187 公里。'],
+ ['世界上有幾大洲？',['七大洲','五大洲','三大洲','十大洲'],'亞洲、歐洲、非洲、北美洲、南美洲、大洋洲、南極洲。'],
+ ['世界上最大的海洋是？',['太平洋','大西洋','印度洋','北極海'],'太平洋是最大的海洋。'],
+ ['阿里山在哪個縣市？',['嘉義縣','花蓮縣','台北市','宜蘭縣'],'阿里山在嘉義縣，可以看日出和小火車。'],
+ ['太魯閣在哪個縣市？',['花蓮縣','台東縣','宜蘭縣','南投縣'],'太魯閣在花蓮縣，以峽谷聞名。'],
+ ['誰趕走荷蘭人、來到台灣？',['鄭成功','孫中山','秦始皇','孔子'],'鄭成功在 1662 年打敗荷蘭人。'],
+ ['端午節是為了紀念誰？',['屈原','孔子','鄭成功','關公'],'屈原是戰國時代的詩人。'],
+ ['下列哪一個是台灣的原住民族？',['阿美族','漢族','蒙古族','藏族'],'阿美族是台灣人口最多的原住民族。'],
+ ['台灣的中央山脈是什麼走向？',['南北走向','東西走向','繞成一圈','斜的'],'中央山脈從北到南貫穿台灣。'],
+ ['世界上人口最多的洲是？',['亞洲','非洲','歐洲','美洲'],'亞洲人口最多，超過 40 億人。'],
+ ['澎湖在台灣本島的哪一邊？',['西邊','東邊','北邊','南邊'],'澎湖在台灣海峽中，台灣的西邊。'],
+ ['蘭嶼和綠島在台灣本島的哪一邊？',['東邊','西邊','北邊','中間'],'兩座島都在台東外海。'],
+ ['萬里長城在哪一國？',['中國','日本','印度','韓國'],'長城是中國古代的防禦工程。'],
+ ['金字塔在哪一國？',['埃及','希臘','美國','義大利'],'埃及金字塔是法老的陵墓。'],
+ ['台灣最南端的地標「鵝鑾鼻」在哪個縣？',['屏東縣','高雄市','台東縣','台南市'],'鵝鑾鼻燈塔在屏東縣恆春半島。'],
+ ['台灣的中央政府在哪個城市？',['台北市','高雄市','台中市','台南市'],'總統府在台北市。'],
+ ['一年有幾個季節？',['四個','兩個','六個','三個'],'春、夏、秋、冬。'],
+ ['富士山在哪一國？',['日本','中國','韓國','泰國'],'富士山是日本最高的山。','🗻'],
+ ['台灣最早的居民是？',['原住民族','荷蘭人','日本人','清朝人'],'原住民族在數千年前就住在台灣。'],
+],
+[ // 10–12
+ ['台灣歷史中，下列哪一段時期最早？',['荷蘭統治','清朝統治','日本統治','中華民國'],'順序：荷西→明鄭→清朝→日治→中華民國。'],
+ ['日本統治台灣大約多少年？',['50 年','10 年','200 年','100 年'],'1895 到 1945 年，約 50 年。'],
+ ['清朝把台灣割讓給日本的條約是？',['馬關條約','南京條約','天津條約','北京條約'],'1895 年甲午戰爭後簽訂馬關條約。'],
+ ['荷蘭人建的「熱蘭遮城」在今天的哪裡？',['台南','基隆','淡水','高雄'],'熱蘭遮城就是今天台南的安平古堡。'],
+ ['法國的首都是？',['巴黎','倫敦','柏林','羅馬'],''],
+ ['日本的首都是？',['東京','大阪','京都','北海道'],''],
+ ['澳洲的首都是？',['坎培拉','雪梨','墨爾本','布里斯本'],'很多人以為是雪梨，其實是坎培拉。'],
+ ['美國的首都是？',['華盛頓','紐約','洛杉磯','芝加哥'],''],
+ ['赤道通過下列哪一洲？',['非洲','歐洲','南極洲','北美洲'],'赤道通過非洲、南美洲和亞洲東南部。'],
+ ['世界上最長的河流一般認為是？',['尼羅河','長江','亞馬遜河','密西西比河'],'尼羅河約 6650 公里。'],
+ ['世界最高峰是？',['聖母峰','玉山','富士山','阿爾卑斯山'],'聖母峰（珠穆朗瑪峰）高 8849 公尺。'],
+ ['中國第一個統一天下的皇帝是？',['秦始皇','漢武帝','唐太宗','漢高祖'],'秦始皇在西元前 221 年統一六國。'],
+ ['哪一條線穿過台灣，把台灣分成熱帶和亞熱帶？',['北回歸線','赤道','南回歸線','本初子午線'],'北回歸線經過嘉義、花蓮。'],
+ ['台灣本島最大的平原是？',['嘉南平原','宜蘭平原','屏東平原','台北盆地'],'嘉南平原是台灣的穀倉。'],
+ ['下列哪一個國家不在歐洲？',['巴西','法國','德國','西班牙'],'巴西在南美洲。'],
+ ['三國時代是哪三國？',['魏、蜀、吳','齊、楚、燕','秦、漢、唐','宋、元、明'],'曹魏、蜀漢、東吳。'],
+ ['二二八事件發生在哪一年？',['1947 年','1895 年','1911 年','1949 年'],'1947 年 2 月 28 日。'],
+ ['唐朝之後，接著建立的大一統朝代是？',['宋朝','漢朝','秦朝','元朝'],'唐→五代十國→宋。'],
+ ['台灣最大的天然湖泊是？',['日月潭','澄清湖','曾文水庫','鯉魚潭'],'曾文水庫是人工的水庫。'],
+ ['地球自轉一圈大約需要多久？',['一天','一年','一個月','一小時'],'自轉一天，公轉一年。'],
+ ['台灣的原住民族目前政府認定有幾族？',['16 族','5 族','9 族','30 族'],'目前政府認定 16 族。'],
+ ['「玉山」的高度大約是？',['3952 公尺','1000 公尺','8848 公尺','500 公尺'],'玉山主峰 3952 公尺，是東北亞最高峰。'],
+],
+],
+};
+
+const BANK={
+  zh:[KID.zh34,KID.zh56,OLD.zh[1],OLD.zh[2]],
+  geo:[KID.geo34,KID.geo56,OLD.geo[1],OLD.geo[2]],
+};
+
+/* ================= 數學出題器 ================= */
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const EMO=['🍎','🐟','⭐','🚗','🎈','🐥','🍪','🌸'];
+const COLORS=[['紅色',['🍎','🍓','🍅']],['黃色',['🍌','🌻','🐤']],['綠色',['🥦','🐸','🌳']],['藍色',['🔵','🐳','🧊']]];
+const SHAPES=[['圓形','⚪'],['三角形','🔺'],['正方形','🟦'],['星形','⭐'],['愛心','❤️']];
+const GROUPS=[['水果',['🍎','🍌','🍇','🍉','🍓']],['動物',['🐱','🐶','🐰','🐘','🐟']],['交通工具',['🚗','✈️','🚢','🚆','🚲']]];
+function distract(ans,n,lo,hi,fmt){
+  fmt=fmt||(x=>String(x));const set=new Set([fmt(ans)]);const out=[];let guard=0;
+  while(out.length<n&&guard++<200){
+    let d=ans+pick([-3,-2,-1,1,2,3,-10,10,-1,1,2,-2]);
+    if(d<lo||d>hi)d=R(lo,hi);
+    const s=fmt(d);if(!set.has(s)){set.add(s);out.push(s)}
+  }
+  return out;
+}
+function mk(q,ans,wrong,why,vis,read){return{q,opts:[ans,...wrong],ans:0,why:why||'',vis:vis||'',read:read||''}}
+const rep=(e,n)=>e.repeat(n);
+const grp=(e,n,say)=>({t:rep(e,n),say:say||(n+'個'),pic:true,group:true});
+
+function math34(){ // 3–4
+  const t=pick(['count','count','more','big','small','same','color','color','shape','next']);
+  if(t==='count'){const n=R(1,5),e=pick(EMO);return mk('有幾個？',String(n),distract(n,2,1,5),'一個一個數：一共有 '+n+' 個。',rep(e,n))}
+  if(t==='more'){let a=R(1,5),b=R(1,5);if(a===b)b=a<5?a+1:a-1;const e=pick(EMO);return mk('哪一堆比較多？',grp(e,Math.max(a,b)),[grp(e,Math.min(a,b))],`這邊有 ${Math.max(a,b)} 個，比較多。`)}
+  if(t==='big'){const e=pick(['🐘','🐻','🚗','🍎','⭐']);return mk('哪一個比較大？',BIG(e,'大的'),[SMALL(e,'小的')],'')}
+  if(t==='small'){const e=pick(['🐭','🐥','🎈','🍓','🌸']);return mk('哪一個比較小？',SMALL(e,'小的'),[BIG(e,'大的')],'')}
+  if(t==='same'){const all=shuffle(['🐱','🐶','🐰','🍎','🚗','⭐','🐸','🌸']);return mk('哪一個和上面的一樣？',P(all[0],'一樣的'),[P(all[1],''),P(all[2],'')],'找找看，哪一個長得一模一樣。',all[0],'哪一個和上面的一樣')}
+  if(t==='color'){const cs=shuffle(COLORS);const c=cs[0];return mk(`哪一個是${c[0]}的？`,P(pick(c[1]),c[0]),[P(pick(cs[1][1]),cs[1][0]),P(pick(cs[2][1]),cs[2][0])],'')}
+  if(t==='shape'){const sh=shuffle(SHAPES.slice(0,3));return mk(`哪一個是${sh[0][0]}？`,P(sh[0][1],sh[0][0]),[P(sh[1][1],sh[1][0]),P(sh[2][1],sh[2][0])],'')}
+  const s=R(1,2);return mk('接下來是幾？',String(s+3),distract(s+3,2,1,5),'一、二、三、四、五，一個一個接著數。',`${s}、${s+1}、${s+2}、？`);
+}
+function math56(){ // 5–6
+  const t=pick(['count','add','add','sub','compare','next','shape','which','odd','odd']);
+  if(t==='count'){const n=R(3,10),e=pick(EMO);return mk('有幾個？',String(n),distract(n,2,1,10),'數數看，一共有 '+n+' 個。',rep(e,n))}
+  if(t==='add'){const a=R(1,5),b=R(1,4),e=pick(EMO);return mk('加起來一共有幾個？',String(a+b),distract(a+b,2,1,10),a+' 加 '+b+' 等於 '+(a+b)+'。',`<span class="grp">${rep(e,a)}</span><span class="vs">＋</span><span class="grp">${rep(e,b)}</span>`)}
+  if(t==='sub'){const a=R(3,9),b=R(1,a-1),e=pick(EMO);return mk(`有 ${a} 個，拿走 ${b} 個，還剩幾個？`,String(a-b),distract(a-b,2,0,9),a+' 減 '+b+' 等於 '+(a-b)+'。',rep(e,a))}
+  if(t==='compare'){let a=R(2,9),b=R(2,9);if(a===b)b=a<9?a+1:a-1;const e=pick(EMO);return mk('哪一堆比較多？',grp(e,Math.max(a,b)),[grp(e,Math.min(a,b))],`一邊 ${Math.max(a,b)} 個，一邊 ${Math.min(a,b)} 個。`)}
+  if(t==='next'){const s=R(1,7);return mk('接下來是幾？',String(s+3),distract(s+3,2,1,10),'數字一個一個接著數。',`${s}、${s+1}、${s+2}、？`)}
+  if(t==='shape'){const sh=shuffle(SHAPES);return mk(`哪一個是${sh[0][0]}？`,P(sh[0][1],sh[0][0]),[P(sh[1][1],sh[1][0]),P(sh[2][1],sh[2][0])],'')}
+  if(t==='which'){const n=R(2,6),e=pick(EMO);const ws=shuffle([1,2,3,4,5,6,7].filter(x=>x!==n)).slice(0,2);return mk(`哪一堆有 ${n} 個？`,grp(e,n),ws.map(w=>grp(e,w)),`數數看，這堆有 ${n} 個。`)}
+  const gs=shuffle(GROUPS);const g1=gs[0],g2=gs[1];const items=shuffle(g1[1]).slice(0,2);const odd=pick(g2[1]);
+  return mk(`哪一個不是${g1[0]}？`,P(odd,g2[0]),items.map(x=>P(x,g1[0])),`${odd} 是${g2[0]}，不是${g1[0]}。`);
+}
+function math1(){ // 7–9
+  const t=pick(['add','sub','mul','mul','div','money','time','unit','big']);
+  if(t==='add'){const a=R(11,60),b=R(11,39);return mk(`${a} + ${b} = ?`,String(a+b),distract(a+b,3,10,99),'先加個位，再加十位。','',`${a}加${b}等於多少`)}
+  if(t==='sub'){const a=R(30,99),b=R(11,a-5);return mk(`${a} − ${b} = ?`,String(a-b),distract(a-b,3,0,99),'不夠減的時候要向十位借 1。','',`${a}減${b}等於多少`)}
+  if(t==='mul'){const a=R(2,9),b=R(2,9);return mk(`${a} × ${b} = ?`,String(a*b),distract(a*b,3,4,81,String),`九九乘法：${a} × ${b} = ${a*b}。`,'',`${a}乘${b}等於多少`)}
+  if(t==='div'){const b=R(2,9),c=R(2,9);return mk(`${b*c} ÷ ${b} = ?`,String(c),distract(c,3,1,9),`因為 ${b} × ${c} = ${b*c}。`,'',`${b*c}除以${b}等於多少`)}
+  if(t==='money'){const p=pick([5,8,10,12,15,20,25]),n=R(2,4);return mk(`一枝筆 ${p} 元，買 ${n} 枝要多少元？`,`${p*n} 元`,distract(p*n,3,5,120,x=>x+' 元'),`${p} × ${n} = ${p*n}。`,'💰')}
+  if(t==='time'){const h=R(1,9),d=R(1,3);return mk(`現在 ${h} 點，再過 ${d} 小時是幾點？`,`${h+d} 點`,distract(h+d,3,1,12,x=>x+' 點'),`${h} + ${d} = ${h+d}。`,'🕐')}
+  if(t==='unit'){const u=pick([['1 公尺是幾公分？','100 公分',['10 公分','1000 公分','60 公分']],['1 公斤是幾公克？','1000 公克',['100 公克','10 公克','60 公克']],['1 小時是幾分鐘？','60 分鐘',['100 分鐘','30 分鐘','24 分鐘']],['1 公里是幾公尺？','1000 公尺',['100 公尺','10 公尺','500 公尺']]]);return mk(u[0],u[1],u[2],'')}
+  const arr=shuffle([R(10,99),R(10,99),R(10,99),R(10,99)]);const s=new Set(arr);if(s.size<4)return math1();const mx=Math.max(...arr);
+  return mk('哪一個數字最大？',String(mx),arr.filter(x=>x!==mx).map(String),'先比十位，再比個位。');
+}
+function math2(){ // 10–12
+  const t=pick(['paren','frac','fraccmp','dec','area','peri','avg','pct','factor','multiple']);
+  if(t==='paren'){const a=R(2,9),b=R(2,9),c=R(2,6);return mk(`( ${a} + ${b} ) × ${c} = ?`,String((a+b)*c),[String(a+b*c),...distract((a+b)*c,2,10,120)],'先算括號裡面，再算乘法。','',`括號${a}加${b}括號乘${c}等於多少`)}
+  if(t==='frac'){const d=pick([5,7,8,9]),a=R(1,d-2),b=R(1,d-1-a);return mk(`${a}/${d} + ${b}/${d} = ?`,`${a+b}/${d}`,[`${a+b}/${2*d}`,`${a*b}/${d}`,`${a+b+1}/${d}`],'同分母相加，分母不變，分子相加。','',`${d}分之${a}加${d}分之${b}等於多少`)}
+  if(t==='fraccmp'){const p=pick([[1,2,1,3],[2,3,1,2],[3,4,2,3],[1,4,1,5],[3,5,1,2]]);return mk(`${p[0]}/${p[1]} 和 ${p[2]}/${p[3]}，哪一個比較大？`,`${p[0]}/${p[1]}`,[`${p[2]}/${p[3]}`,'一樣大'],'通分之後再比較分子。','',`${p[1]}分之${p[0]}和${p[3]}分之${p[2]}哪一個比較大`)}
+  if(t==='dec'){const a=(R(10,90)/10),b=(R(10,90)/10);const s=Math.round((a+b)*10)/10;return mk(`${a} + ${b} = ?`,String(s),distract(Math.round(s*10),3,20,190,x=>String(x/10)),'小數點對齊再相加。','',`${a}加${b}等於多少`)}
+  if(t==='area'){const w=R(3,12),h=R(3,12);return mk(`長 ${w} 公分、寬 ${h} 公分的長方形，面積是多少？`,`${w*h} 平方公分`,distract(w*h,3,6,150,x=>x+' 平方公分'),'面積 = 長 × 寬。','📐')}
+  if(t==='peri'){const w=R(3,12),h=R(3,12);return mk(`長 ${w} 公分、寬 ${h} 公分的長方形，周長是多少？`,`${2*(w+h)} 公分`,[`${w*h} 公分`,...distract(2*(w+h),2,10,50,x=>x+' 公分')],'周長 = (長 + 寬) × 2。','📐')}
+  if(t==='avg'){const base=R(5,20),arr=[base,base+R(1,6),base+R(1,6)];const sum=arr[0]+arr[1]+arr[2];if(sum%3)return math2();return mk(`${arr.join('、')} 這三個數的平均是多少？`,String(sum/3),distract(sum/3,3,3,30),'平均 = 總和 ÷ 個數。')}
+  if(t==='pct'){const base=pick([100,200,400,50,80]),p=pick([10,25,50,20]);return mk(`${base} 的 ${p}% 是多少？`,String(base*p/100),distract(base*p/100,3,2,300),`${p}% 就是 ${p}/100。`)}
+  if(t==='factor'){const n=pick([12,18,24,36,30]);const fs=[];for(let i=2;i<n;i++)if(n%i===0)fs.push(i);const f=pick(fs);const wrong=[];let g=0;while(wrong.length<3&&g++<50){const w=R(2,n-1);if(n%w&&!wrong.includes(String(w)))wrong.push(String(w))}return mk(`下列哪一個是 ${n} 的因數？`,String(f),wrong,`${n} ÷ ${f} = ${n/f}，整除。`)}
+  const b=R(3,9),m=b*R(2,9);const wrong=[];let g=0;while(wrong.length<3&&g++<50){const w=R(10,80);if(w%b&&!wrong.includes(String(w)))wrong.push(String(w))}
+  return mk(`下列哪一個是 ${b} 的倍數？`,String(m),wrong,`${m} ÷ ${b} = ${m/b}。`);
+}
+const MATH=[math34,math56,math1,math2];
+
+const norm=o=>typeof o==='string'?{t:o,say:o}:o;
+function fromBank(subj,tier){
+  return shuffle(BANK[subj][tier]).map(x=>mk(x[0],x[1][0],x[1].slice(1),x[2]||'',x[3]||''));
+}
+function buildRound(subj,tier){
+  const n=TIERS[tier].round;const qs=[];
+  const tag=(q,id)=>{q.subj=id;return q};
+  if(subj==='math'){while(qs.length<n)qs.push(tag(MATH[tier](),'math'))}
+  else if(subj==='mix'){
+    const zh=fromBank('zh',tier),geo=fromBank('geo',tier);
+    for(let i=0;i<n;i++){const k=i%3;qs.push(k===0?tag(MATH[tier](),'math'):k===1?tag(zh.pop(),'zh'):tag(geo.pop(),'geo'))}
+  }else{const b=fromBank(subj,tier);while(qs.length<n)qs.push(tag(b[qs.length%b.length],subj))}
+  return qs.map(q=>{const opts=q.opts.map(norm);const idx=shuffle(opts.map((_,i)=>i));return{...q,opts:idx.map(i=>opts[i]),ans:idx.indexOf(q.ans)}});
+}
+/* ================= SVG 機甲 ================= */
+function vehicleSVG(b){
+  const {type,c1,c2,c3}=b;const W='#23262B',RIM='#C9CED6',G='#7FE3FF';
+  const wheel=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${W}"/><circle cx="${x}" cy="${y}" r="${r*.45}" fill="${RIM}"/>`;
+  if(type==='car')return `
+   <path d="M18 152 L18 132 Q18 122 30 120 L62 114 L86 92 Q92 86 102 86 L150 86 Q160 86 168 92 L196 114 L222 120 Q232 122 232 132 L232 152 Z" fill="${c1}"/>
+   <polygon points="94,92 148,92 166,112 80,112" fill="${G}"/>
+   <rect x="18" y="134" width="214" height="8" fill="${c2}" opacity=".55"/>
+   <rect x="218" y="124" width="10" height="9" rx="2" fill="#FFF3B0"/>
+   <rect x="22" y="124" width="10" height="9" rx="2" fill="#E23D28"/>
+   ${wheel(64,154,17)}${wheel(186,154,17)}`;
+  if(type==='truck')return `
+   <rect x="10" y="92" width="130" height="60" rx="4" fill="${c2}"/>
+   <rect x="10" y="118" width="130" height="8" fill="${c3}" opacity=".5"/>
+   <rect x="142" y="80" width="68" height="72" rx="6" fill="${c1}"/>
+   <rect x="204" y="110" width="30" height="42" rx="4" fill="${c1}"/>
+   <rect x="152" y="88" width="50" height="26" rx="3" fill="${G}"/>
+   <rect x="224" y="118" width="10" height="26" rx="2" fill="${RIM}"/>
+   <rect x="144" y="58" width="7" height="24" fill="#9AA3B2"/>
+   ${wheel(40,154,15)}${wheel(100,154,15)}${wheel(170,154,15)}${wheel(214,154,15)}`;
+  if(type==='jet')return `
+   <polygon points="90,124 160,124 212,168 56,168" fill="${c2}"/>
+   <polygon points="30,122 52,122 62,84 40,84" fill="${c2}"/>
+   <ellipse cx="122" cy="134" rx="110" ry="15" fill="${c1}"/>
+   <polygon points="216,126 236,134 216,142" fill="${c3}"/>
+   <ellipse cx="180" cy="128" rx="20" ry="8" fill="${G}"/>
+   <rect x="20" y="128" width="30" height="12" rx="3" fill="${c3}"/>`;
+  if(type==='heli')return `
+   <rect x="34" y="94" width="172" height="6" rx="3" fill="${W}"/>
+   <rect x="116" y="100" width="8" height="12" fill="${W}"/>
+   <polygon points="70,128 14,118 14,136 72,146" fill="${c1}"/>
+   <polygon points="14,118 14,98 30,98 30,118" fill="${c2}"/>
+   <ellipse cx="120" cy="136" rx="58" ry="28" fill="${c1}"/>
+   <ellipse cx="150" cy="130" rx="22" ry="16" fill="${G}"/>
+   <rect x="98" y="128" width="30" height="8" rx="2" fill="${c3}" opacity=".8"/>
+   <rect x="96" y="162" width="6" height="12" fill="${W}"/><rect x="140" y="162" width="6" height="12" fill="${W}"/>
+   <rect x="72" y="172" width="100" height="5" rx="2" fill="${W}"/>`;
+  return `
+   <rect x="24" y="146" width="192" height="34" rx="17" fill="${W}"/>
+   ${[46,76,106,136,166,196].map(x=>`<circle cx="${x}" cy="163" r="10" fill="#8A929F"/>`).join('')}
+   <polygon points="30,146 52,116 198,116 222,146" fill="${c1}"/>
+   <rect x="84" y="90" width="72" height="28" rx="8" fill="${c2}"/>
+   <rect x="150" y="98" width="82" height="9" rx="3" fill="#5C6371"/>
+   <rect x="108" y="84" width="22" height="8" rx="3" fill="${c3}"/>`;
+}
+function robotSVG(b){
+  const {type,c1,c2,c3}=b;const W='#23262B',RIM='#C9CED6',G='#7FE3FF';
+  let acc='';
+  if(type==='car')acc=`<circle cx="72" cy="90" r="13" fill="${W}"/><circle cx="72" cy="90" r="6" fill="${RIM}"/><circle cx="168" cy="90" r="13" fill="${W}"/><circle cx="168" cy="90" r="6" fill="${RIM}"/><rect x="104" y="96" width="32" height="6" rx="2" fill="${c3}"/>`;
+  if(type==='truck')acc=`<rect x="66" y="52" width="9" height="32" rx="2" fill="#9AA3B2"/><rect x="165" y="52" width="9" height="32" rx="2" fill="#9AA3B2"/><rect x="100" y="126" width="40" height="8" rx="2" fill="${RIM}"/>`;
+  if(type==='jet')acc=`<polygon points="86,96 24,142 86,132" fill="${c2}"/><polygon points="154,96 216,142 154,132" fill="${c2}"/><rect x="112" y="24" width="16" height="16" rx="3" fill="${c2}"/>`;
+  if(type==='heli')acc=`<rect x="44" y="26" width="152" height="6" rx="3" fill="${W}"/><rect x="116" y="30" width="8" height="12" fill="${W}"/><rect x="60" y="150" width="120" height="5" rx="2" fill="${W}"/>`;
+  if(type==='tank')acc=`<rect x="172" y="118" width="60" height="11" rx="3" fill="#5C6371"/><rect x="60" y="124" width="22" height="30" rx="4" fill="${c3}"/><rect x="104" y="128" width="32" height="6" rx="2" fill="${c3}"/>`;
+  return `<g class="robot">
+   <g class="p p-legs">
+    <rect x="94" y="164" width="24" height="58" rx="6" fill="${c1}"/><rect x="122" y="164" width="24" height="58" rx="6" fill="${c1}"/>
+    <rect x="86" y="218" width="34" height="16" rx="5" fill="${c2}"/><rect x="120" y="218" width="34" height="16" rx="5" fill="${c2}"/>
+    <rect x="98" y="184" width="16" height="6" rx="2" fill="${c2}"/><rect x="126" y="184" width="16" height="6" rx="2" fill="${c2}"/>
+   </g>
+   <g class="p p-torso">
+    <rect x="84" y="80" width="72" height="72" rx="10" fill="${c1}"/>
+    <rect x="94" y="150" width="52" height="14" rx="3" fill="${c2}"/>
+    <rect x="100" y="92" width="40" height="30" rx="6" fill="${c2}"/>
+    <circle cx="120" cy="107" r="7" fill="${G}"/>
+   </g>
+   <g class="p p-armL">
+    <rect x="58" y="82" width="28" height="24" rx="6" fill="${c2}"/>
+    <rect x="62" y="106" width="22" height="50" rx="8" fill="${c1}"/>
+    <rect x="64" y="154" width="18" height="16" rx="5" fill="${c2}"/>
+   </g>
+   <g class="p p-armR">
+    <rect x="154" y="82" width="28" height="24" rx="6" fill="${c2}"/>
+    <rect x="156" y="106" width="22" height="50" rx="8" fill="${c1}"/>
+    <rect x="158" y="154" width="18" height="16" rx="5" fill="${c2}"/>
+   </g>
+   <g class="p p-head">
+    <rect x="112" y="72" width="16" height="10" fill="${c2}"/>
+    <rect x="100" y="40" width="40" height="36" rx="8" fill="${c1}"/>
+    <rect x="106" y="52" width="28" height="10" rx="3" fill="${G}"/>
+    <rect x="96" y="46" width="6" height="16" rx="2" fill="${c2}"/><rect x="138" y="46" width="6" height="16" rx="2" fill="${c2}"/>
+   </g>
+   <g class="p p-acc">${acc}</g>
+  </g>`;
+}
+const botSVG=b=>`<svg viewBox="0 0 240 260" aria-label="${b.name}機甲"><g class="veh">${vehicleSVG(b)}</g>${robotSVG(b)}</svg>`;
+const miniSVG=b=>`<svg viewBox="10 60 220 130" aria-hidden="true">${vehicleSVG(b)}</svg>`;
+
+/* ================= 存檔 ================= */
+const KEY='mecha-academy-v2';
+let save={rounds:0,completed:0,stars:0,best:{},subj:{},tier:0,sound:true,read:true};
+try{const s=JSON.parse(localStorage.getItem(KEY));if(s)save={...save,...s}}catch(e){}
+const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(save))}catch(e){}};
+
+/* ================= 聲音 & 朗讀 ================= */
+let ac;
+function tone(f,t,dur,type){if(!save.sound)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=type||'triangle';o.frequency.value=f;g.gain.value=.0001;o.connect(g).connect(ac.destination);const s=ac.currentTime+t;g.gain.setValueAtTime(.0001,s);g.gain.exponentialRampToValueAtTime(.18,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+dur);o.start(s);o.stop(s+dur+.05)}catch(e){}}
+const SFX={
+  good(){tone(660,0,.15);tone(880,.12,.2)},
+  bad(){tone(220,0,.18,'sine');tone(180,.15,.2,'sine')},
+  step(){tone(440,0,.1,'square');tone(660,.08,.12,'square')},
+  transform(){[523,659,784,1047].forEach((f,i)=>tone(f,i*.1,.25));tone(1319,.45,.5)},
+  fanfare(){[523,523,784,1047,880,1047].forEach((f,i)=>tone(f,i*.13,.22))},
+};
+let voice=null;
+function pickVoice(){try{const vs=speechSynthesis.getVoices();voice=vs.find(v=>/zh[-_]TW/i.test(v.lang))||vs.find(v=>/^zh/i.test(v.lang))||null}catch(e){}}
+function speak(text,force){
+  if((!save.read&&!force)||!('speechSynthesis'in window)||!text)return;
+  try{speechSynthesis.cancel();if(!voice)pickVoice();
+    const u=new SpeechSynthesisUtterance(text.replace(/___/g,'什麼').replace(/[?？]/g,'').replace(/[「」]/g,''));
+    u.lang='zh-TW';u.rate=.85;if(voice)u.voice=voice;speechSynthesis.speak(u)}catch(e){}
+}
+function readQuestion(q,force){
+  let t=q.read||q.q;
+  if(!q.opts[0].pic){const names=q.opts.map(o=>o.say||o.t);t+='。'+names.slice(0,-1).join('、')+'，還是'+names[names.length-1]}
+  speak(t,force);
+}
+
+/* ================= 狀態 & 畫面 ================= */
+const app=document.getElementById('app');
+let sel={tier:save.tier||0,subj:'math',bot:'flash'};
+let g=null;
+const unlocked=i=>i<=save.completed;
+const starStr=n=>'★'.repeat(n)+'<span class="off">'+'★'.repeat(3-n)+'</span>';
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const isKid=()=>TIERS[sel.tier].kid;
+
+function header(){
+  return `<header class="top"><div class="logo"><span class="badge">MA</span>變形機甲學園</div>
+  <div class="tools">
+    <button class="iconbtn" data-act="read" title="朗讀題目" aria-label="朗讀題目">${save.read?'🔊':'🔇'}</button>
+    <button class="iconbtn" data-act="sound" title="音效" aria-label="音效">${save.sound?'🎵':'🚫'}</button>
+    <button class="iconbtn" data-act="home" title="回機庫" aria-label="回機庫">🏠</button>
+  </div></header>`;
+}
+const tierCard=t=>`<button class="tier ${sel.tier===t.id?'on':''}" data-tier="${t.id}"><span class="ticon">${t.icon}</span><span><b>${t.name}</b><span class="age">${t.age}</span><small>${t.desc}</small></span></button>`;
+
+function renderStart(){
+  const bot=BOTS.find(b=>b.id===sel.bot);
+  const subjRate=id=>{const s=save.subj[id];return s&&s.n?Math.round(100*s.ok/s.n)+'%':'—'};
+  app.innerHTML=header()+`
+  <div class="hero">
+    <div>
+      <h1>答對題目，機甲就會變形！</h1>
+      <p class="lede">選一台機甲、選一個想學的東西。每答對一題就補一格能量，五格集滿，車子就會變成機器人。每完成一次任務，就能解鎖新的機甲。</p>
+    </div>
+    <div class="art"><div class="bot showrobot" aria-hidden="true">${botSVG(bot)}</div></div>
+  </div>
+  <section class="pick"><h2><span class="step">1</span>誰來當駕駛員？</h2>
+    <div class="tiers kid">${TIERS.filter(t=>t.kid).map(tierCard).join('')}</div>
+    <details class="older" ${sel.tier>=2?'open':''}><summary>大孩子也想玩？（7–12 歲）</summary>
+      <div class="tiers">${TIERS.filter(t=>!t.kid).map(tierCard).join('')}</div></details>
+  </section>
+  <section class="pick"><h2><span class="step">2</span>今天想學什麼？</h2>
+    <div class="subs">${SUBJECTS.map(s=>`<button class="sub ${sel.subj===s.id?'on':''}" data-subj="${s.id}"><span class="ico">${s.icon}</span>${s.name}<small>${s.kid}</small></button>`).join('')}</div>
+  </section>
+  <section class="pick"><h2><span class="step">3</span>選一台機甲</h2>
+    <div class="bots">${BOTS.map((b,i)=>{const lk=!unlocked(i);const st=save.best[b.id]||0;return `<button class="botcard ${sel.bot===b.id?'on':''} ${lk?'locked':''}" data-bot="${b.id}" ${lk?'disabled':''} title="${b.blurb}">
+      <div class="mini">${miniSVG(b)}</div><b>${b.name}</b><small>${b.tag}</small><div class="stars" aria-label="最佳成績 ${st} 顆星">${st?'⭐'.repeat(st):''}</div>
+      ${lk?`<div class="lock">🔒<span>再完成 ${i-save.completed} 次任務</span></div>`:''}</button>`}).join('')}</div>
+  </section>
+  <div class="go"><button class="bigbtn" data-act="start">出擊！</button></div>
+  <details class="parents"><summary>給爸媽的說明</summary><div class="body">
+    <p><b>3–6 歲</b>：每次任務 5 題，題目和選項都會念出來，選項以圖片為主，小孩聽完直接點圖。答錯不會扣分，那個選項會變暗，讓孩子再試一次，所以每次任務結束時機甲一定會變形完成。星星依「第一次就答對」的題數計算：5 題三顆星、4 題兩顆星、其他一顆星。每完成一次任務解鎖下一台機甲。</p>
+    <p style="margin-top:8px"><b>7–12 歲</b>：每次任務 10 題、四個選項、沒有重試。答對 5 題以上算完成任務，7 題兩顆星，9 題以上三顆星。可以用鍵盤 1–4 或 A–D 作答。</p>
+    <table><tr><th>年齡</th><th>數學</th><th>國語</th><th>地理歷史</th></tr>
+    <tr><th>3–4 歲</th><td>數到 5、哪堆比較多、比大小、找一樣的、顏色、形狀、接下來是幾</td><td>聽名字找圖、動物叫聲、身體部位、日常用品、相反詞</td><td>白天晚上、動物住哪裡、天氣與穿著、台灣國旗、職業與交通、節日</td></tr>
+    <tr><th>5–6 歲</th><td>數到 10、10 以內加減、比多少、哪堆有 N 個、分類找不同、形狀</td><td>看圖認字、認簡單的字、注音聲母、量詞、顏色、生活禮貌</td><td>東西南北、台灣是島、台北高雄的位置、玉山、節日、貓熊袋鼠的家</td></tr>
+    <tr><th>7–9 歲</th><td>100 以內加減、九九乘法、除法、錢與時間、單位換算</td><td>錯別字、量詞、成語填空、部首、的得地</td><td>台灣縣市與景點、河流山脈、原住民族、鄭成功、七大洲</td></tr>
+    <tr><th>10–12 歲</th><td>括號四則、分數、小數、面積周長、平均、百分比、因數倍數</td><td>成語意義、修辭、文言字義、詞性</td><td>台灣歷史順序、條約與年代、世界首都、地理之最</td></tr></table>
+    <div class="stats">
+      <div class="stat"><b>${save.completed}</b><span>完成任務</span></div>
+      <div class="stat"><b>${save.stars}</b><span>累積星星</span></div>
+      <div class="stat"><b>${subjRate('math')}</b><span>數學第一次就答對</span></div>
+      <div class="stat"><b>${subjRate('zh')} / ${subjRate('geo')}</b><span>國語 / 地理歷史</span></div>
+    </div>
+    <p style="margin-top:10px;font-size:.82rem">朗讀使用瀏覽器內建的中文語音；iPhone 或 iPad 上第一次要先按一下題目旁的喇叭。進度只存在這個瀏覽器裡。<button data-act="reset" style="text-decoration:underline;color:var(--bad)">清除全部進度</button></p>
+  </div></details>`;
+}
+
+function startRound(){
+  const bot=BOTS.find(b=>b.id===sel.bot);
+  g={bot,tier:sel.tier,subj:sel.subj,qs:buildRound(sel.subj,sel.tier),i:0,ok:0,energy:0,retried:false,log:[],answered:false,timer:null};
+  save.tier=sel.tier;persist();
+  renderPlay();
+}
+const ROUNDN=()=>TIERS[g.tier].round;
+function stageOf(){return Math.min(5,g.energy)}
+function modeLabel(){const s=stageOf();return s===0?'車輛模式':s<5?`變形中 ${s} / 5`:'機甲模式 READY'}
+function optHTML(o,k){
+  if(o.pic)return `<button class="opt pic ${o.group?'group':''} ${o.size||''}" data-opt="${k}" aria-label="${esc(o.say||o.t)}"><span class="emo">${o.t}</span></button>`;
+  return `<button class="opt" data-opt="${k}"><span class="key">${'ABCD'[k]}</span><span>${esc(o.t)}</span></button>`;
+}
+function renderPlay(){
+  const q=g.qs[g.i];const t=TIERS[g.tier];const s=stageOf();const n=ROUNDN();
+  const subjName=SUBJECTS.find(x=>x.id===q.subj).name;
+  const pics=q.opts[0].pic;
+  app.innerHTML=header()+`<div class="stage ${t.kid?'kid':''} t${g.tier}">
+    <div class="hangar">
+      <div class="nameplate"><b>${g.bot.name}</b><span>${g.bot.tag.toUpperCase()}</span></div>
+      <div class="mode" id="mode">${modeLabel()}</div>
+      <div class="bot ${Array.from({length:s},(_,k)=>'s'+(k+1)).join(' ')}" id="bot"><div class="glowring"></div>${botSVG(g.bot)}</div>
+      <div class="energy"><span class="lab">ENERGY</span>${[0,1,2,3,4].map(k=>`<i class="cell ${k<s?'on':''}"></i>`).join('')}</div>
+      <div class="lift"></div>
+    </div>
+    <div class="console">
+      <div class="bar"><span class="chip">第 ${g.i+1} / ${n} 題</span><div class="progress">${g.qs.map((_,k)=>`<i class="${k<g.i?(g.log[k].ok?'ok':'no'):k===g.i?'cur':''}"></i>`).join('')}</div><span class="chip sub">${subjName}</span></div>
+      <div class="qtext"><button class="speak" data-act="speak" aria-label="再聽一次">🔊</button><span id="qt">${esc(q.q).replace(/___/g,'<u>　　</u>')}</span></div>
+      ${q.vis?`<div class="vis">${q.vis}</div>`:''}
+      <div class="opts ${pics?'pics':''} n${q.opts.length}">${q.opts.map(optHTML).join('')}</div>
+      <div id="fb"></div>
+    </div></div>`;
+  if(t.kid)setTimeout(()=>readQuestion(q),300);
+}
+function answer(k){
+  if(g.answered)return;
+  const q=g.qs[g.i];const ok=k===q.ans;const kid=TIERS[g.tier].kid;
+  const btns=document.querySelectorAll('.opt');const fb=document.getElementById('fb');
+  if(!ok&&kid){ // 小小孩：再試一次
+    if(!g.retried){g.retried=true;save.subj[q.subj]=save.subj[q.subj]||{n:0,ok:0};save.subj[q.subj].n++;persist()}
+    SFX.bad();btns[k].classList.add('wrong');btns[k].disabled=true;
+    fb.innerHTML=`<div class="feedback bad"><div><b>再試一次！</b></div></div>`;
+    speak('再試一次');return;
+  }
+  g.answered=true;
+  const firstTry=ok&&!g.retried;
+  if(!kid||!g.retried){save.subj[q.subj]=save.subj[q.subj]||{n:0,ok:0};save.subj[q.subj].n++;if(ok)save.subj[q.subj].ok++;persist()}
+  g.log.push({q:q.q,ok:firstTry,ans:q.opts[q.ans].say||q.opts[q.ans].t,why:q.why});
+  btns.forEach((b,i)=>{b.disabled=true;if(i===q.ans)b.classList.add('right');else if(i===k)b.classList.add('wrong');else b.classList.add('dim')});
+  if(ok){
+    if(firstTry)g.ok++;g.energy++;const s=stageOf();const bot=document.getElementById('bot');
+    if(!bot.classList.contains('s'+s)){bot.classList.add('s'+s);document.querySelectorAll('.cell')[s-1]?.classList.add('on');document.getElementById('mode').textContent=modeLabel();
+      if(s===5){SFX.transform();sparkle(bot)}else SFX.step();}
+    else SFX.good();
+    const praise=pick(['答對了！','太棒了！','好厲害！','就是這個！']);
+    fb.innerHTML=`<div class="feedback good"><div><b>${praise}</b>${q.why?`<p>${esc(q.why)}</p>`:''}</div><button class="next" data-act="next">下一題 ▶</button></div>`;
+    if(kid)speak(s===5?praise+'變形完成！':praise+(q.why||''));
+    g.timer=setTimeout(next,kid?(s===5?3200:(q.why?2600:1600)):(q.why?2600:1500));
+  }else{
+    SFX.bad();
+    fb.innerHTML=`<div class="feedback bad"><div><b>再想想！正確答案是「${esc(q.opts[q.ans].say||q.opts[q.ans].t)}」</b>${q.why?`<p>${esc(q.why)}</p>`:''}</div><button class="next" data-act="next">下一題 ▶</button></div>`;
+  }
+}
+function next(){
+  clearTimeout(g.timer);g.i++;g.answered=false;g.retried=false;
+  if(g.i>=ROUNDN())return finish();
+  renderPlay();
+}
+function sparkle(host){
+  for(let i=0;i<18;i++){const s=document.createElement('span');s.className='sparkle';
+    s.style.left=(50+R(-22,22))+'%';s.style.top=(55+R(-15,15))+'%';
+    s.style.setProperty('--dx',R(-130,130)+'px');s.style.setProperty('--dy',R(-170,-40)+'px');
+    s.style.background=pick(['#FFC72C','#7FE3FF','#fff','#FF7A59']);
+    host.parentElement.appendChild(s);setTimeout(()=>s.remove(),1200)}
+}
+function finish(){
+  const kid=TIERS[g.tier].kid;const n=ROUNDN();
+  const stars=kid?(g.ok>=5?3:g.ok>=4?2:1):(g.ok>=9?3:g.ok>=7?2:g.ok>=5?1:0);
+  const done=kid||g.ok>=5;let unlockedNew=null;
+  save.rounds++;
+  if(done){save.completed++;if(save.completed<BOTS.length)unlockedNew=BOTS[save.completed];}
+  save.stars+=stars;save.best[g.bot.id]=Math.max(save.best[g.bot.id]||0,stars);persist();
+  if(stars>=2)SFX.fanfare();else if(done)SFX.transform();
+  const wrong=g.log.filter(l=>!l.ok);
+  const title=stars===3?'完美出擊！':stars===2?'表現很棒！':stars===1?'任務完成！':'再試一次，你可以的！';
+  app.innerHTML=header()+`<div class="result">
+    <div class="hangar">
+      <div class="nameplate"><b>${g.bot.name}</b><span>${g.bot.tag.toUpperCase()}</span></div>
+      <div class="mode">${done?'任務完成 MISSION CLEAR':'任務未完成 TRY AGAIN'}</div>
+      <div class="bot ${done?'s1 s2 s3 s4 s5':Array.from({length:stageOf()},(_,k)=>'s'+(k+1)).join(' ')}" id="bot"><div class="glowring"></div>${botSVG(g.bot)}</div>
+      <div class="energy"><span class="lab">ENERGY</span>${[0,1,2,3,4].map(k=>`<i class="cell ${k<(done?5:stageOf())?'on':''}"></i>`).join('')}</div>
+      <div class="lift"></div>
+    </div>
+    <div class="report">
+      <h2>${title}</h2>
+      <div class="starrow" aria-label="${stars} 顆星">${starStr(stars)}</div>
+      <div class="nums"><div><b>${g.ok}</b><span>${kid?'一次就答對':'答對題數'}</span></div><div><b>${n-g.ok}</b><span>${kid?'再試一次才對':'答錯題數'}</span></div><div><b>${Math.round(100*g.ok/n)}%</b><span>答對率</span></div></div>
+      ${unlockedNew?`<div class="unlock">🔓 解鎖新機甲：${unlockedNew.name}（${unlockedNew.tag}）！回機庫看看。</div>`:''}
+      <div class="acts"><button class="bigbtn" data-act="again">再玩一次</button><button class="bigbtn ghost" data-act="home">回機庫</button></div>
+    </div></div>
+    ${wrong.length?`<div class="review"><h3>${kid?'這次需要再試一次的題目':'這次答錯的題目'}</h3><ol>${wrong.map(w=>`<li>${esc(w.q).replace(/___/g,'＿＿')} → <b>${esc(w.ans)}</b>${w.why?`　${esc(w.why)}`:''}</li>`).join('')}</ol></div>`:''}`;
+  if(done)setTimeout(()=>sparkle(document.getElementById('bot')),400);
+  if(kid)setTimeout(()=>speak(title+(unlockedNew?'解鎖新機甲，'+unlockedNew.name:'')),600);
+}
+
+app.addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.tier!==undefined){sel.tier=+b.dataset.tier;renderStart();speak(TIERS[sel.tier].name);return}
+  if(b.dataset.subj){sel.subj=b.dataset.subj;renderStart();const s=SUBJECTS.find(x=>x.id===sel.subj);if(isKid())speak(s.name+'，'+s.kid);return}
+  if(b.dataset.bot){sel.bot=b.dataset.bot;renderStart();if(isKid())speak(BOTS.find(x=>x.id===sel.bot).name);return}
+  if(b.dataset.opt!==undefined){answer(+b.dataset.opt);return}
+  const a=b.dataset.act;
+  if(a==='start'||a==='again'){SFX.step();startRound()}
+  else if(a==='next')next();
+  else if(a==='home'){if(g&&g.timer)clearTimeout(g.timer);g=null;try{speechSynthesis.cancel()}catch(x){}renderStart()}
+  else if(a==='speak'){readQuestion(g.qs[g.i],true)}
+  else if(a==='read'){save.read=!save.read;persist();b.textContent=save.read?'🔊':'🔇';if(!save.read)try{speechSynthesis.cancel()}catch(x){}}
+  else if(a==='sound'){save.sound=!save.sound;persist();b.textContent=save.sound?'🎵':'🚫';if(save.sound)SFX.step()}
+  else if(a==='reset'){if(confirm('確定要清除全部進度嗎？')){save={rounds:0,completed:0,stars:0,best:{},subj:{},tier:0,sound:save.sound,read:save.read};persist();renderStart()}}
+});
+document.addEventListener('keydown',e=>{
+  if(!g||g.answered)return;const k='1234abcdABCD'.indexOf(e.key);if(k<0)return;const idx=k%4;if(idx<g.qs[g.i].opts.length)answer(idx);
+});
+if('speechSynthesis'in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
+renderStart();
+</script>
+
+<script>
+if('serviceWorker'in navigator&&location.protocol!=='file:'){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
+</script>
+</body>
+</html>

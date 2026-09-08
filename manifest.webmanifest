@@ -1,0 +1,17 @@
+{
+  "name": "變形機甲學園",
+  "short_name": "機甲學園",
+  "description": "3–6 歲為主的變形機甲學習遊戲：答對題目，車子就會變形成機器人。",
+  "lang": "zh-TW",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#D9EEFB",
+  "theme_color": "#2B3A5C",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
