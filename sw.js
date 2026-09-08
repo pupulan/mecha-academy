@@ -1,5 +1,5 @@
 /* 變形機甲學園 service worker：安裝後離線也能玩 */
-const VERSION = 'mecha-academy-v2.0.1';
+const VERSION = 'mecha-academy-v2.1.0';
 const SHELL = ['./', './index.html', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/icon-512-maskable.png', './icons/apple-touch-icon.png'];
 

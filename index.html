@@ -246,6 +246,45 @@ section.pick{background:var(--paper);border-radius:var(--r);padding:16px 18px;ma
   .kid .vis{margin:4px 0}
 }
 
+/* ---------- 收藏庫 ---------- */
+.iconbtn.trophy{position:relative}
+.iconbtn.trophy .cnt{position:absolute;top:-4px;right:-4px;background:var(--hazard);color:var(--ink);font-family:var(--fn);font-weight:800;font-size:.7rem;min-width:19px;height:19px;border-radius:99px;display:grid;place-items:center;box-shadow:0 0 0 2px var(--sky)}
+.collhead{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin:6px 0 18px}
+.collhead h1{font-size:clamp(1.7rem,3.6vw,2.4rem)}
+.collhead .lede{color:var(--ink2);margin-top:6px;max-width:32em}
+.collstats{display:flex;gap:10px}
+.collstats .stat{background:var(--paper);border-radius:12px;padding:10px 16px;box-shadow:0 1px 0 var(--line);text-align:center}
+.shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.trophy-card{background:var(--paper);border-radius:18px;padding:14px;box-shadow:0 1px 0 var(--line);display:flex;flex-direction:column;gap:10px;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.trophy-card:hover{transform:translateY(-3px);box-shadow:0 1px 0 var(--line),0 10px 24px rgba(22,35,59,.12)}
+.trophy-card .tstage{position:relative;border-radius:12px;background:linear-gradient(180deg,#324569,#1B2740);padding:10px 0 6px;overflow:hidden}
+.trophy-card .tstage::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 2px,transparent 2px 34px),repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 2px,transparent 2px 34px)}
+.trophy-card .bot{position:relative;width:min(100%,170px);margin:0 auto;aspect-ratio:240/260;z-index:1}
+.trophy-card .bot svg{width:100%;height:100%;overflow:visible}
+.tname{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.tname b{font-family:var(--fd);font-size:1.3rem}
+.tstars{font-size:.9rem;letter-spacing:.04em}
+.tinfo small{display:block;color:var(--ink2);font-size:.84rem;margin-top:2px;line-height:1.4}
+.tmeta{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:8px;font-size:.78rem;color:var(--ink2);font-variant-numeric:tabular-nums}
+.tacts{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto}
+.bigbtn.small{font-size:1rem;padding:9px 20px}
+.tmode{font-family:var(--fn);font-weight:800;font-size:.72rem;letter-spacing:.1em;color:var(--ink2);text-transform:uppercase}
+.trophy-card.locked{cursor:default;position:relative;opacity:.7}
+.trophy-card.locked:hover{transform:none;box-shadow:0 1px 0 var(--line)}
+.trophy-card.locked .silhouette{border-radius:12px;background:var(--paper2);padding:18px 10px;filter:grayscale(1) brightness(.55) contrast(.5)}
+.trophy-card.locked .silhouette svg{width:100%;aspect-ratio:220/130}
+.trophy-card.locked .tinfo b{font-family:var(--fd);font-size:1.3rem;color:var(--ink2)}
+.trophy-card .tlock{position:absolute;top:50%;left:50%;transform:translate(-50%,-90%);font-size:2rem}
+.sub.wide{margin-top:10px;width:100%;flex-direction:row;justify-content:center;gap:10px;padding:12px}
+.sub.wide .ico{font-size:1.4rem}
+.sub.wide small{margin-left:4px}
+@media (max-width:820px){
+  .collstats{width:100%}
+  .collstats .stat{flex:1;padding:8px 6px}
+  .shelf{grid-template-columns:1fr}
+  .trophy-card .bot{width:min(100%,150px)}
+}
+
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition-duration:.01ms!important}
 }
@@ -287,9 +326,11 @@ const TIERS=[
 const SUBJECTS=[
   {id:'math',name:'數學',kid:'數一數',icon:'🔢'},
   {id:'zh',name:'國語',kid:'聽聽看',icon:'📖'},
+  {id:'sci',name:'自然常識',kid:'為什麼',icon:'🔬'},
   {id:'geo',name:'地理歷史',kid:'認識世界',icon:'🗺️'},
-  {id:'mix',name:'混合挑戰',kid:'通通來',icon:'⚡'},
 ];
+const MIX={id:'mix',name:'混合挑戰',kid:'四科通通來',icon:'⚡'};
+const ALLSUBJ=[...SUBJECTS,MIX];
 /* 選項可以是文字，也可以是圖片：P(圖, 念出來的字) */
 const P=(t,say,extra)=>({t,say,pic:true,...(extra||{})});
 const BIG=(t,say)=>({t,say,pic:true,size:'big'}), SMALL=(t,say)=>({t,say,pic:true,size:'small'});
@@ -548,10 +589,284 @@ geo:[
 ],
 };
 
-const BANK={
-  zh:[KID.zh34,KID.zh56,OLD.zh[1],OLD.zh[2]],
-  geo:[KID.geo34,KID.geo56,OLD.geo[1],OLD.geo[2]],
+const SCI={
+t34:[
+ ['小狗有幾條腿？',['4 條','2 條','6 條'],'狗有四條腿。','🐶'],
+ ['小鳥有幾條腿？',['2 條','4 條','6 條'],'鳥有兩條腿。','🐦'],
+ ['哪一個會飛？',[P('🐦','小鳥'),P('🐟','魚'),P('🐢','烏龜')],'小鳥有翅膀，可以飛。'],
+ ['哪一個住在水裡？',[P('🐟','魚'),P('🐘','大象'),P('🐦','小鳥')],'魚住在水裡。'],
+ ['哪一個是花？',[P('🌸','花'),P('🍎','蘋果'),P('🐱','貓')]],
+ ['哪一個是樹？',[P('🌳','樹'),P('🌸','花'),P('🐟','魚')]],
+ ['哪一個可以吃？',[P('🍎','蘋果'),P('🪨','石頭'),P('👟','鞋子')],'石頭和鞋子不能吃。'],
+ ['哪一個是蛋？',[P('🥚','蛋'),P('🍎','蘋果'),P('⚽','球')]],
+ ['小雞是從哪裡出來的？',[P('🥚','蛋'),P('🌸','花'),P('💧','水')],'小雞從蛋裡孵出來。'],
+ ['種子種下去，會長出什麼？',[P('🌱','小樹苗'),P('🐟','魚'),P('🚗','車子')],'種子會長成植物。'],
+ ['樹葉是什麼顏色的？',['綠色','紅色','藍色'],'大部分的樹葉是綠色的。','🌳'],
+ ['摸到火會怎麼樣？',['燙燙的','涼涼的','香香的'],'火很燙，不可以摸。','🔥'],
+ ['冰塊摸起來怎麼樣？',['冰冰的','燙燙的','熱熱的'],'冰塊很冰。','🧊'],
+ ['我們用什麼走路？',[P('🦵','腳'),P('👀','眼睛'),P('👂','耳朵')],'我們用腳走路。'],
+ ['我們用什麼拿東西？',[P('🖐️','手'),P('👣','腳'),P('👃','鼻子')],'我們用手拿東西。'],
+ ['刷牙要用什麼？',[P('🪥','牙刷'),P('🥄','湯匙'),P('✏️','鉛筆')],'每天早晚都要刷牙。'],
+ ['肚子餓了要做什麼？',[P('🍚','吃飯'),P('😴','睡覺'),P('🏃','跑步')]],
+ ['想睡覺的時候要做什麼？',[P('😴','睡覺'),P('🍚','吃飯'),P('🏊','游泳')]],
+ ['下雨過後，地上會怎麼樣？',['濕濕的','乾乾的','熱熱的'],'下雨會把地弄濕。','🌧️'],
+ ['烏龜身上有什麼？',['殼','羽毛','角'],'烏龜有硬硬的殼。','🐢'],
+ ['大象的鼻子是？',['長長的','短短的','圓圓的'],'大象的長鼻子可以拿東西。','🐘'],
+ ['哪一個動物身上有很多毛？',[P('🐻','熊'),P('🐟','魚'),P('🐍','蛇')]],
+ ['小鳥用什麼飛？',['翅膀','腳','尾巴'],'鳥用翅膀飛。','🐦'],
+ ['魚用什麼游泳？',['尾巴','翅膀','手'],'魚擺動尾巴游泳。','🐟'],
+ ['太陽出來的時候是？',['白天','晚上'],'太陽出來就是白天。','☀️'],
+ ['哪一個會自己動？',[P('🐱','貓'),P('🪨','石頭'),P('🪑','椅子')],'動物會自己動。'],
+],
+t56:[
+ ['小雞長大會變成什麼？',['雞','鴨','鳥'],'小雞長大變成雞。','🐥'],
+ ['蝌蚪長大會變成什麼？',['青蛙','魚','蛇'],'蝌蚪長出腳，變成青蛙。','🐸'],
+ ['毛毛蟲長大會變成什麼？',['蝴蝶','蜜蜂','小鳥'],'毛毛蟲會結蛹，變成蝴蝶。','🦋'],
+ ['植物需要什麼才會長大？',['水和陽光','糖果','電視'],'植物需要水、陽光和空氣。','🌱'],
+ ['水結冰會變成什麼？',['冰塊','石頭','沙子'],'水太冷就結成冰。','🧊'],
+ ['冰塊放久了會變成什麼？',['水','石頭','空氣'],'冰融化就變回水。','💧'],
+ ['太陽下山以後是什麼時候？',['晚上','早上','中午'],'太陽下山天就黑了。','🌇'],
+ ['我們用鼻子做什麼？',['呼吸和聞味道','看東西','聽聲音'],'鼻子可以呼吸，也可以聞味道。','👃'],
+ ['牙齒是用來做什麼的？',['咬東西','看東西','聽聲音'],'牙齒幫我們咬碎食物。','🦷'],
+ ['哪一個是昆蟲？',[P('🐜','螞蟻'),P('🐟','魚'),P('🐦','小鳥')],'螞蟻是昆蟲，有六隻腳。'],
+ ['蜜蜂會採什麼？',['花蜜','牛奶','雨水'],'蜜蜂採花蜜做成蜂蜜。','🐝'],
+ ['牛給我們什麼？',['牛奶','雞蛋','蜂蜜'],'我們喝的牛奶來自牛。','🐄'],
+ ['雞給我們什麼？',['雞蛋','牛奶','羊毛'],'母雞會生蛋。','🐔'],
+ ['什麼動物身上有羽毛？',[P('🐦','小鳥'),P('🐟','魚'),P('🐍','蛇')],'鳥類身上有羽毛。'],
+ ['哪一個動物冬天會冬眠？',[P('🐻','熊'),P('🐱','貓'),P('🐶','狗')],'熊冬天會睡很長的覺。'],
+ ['晚上照亮我們的是什麼？',['月亮','太陽','電風扇'],'月亮和星星在晚上發亮。','🌙'],
+ ['放在水裡會浮起來的是？',[P('🍃','葉子'),P('🪨','石頭'),P('🔩','鐵釘')],'輕的東西會浮起來。'],
+ ['磁鐵可以吸住什麼？',['鐵釘','紙','木頭'],'磁鐵只吸得住鐵做的東西。','🧲'],
+ ['生病發燒的時候要量什麼？',['體溫','身高','體重'],'發燒要量體溫。','🌡️'],
+ ['洗手可以趕走什麼？',['細菌','影子','聲音'],'洗手可以洗掉看不見的細菌。','🧼'],
+ ['彩虹有幾種顏色？',['七種','三種','一種'],'紅橙黃綠藍靛紫，一共七種。','🌈'],
+ ['種子要種在哪裡？',['土裡','天上','火裡'],'種子種在土裡才會發芽。','🌱'],
+ ['什麼可以讓風車轉動？',['風','石頭','紙'],'風推動風車轉動。','💨'],
+ ['下雨是從哪裡來的？',['雲','地上','樹上'],'雲裡的小水滴變大就下雨了。','☁️'],
+ ['睡覺的時候，身體在做什麼？',['休息和長大','跑步','吃飯'],'好好睡覺才會長高。','😴'],
+ ['哪一個是液體？',[P('💧','水'),P('🪨','石頭'),P('🪵','木頭')],'水會流動，是液體。'],
+ ['吃太多糖會怎麼樣？',['蛀牙','長高','變聰明'],'糖吃太多容易蛀牙。','🦷'],
+ ['過馬路前要先做什麼？',['看左右有沒有車','跑過去','閉眼睛'],'先看左右，綠燈才走。','🚦'],
+],
+t1:[
+ ['蝴蝶的一生順序是？',['卵→幼蟲→蛹→成蟲','卵→蛹→幼蟲→成蟲','幼蟲→卵→蛹→成蟲','成蟲→卵→蛹→幼蟲'],'這叫完全變態。'],
+ ['水的三態是？',['固體、液體、氣體','冷的、溫的、熱的','大的、中的、小的','紅的、藍的、白的'],'冰、水、水蒸氣。'],
+ ['水蒸氣遇到冷的東西會變成什麼？',['小水滴','冰塊','石頭','空氣'],'這叫凝結，像冷飲杯外面的水珠。'],
+ ['植物行光合作用需要什麼？',['陽光、水和二氧化碳','月光和牛奶','土壤和石頭','空氣和糖'],'植物利用陽光製造養分。'],
+ ['植物白天會放出什麼氣體？',['氧氣','二氧化碳','氮氣','水蒸氣'],'光合作用會放出氧氣。'],
+ ['太陽系有幾顆行星？',['8 顆','9 顆','7 顆','12 顆'],'冥王星在 2006 年被改列為矮行星。'],
+ ['離太陽最近的行星是？',['水星','金星','地球','火星'],'順序是水金地火木土天海。'],
+ ['地球的衛星是？',['月球','太陽','火星','金星'],'月球繞著地球轉。'],
+ ['白天和黑夜是因為地球的什麼運動？',['自轉','公轉','跳動','搖晃'],'地球自轉一圈是一天。'],
+ ['昆蟲有幾隻腳？',['6 隻','8 隻','4 隻','10 隻'],'昆蟲的身體分頭、胸、腹，有六隻腳。'],
+ ['蜘蛛有幾隻腳？',['8 隻','6 隻','4 隻','10 隻'],'蜘蛛有八隻腳，不是昆蟲。'],
+ ['下列哪一個是哺乳類？',['鯨魚','鯊魚','烏龜','青蛙'],'鯨魚用肺呼吸、餵母乳。'],
+ ['蝙蝠屬於哪一類動物？',['哺乳類','鳥類','爬蟲類','兩棲類'],'蝙蝠會飛，但是哺乳類。'],
+ ['心臟的功能是什麼？',['把血液送到全身','消化食物','呼吸空氣','思考事情'],'心臟像幫浦一樣推動血液。'],
+ ['肺的功能是什麼？',['呼吸，吸進氧氣','消化食物','過濾血液','儲存養分'],'我們用肺呼吸。'],
+ ['食物鏈「草→兔子→老鷹」中，兔子吃什麼？',['草','老鷹','石頭','土'],'兔子是草食動物。'],
+ ['磁鐵的同一極靠在一起會怎麼樣？',['互相排斥','互相吸引','變成一個','消失'],'同極相斥、異極相吸。'],
+ ['下列哪一個可以導電？',['鐵','塑膠','木頭','橡皮'],'金屬是導體。'],
+ ['影子是怎麼形成的？',['光被東西擋住','東西自己發黑','風吹出來的','水造成的'],'光走直線，被擋住就形成影子。'],
+ ['聲音主要靠什麼傳播？',['空氣','光','影子','磁鐵'],'聲音靠空氣振動傳到耳朵。'],
+ ['溫度計是用來量什麼的？',['溫度','長度','重量','時間'],''],
+ ['寶特瓶回收要丟哪一類？',['塑膠類','紙類','鐵鋁罐','廚餘'],'寶特瓶是塑膠做的。'],
+ ['地震的時候應該怎麼做？',['蹲下、躲在桌子下、保護頭部','馬上跑去搭電梯','站在窗戶旁邊','大聲喊叫不動'],'趴下、掩護、穩住。'],
+ ['青蛙小時候住在哪裡？',['水裡','土裡','樹上','沙漠'],'蝌蚪住在水裡，用鰓呼吸。'],
+ ['一天有 24 小時，是因為地球自轉一圈需要多久？',['一天','一個月','一年','一小時'],''],
+ ['植物的根主要功能是？',['吸收水分和養分','行光合作用','開花','散播種子'],'根負責吸水和固定植物。'],
+],
+t2:[
+ ['光合作用會產生什麼？',['氧氣和養分','二氧化碳和水','氮氣和鹽','只有熱'],'植物用光把水和二氧化碳變成養分，並放出氧氣。'],
+ ['呼吸作用會產生什麼氣體？',['二氧化碳','氧氣','氮氣','氫氣'],'生物呼吸會放出二氧化碳。'],
+ ['在標準大氣壓下，水的沸點是幾度？',['100 度','0 度','50 度','200 度'],'攝氏 100 度沸騰。'],
+ ['水的凝固點是幾度？',['0 度','100 度','32 度','-10 度'],'攝氏 0 度結冰。'],
+ ['太陽系最大的行星是？',['木星','土星','地球','海王星'],'木星的體積是地球的一千多倍。'],
+ ['哪一顆行星有明顯的光環？',['土星','水星','金星','火星'],'土星環主要由冰和岩石組成。'],
+ ['月亮有陰晴圓缺，是因為？',['月球繞地球，被太陽照亮的部分改變','月亮自己會變形','地球擋住月亮','雲把月亮遮住'],'我們看到的是月球被照亮的不同角度。'],
+ ['把血液從心臟送出去的血管叫什麼？',['動脈','靜脈','微血管','神經'],'動脈送出，靜脈送回。'],
+ ['食物的養分主要在哪裡被吸收？',['小腸','胃','大腸','食道'],'小腸內壁有絨毛，負責吸收養分。'],
+ ['人體製造血球的地方是？',['骨髓','心臟','肝臟','肺'],'骨頭裡的骨髓製造血球。'],
+ ['冰會浮在水面上，是因為冰的密度比水？',['小','大','一樣','無關'],'水結冰時體積變大，密度變小。'],
+ ['力的單位是什麼？',['牛頓','公尺','安培','秒'],'紀念科學家牛頓。'],
+ ['電流的單位是什麼？',['安培','伏特','瓦特','歐姆'],'伏特是電壓的單位。'],
+ ['串聯電路中拿掉一顆燈泡，其他燈泡會？',['全部都不亮','照常亮','更亮','閃爍'],'串聯只有一條路徑，斷了就全滅。'],
+ ['槓桿有哪三個點？',['支點、施力點、抗力點','起點、中點、終點','上點、中點、下點','左點、右點、中點'],''],
+ ['生態系中的分解者是？',['細菌和真菌','老鷹','綠色植物','兔子'],'分解者把死去的生物分解回土壤。'],
+ ['食物鏈的最開始通常是誰？',['綠色植物','肉食動物','分解者','人類'],'植物是生產者，能自己製造養分。'],
+ ['溫室效應主要和哪種氣體增加有關？',['二氧化碳','氧氣','氮氣','氦氣'],'二氧化碳會把熱留在大氣中。'],
+ ['pH 值等於 7 表示？',['中性','強酸','強鹼','無法測量'],'小於 7 是酸性，大於 7 是鹼性。'],
+ ['空氣中含量最多的氣體是？',['氮氣','氧氣','二氧化碳','水蒸氣'],'氮氣約佔 78%，氧氣約佔 21%。'],
+ ['火山噴發的岩漿冷卻後形成哪一類岩石？',['火成岩','沉積岩','變質岩','化石'],'三大岩類：火成岩、沉積岩、變質岩。'],
+ ['化石可以告訴我們什麼？',['古代生物的樣子和生活環境','未來會發生的事','現在的天氣','地球的重量'],''],
+ ['台灣最常見的兩種天然災害是？',['颱風和地震','火山和海嘯','龍捲風和沙塵暴','雪崩和乾旱'],'台灣位在板塊交界，又在颱風路徑上。'],
+ ['聲音在哪一種介質中傳得最快？',['固體','液體','氣體','真空'],'真空中聲音無法傳播。'],
+ ['植物的葉子中，進行光合作用的構造是？',['葉綠體','細胞壁','根毛','花瓣'],'葉綠體裡的葉綠素吸收光。'],
+ ['地球上的水循環中，海水變成雲的過程叫？',['蒸發','凝結','降水','逕流'],'蒸發→凝結→降水，不斷循環。'],
+ ['恐龍大約在多久以前滅絕？',['約 6500 萬年前','約 1 萬年前','約 100 年前','約 5 億年前'],'白堊紀末期的大滅絕。'],
+ ['人體的體溫正常大約是幾度？',['攝氏 36 到 37 度','攝氏 30 度','攝氏 40 度','攝氏 20 度'],'超過 38 度算發燒。'],
+],
 };
+
+/* 各科補充題庫 */
+const MORE={
+zh34:[
+ ['哪一個是老虎？',[P('🐯','老虎'),P('🦁','獅子'),P('🐻','熊')]],
+ ['哪一個是猴子？',[P('🐵','猴子'),P('🐷','豬'),P('🐮','牛')]],
+ ['哪一個是西瓜？',[P('🍉','西瓜'),P('🍇','葡萄'),P('🍓','草莓')]],
+ ['哪一個是草莓？',[P('🍓','草莓'),P('🍎','蘋果'),P('🍊','橘子')]],
+ ['哪一個是船？',[P('🚢','船'),P('🚗','車子'),P('🚲','腳踏車')]],
+ ['哪一個是腳踏車？',[P('🚲','腳踏車'),P('🚌','公車'),P('✈️','飛機')]],
+ ['「嘰嘰喳喳」是誰在叫？',[P('🐦','小鳥'),P('🐘','大象'),P('🐟','魚')],'小鳥會嘰嘰喳喳叫。'],
+ ['「哼哼」是誰在叫？',[P('🐷','豬'),P('🐱','貓'),P('🐔','雞')],'豬會哼哼叫。'],
+ ['哪一個是用來睡覺的？',[P('🛏️','床'),P('🪑','椅子'),P('🚗','車子')]],
+ ['哪一個是用來吃飯的？',[P('🥄','湯匙'),P('✏️','鉛筆'),P('🧦','襪子')]],
+ ['哪一個是用來寫字的？',[P('✏️','鉛筆'),P('🥄','湯匙'),P('👟','鞋子')]],
+ ['哪一個是生氣的臉？',[P('😠','生氣'),P('😊','開心'),P('😴','想睡')]],
+ ['「開」的相反是什麼？',['關','大','高'],'開和關是相反的。'],
+ ['「前」的相反是什麼？',['後','左','上'],'前和後是相反的。'],
+ ['「長」的相反是什麼？',['短','大','快'],'長和短是相反的。'],
+ ['哪一個是圓圓的？',[P('⚽','球'),P('📏','尺'),P('📕','書')]],
+],
+zh56:[
+ ['哪一個字是「木」？',['木','禾','本'],'「木」就是樹木。','🌳'],
+ ['哪一個字是「手」？',['手','毛','牛'],'','🖐️'],
+ ['哪一個字是「小」？',['小','少','水'],'','🐭'],
+ ['哪一個字是「上」？',['上','下','土'],''],
+ ['哪一個字是「中」？',['中','申','由'],''],
+ ['「魚」的第一個注音是？',[{t:'ㄩ',say:'淤'},{t:'ㄨ',say:'烏'},{t:'ㄧ',say:'衣'}],'魚，ㄩˊ。','🐟'],
+ ['「花」的第一個注音是？',[{t:'ㄏ',say:'喝'},{t:'ㄎ',say:'科'},{t:'ㄐ',say:'雞'}],'花，ㄏㄨㄚ。','🌸'],
+ ['「狗」的第一個注音是？',[{t:'ㄍ',say:'哥'},{t:'ㄎ',say:'科'},{t:'ㄏ',say:'喝'}],'狗，ㄍㄡˇ。','🐶'],
+ ['一___房子',['間','隻','條'],'房子用「間」來數。','🏠'],
+ ['一___褲子',['條','本','台'],'褲子、魚、路都用「條」。','👖'],
+ ['一___花',['朵','隻','台'],'花用「朵」來數。','🌸'],
+ ['我___書。',['看','喝','跑'],'書是用看的。','📖'],
+ ['我___歌。',['唱','吃','走'],'歌是用唱的。','🎤'],
+ ['太陽好___。',['亮','冷','矮'],'太陽又亮又熱。','☀️'],
+ ['這是什麼顏色？',['黃色','紫色','黑色'],'','🟡'],
+ ['這是什麼顏色？',['紫色','綠色','橘色'],'','🟣'],
+ ['「新」的相反是什麼？',['舊','好','大'],'新和舊是相反的。'],
+ ['「胖」的相反是什麼？',['瘦','高','圓'],'胖和瘦是相反的。'],
+ ['做錯事情要說什麼？',['對不起','謝謝','早安'],'做錯事要說對不起。'],
+ ['早上見到老師要說什麼？',['老師早','晚安','再見'],''],
+],
+geo34:[
+ ['哪一個是警察？',[P('👮','警察'),P('👨‍🍳','廚師'),P('👩‍🏫','老師')],'警察保護大家的安全。'],
+ ['哪一個是老師？',[P('👩‍🏫','老師'),P('👮','警察'),P('👨‍🌾','農夫')]],
+ ['哪一個是救護車？',[P('🚑','救護車'),P('🚒','消防車'),P('🚕','計程車')],'救護車會送生病的人去醫院。'],
+ ['哪一個是公車？',[P('🚌','公車'),P('🚲','腳踏車'),P('🚢','船')]],
+ ['大象住在哪裡？',[P('🌳','森林'),P('🌊','海裡'),P('❄️','雪地')],'大象住在森林和草原。'],
+ ['北極熊住在哪裡？',[P('❄️','很冷的地方'),P('🏜️','沙漠'),P('🌊','熱帶海邊')],'北極熊住在北極。'],
+ ['駱駝住在哪裡？',[P('🏜️','沙漠'),P('❄️','雪地'),P('🌊','海裡')],'駱駝住在沙漠。'],
+ ['聖誕節會有什麼？',[P('🎄','聖誕樹'),P('🧧','紅包'),P('🫔','粽子')]],
+ ['生日的時候會吃什麼？',[P('🎂','蛋糕'),P('🫔','粽子'),P('🥮','月餅')]],
+ ['刮大風下大雨的時候是？',[P('🌀','颱風'),P('☀️','大晴天'),P('❄️','下雪')],'台灣夏天常常有颱風。'],
+ ['我們住的地方叫什麼？',['台灣','美國','日本'],'我們住在台灣。','🇹🇼'],
+ ['哪一個是山？',[P('⛰️','山'),P('🌊','海'),P('🏠','房子')]],
+],
+geo56:[
+ ['台中在台灣的哪一邊？',['中間','北邊','東邊'],'台中在台灣的中部。'],
+ ['花蓮在台灣的哪一邊？',['東邊','西邊','北邊'],'花蓮在台灣的東部，靠太平洋。'],
+ ['台南以前叫做什麼？',['府城','京城','港城'],'台南是台灣最早發展的城市。'],
+ ['阿里山看得到什麼有名的景色？',['日出','極光','沙漠'],'阿里山日出很有名。','🌅'],
+ ['日月潭是什麼？',['湖','海','沙漠'],'日月潭是台灣最大的天然湖泊。'],
+ ['台灣的夏天常常有什麼？',['颱風','下雪','沙塵暴'],'颱風大多在夏天和秋天來。','🌀'],
+ ['台灣人最常說的語言是？',['中文','英文','法文'],'台灣也有台語、客語和原住民語。'],
+ ['哪一個是台灣的原住民族？',['阿美族','蒙古族','藏族'],'台灣有 16 個原住民族。'],
+ ['北極住著什麼動物？',['北極熊','企鵝','袋鼠'],'企鵝住在南極，北極熊住在北極。','🐻‍❄️'],
+ ['長頸鹿和獅子住在哪一洲最多？',['非洲','歐洲','南極洲'],'非洲的草原有很多野生動物。','🦒'],
+ ['地球上最多的是什麼？',['海水','沙子','樹木'],'地球有七成是海洋。','🌊'],
+ ['一個星期有幾天？',['七天','五天','十天'],'星期一到星期日，共七天。'],
+ ['一年有幾個月？',['12 個月','10 個月','7 個月'],''],
+ ['過年的時候會做什麼？',['放鞭炮、拜年','吃粽子','賞月'],'','🧨'],
+],
+zh1:[
+ ['「他跑的很快。」哪個字用錯了？',['的','跑','很'],'動詞後面說明程度要用「得」。'],
+ ['「我今天很高心。」哪個字寫錯了？',['心','高','天'],'應該是「高興」。'],
+ ['一___門',['扇','本','條','隻'],'門、窗戶用「扇」來數。','🚪'],
+ ['一___牛',['頭','隻','匹','條'],'牛、象用「頭」來數。','🐮'],
+ ['對牛彈___',['琴','歌','鼓','笛'],'對牛彈琴：對不懂的人講道理。'],
+ ['井底之___',['蛙','魚','蟲','鳥'],'井底之蛙：見識淺薄。'],
+ ['狐假___威',['虎','狼','獅','龍'],'狐假虎威：藉別人的勢力欺負人。'],
+ ['亡羊補___',['牢','門','洞','窗'],'亡羊補牢：出事後趕快補救。'],
+ ['「江」的部首是什麼？',['水','工','土','日'],'「江」是三點水，部首是「水」。'],
+ ['「想」的部首是什麼？',['心','木','目','相'],'「想」下面是心。'],
+ ['「安靜」的相反詞是？',['吵鬧','平靜','溫和','乖巧'],''],
+ ['「勤勞」的相反詞是？',['懶惰','努力','認真','辛苦'],''],
+ ['「雖然天氣很冷，___他還是去運動。」',['但是','所以','因為','如果'],'「雖然……但是……」是一組。'],
+ ['「小華認真___寫功課。」',['地','的','得','了'],'副詞修飾動詞用「地」。'],
+ ['「哇！好漂亮的花___」要用哪個標點？',['！','？','。','，'],'感嘆句用驚嘆號。'],
+ ['「一年之計在於春」是什麼意思？',['一年的計畫要在春天做好','春天很短','一年只有春天','春天要休息'],'比喻凡事要及早計畫。'],
+ ['「小明和小華一起去圖書館。」誰去了圖書館？',['小明和小華','只有小明','只有小華','圖書館員'],''],
+ ['「馬馬虎虎」的意思是？',['做事不認真','馬跑得快','老虎很兇','很努力'],''],
+],
+zh2:[
+ ['「守株待兔」和下列哪個成語意思最接近？',['刻舟求劍','勤能補拙','聞雞起舞','鍥而不捨'],'兩者都比喻不知變通。'],
+ ['「青出於藍」比喻什麼？',['學生勝過老師','顏色很漂亮','天空很藍','年輕人很衝動'],'出自荀子《勸學》。'],
+ ['「班門弄斧」比喻什麼？',['在行家面前賣弄','班上很吵','用斧頭砍樹','搬東西很費力'],'魯班是有名的木匠。'],
+ ['「風聲鶴唳」形容什麼？',['非常驚慌，聽到風聲都害怕','風景很美','鶴叫得很好聽','風很大'],'出自淝水之戰。'],
+ ['「一諾千金」形容什麼？',['守信用','很有錢','答應很多事','說話很大聲'],''],
+ ['「山不轉路轉。」用了什麼修辭？',['對比','擬人','誇飾','排比'],'把山和路對照，說明要變通。'],
+ ['「他的眼淚像斷了線的珍珠。」用了什麼修辭？',['譬喻','擬人','設問','反問'],'用「像」比喻，是譬喻。'],
+ ['「難道你不知道嗎？」用了什麼修辭？',['反問','排比','譬喻','誇飾'],'明知故問，答案在問句中，是反問。'],
+ ['文言文「妻子」通常指什麼？',['妻子和兒女','太太','女兒','家人'],'古文的「妻子」是妻和子。'],
+ ['文言文「或」常常是什麼意思？',['有人','或者','疑惑','國家'],'例如「或曰」就是「有人說」。'],
+ ['「不脛而走」和「不翼而飛」差別在哪？',['前者指消息傳得快，後者指東西不見了','兩者一樣','前者指東西不見','兩者都指跑得快'],''],
+ ['「美輪美奐」是形容什麼？',['房屋高大華美','風景漂亮','人長得好看','衣服很美'],'常被誤用來形容人或風景。'],
+ ['「空穴來風」原本的意思是？',['事情有原因，不是完全沒根據','完全沒有根據的謠言','洞裡有風','風很大'],'原意是有根據，現代常被反過來用。'],
+ ['「差強人意」的意思是？',['大致還能令人滿意','很不滿意','非常滿意','完全不行'],'常被誤用成「不滿意」。'],
+ ['「炙手可熱」形容什麼？',['權勢很大，氣焰逼人','東西很燙','天氣很熱','食物很好吃'],''],
+ ['下列哪一句沒有錯字？',['他做事一絲不苟','他做事一絲不拘','他做事一絲不勾','他做事一絲不夠'],'是「苟」，隨便的意思。'],
+ ['「他是個熱心的人」中，「熱心的」是什麼詞？',['形容詞','名詞','動詞','副詞'],''],
+ ['「非常快樂」中的「非常」是什麼詞？',['副詞','形容詞','名詞','動詞'],'副詞修飾形容詞。'],
+],
+geo1:[
+ ['台灣本島面積最大的縣市是？',['花蓮縣','台北市','南投縣','高雄市'],'花蓮縣面積約 4629 平方公里。'],
+ ['墾丁在哪個縣？',['屏東縣','台東縣','高雄市','嘉義縣'],'墾丁國家公園在屏東。'],
+ ['野柳女王頭在哪個縣市？',['新北市','基隆市','宜蘭縣','桃園市'],'野柳地質公園在新北市萬里。'],
+ ['台灣最北的縣市是？',['基隆市','台北市','新北市','桃園市'],'不過台灣本島最北端在新北市石門。'],
+ ['台灣的高鐵從哪裡到哪裡？',['南港到左營','台北到花蓮','基隆到墾丁','桃園到台中'],''],
+ ['七大洲中面積最大的是？',['亞洲','非洲','北美洲','南極洲'],'亞洲約佔陸地面積的三成。'],
+ ['埃及在哪一洲？',['非洲','亞洲','歐洲','南美洲'],''],
+ ['巴西在哪一洲？',['南美洲','北美洲','非洲','歐洲'],''],
+ ['「明鄭時期」的統治者是誰的後代？',['鄭成功','鄭和','鄭板橋','鄭愁予'],'鄭成功、鄭經、鄭克塽三代。'],
+ ['中秋節的由來和哪個傳說有關？',['嫦娥奔月','屈原投江','牛郎織女','女媧補天'],''],
+ ['七夕情人節和哪個傳說有關？',['牛郎織女','嫦娥奔月','愚公移山','精衛填海'],''],
+ ['孔子是哪一個時代的人？',['春秋時代','唐朝','清朝','明朝'],'孔子是春秋時代的教育家。'],
+ ['我們現在用的國曆，一年有幾天？',['365 天','360 天','354 天','400 天'],'閏年是 366 天。'],
+ ['台灣的雨季梅雨大約在幾月？',['五、六月','一、二月','九、十月','十一、十二月'],''],
+ ['澎湖有名的地形景觀是？',['玄武岩柱','沙漠','冰河','火山口湖'],'澎湖的柱狀玄武岩很有名。'],
+ ['蘭嶼上的原住民族是？',['達悟族','阿美族','排灣族','布農族'],'達悟族（雅美族）以拼板舟聞名。'],
+],
+geo2:[
+ ['台灣在哪一年結束日本統治？',['1945 年','1895 年','1911 年','1949 年'],'第二次世界大戰結束後。'],
+ ['西元 1949 年台灣發生什麼大事？',['中華民國政府遷台','日本統治開始','鄭成功來台','清朝割讓台灣'],''],
+ ['清朝在哪一年正式將台灣設省？',['1885 年','1683 年','1895 年','1945 年'],'首任巡撫是劉銘傳。'],
+ ['劉銘傳在台灣推動了什麼建設？',['鐵路和電報','高速公路','機場','捷運'],'他建了基隆到新竹的鐵路。'],
+ ['八國聯軍發生在哪一個朝代？',['清朝','明朝','唐朝','宋朝'],'1900 年，清朝末年。'],
+ ['第二次世界大戰結束於哪一年？',['1945 年','1918 年','1939 年','1950 年'],''],
+ ['義大利的首都是？',['羅馬','米蘭','威尼斯','佛羅倫斯'],''],
+ ['英國的首都是？',['倫敦','曼徹斯特','愛丁堡','利物浦'],''],
+ ['韓國的首都是？',['首爾','釜山','平壤','仁川'],'平壤是北韓的首都。'],
+ ['泰國的首都是？',['曼谷','清邁','普吉','芭達雅'],''],
+ ['世界上面積最大的國家是？',['俄羅斯','加拿大','中國','美國'],'俄羅斯橫跨歐亞兩洲。'],
+ ['世界上最大的沙漠是？',['撒哈拉沙漠','戈壁沙漠','塔克拉瑪干沙漠','阿拉伯沙漠'],'若含極地，南極才是最大的沙漠。'],
+ ['世界上最深的海溝是？',['馬里亞納海溝','日本海溝','秘魯海溝','爪哇海溝'],'深約 11000 公尺。'],
+ ['本初子午線通過哪一個城市？',['倫敦','巴黎','紐約','東京'],'通過倫敦格林威治天文台。'],
+ ['地球被分成幾個時區？',['24 個','12 個','36 個','7 個'],'每 15 度經度為一個時區。'],
+ ['台灣的時間比英國快幾小時？',['8 小時','12 小時','5 小時','1 小時'],'台灣是 UTC+8。'],
+ ['「絲路」連接的是哪兩個地方？',['中國和西方（歐洲）','台灣和日本','非洲和美洲','印度和澳洲'],'古代重要的貿易通道。'],
+ ['台灣的板塊位置在哪兩個板塊交界？',['歐亞板塊和菲律賓海板塊','美洲板塊和非洲板塊','太平洋板塊和印度板塊','南極板塊和澳洲板塊'],'所以台灣多地震和山脈。'],
+],
+};
+
+/* 把補充題併進各科題庫 */
+const BANK={
+  zh:[[...KID.zh34,...MORE.zh34],[...KID.zh56,...MORE.zh56],[...OLD.zh[1],...MORE.zh1],[...OLD.zh[2],...MORE.zh2]],
+  geo:[[...KID.geo34,...MORE.geo34],[...KID.geo56,...MORE.geo56],[...OLD.geo[1],...MORE.geo1],[...OLD.geo[2],...MORE.geo2]],
+  sci:[SCI.t34,SCI.t56,SCI.t1,SCI.t2],
+};
+const BANK_TOTAL=Object.values(BANK).reduce((a,arr)=>a+arr.reduce((b,x)=>b+x.length,0),0);
 
 /* ================= 數學出題器 ================= */
 const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
@@ -634,8 +949,9 @@ function buildRound(subj,tier){
   const tag=(q,id)=>{q.subj=id;return q};
   if(subj==='math'){while(qs.length<n)qs.push(tag(MATH[tier](),'math'))}
   else if(subj==='mix'){
-    const zh=fromBank('zh',tier),geo=fromBank('geo',tier);
-    for(let i=0;i<n;i++){const k=i%3;qs.push(k===0?tag(MATH[tier](),'math'):k===1?tag(zh.pop(),'zh'):tag(geo.pop(),'geo'))}
+    const pool={zh:fromBank('zh',tier),sci:fromBank('sci',tier),geo:fromBank('geo',tier)};
+    const order=['math','zh','sci','geo'];
+    for(let i=0;i<n;i++){const k=order[i%4];qs.push(k==='math'?tag(MATH[tier](),'math'):tag(pool[k].pop(),k))}
   }else{const b=fromBank(subj,tier);while(qs.length<n)qs.push(tag(b[qs.length%b.length],subj))}
   return qs.map(q=>{const opts=q.opts.map(norm);const idx=shuffle(opts.map((_,i)=>i));return{...q,opts:idx.map(i=>opts[i]),ans:idx.indexOf(q.ans)}});
 }
@@ -728,9 +1044,18 @@ const miniSVG=b=>`<svg viewBox="10 60 220 130" aria-hidden="true">${vehicleSVG(b
 
 /* ================= 存檔 ================= */
 const KEY='mecha-academy-v2';
-let save={rounds:0,completed:0,stars:0,best:{},subj:{},tier:0,sound:true,read:true};
+let save={rounds:0,completed:0,stars:0,best:{},subj:{},collection:{},tier:0,sound:true,read:true};
 try{const s=JSON.parse(localStorage.getItem(KEY));if(s)save={...save,...s}}catch(e){}
 const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(save))}catch(e){}};
+const today=()=>{const d=new Date();return d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate()};
+/* 收藏庫：每台解鎖的機甲記錄拿到的日期、出過幾次任務、最好成績、累積能量 */
+function ensureCollection(){
+  save.collection=save.collection||{};let changed=false;
+  BOTS.forEach((b,i)=>{if(i<=save.completed&&!save.collection[b.id]){
+    save.collection[b.id]={at:today(),plays:0,stars:save.best[b.id]||0,energy:0};changed=true}});
+  if(changed)persist();
+}
+ensureCollection();
 
 /* ================= 聲音 & 朗讀 ================= */
 let ac;
@@ -768,6 +1093,7 @@ const isKid=()=>TIERS[sel.tier].kid;
 function header(){
   return `<header class="top"><div class="logo"><span class="badge">MA</span>變形機甲學園</div>
   <div class="tools">
+    <button class="iconbtn trophy" data-act="collection" title="收藏庫" aria-label="收藏庫">🏆<span class="cnt">${save.completed+1>BOTS.length?BOTS.length:save.completed+1}</span></button>
     <button class="iconbtn" data-act="read" title="朗讀題目" aria-label="朗讀題目">${save.read?'🔊':'🔇'}</button>
     <button class="iconbtn" data-act="sound" title="音效" aria-label="音效">${save.sound?'🎵':'🚫'}</button>
     <button class="iconbtn" data-act="home" title="回機庫" aria-label="回機庫">🏠</button>
@@ -793,6 +1119,7 @@ function renderStart(){
   </section>
   <section class="pick"><h2><span class="step">2</span>今天想學什麼？</h2>
     <div class="subs">${SUBJECTS.map(s=>`<button class="sub ${sel.subj===s.id?'on':''}" data-subj="${s.id}"><span class="ico">${s.icon}</span>${s.name}<small>${s.kid}</small></button>`).join('')}</div>
+    <button class="sub wide ${sel.subj==='mix'?'on':''}" data-subj="mix"><span class="ico">${MIX.icon}</span>${MIX.name}<small>${MIX.kid}</small></button>
   </section>
   <section class="pick"><h2><span class="step">3</span>選一台機甲</h2>
     <div class="bots">${BOTS.map((b,i)=>{const lk=!unlocked(i);const st=save.best[b.id]||0;return `<button class="botcard ${sel.bot===b.id?'on':''} ${lk?'locked':''}" data-bot="${b.id}" ${lk?'disabled':''} title="${b.blurb}">
@@ -814,8 +1141,69 @@ function renderStart(){
       <div class="stat"><b>${subjRate('math')}</b><span>數學第一次就答對</span></div>
       <div class="stat"><b>${subjRate('zh')} / ${subjRate('geo')}</b><span>國語 / 地理歷史</span></div>
     </div>
-    <p style="margin-top:10px;font-size:.82rem">朗讀使用瀏覽器內建的中文語音；iPhone 或 iPad 上第一次要先按一下題目旁的喇叭。進度只存在這個瀏覽器裡。<button data-act="reset" style="text-decoration:underline;color:var(--bad)">清除全部進度</button></p>
+    <p style="margin-top:10px;font-size:.82rem"><b>題庫規模：</b>國語、自然常識、地理歷史共 <b>${BANK_TOTAL}</b> 題（依年齡分四級）。數學是程式即時出題，數字每次都不同，等於出不完。</p>
+    <p style="margin-top:6px;font-size:.82rem">朗讀使用瀏覽器內建的中文語音；iPhone 或 iPad 上第一次要先按一下題目旁的喇叭。進度只存在這個瀏覽器裡。<button data-act="reset" style="text-decoration:underline;color:var(--bad)">清除全部進度</button></p>
   </div></details>`;
+}
+
+/* ================= 收藏庫：每台機甲都可以自由變形 ================= */
+let toyTimers=[];
+function clearToys(){toyTimers.forEach(clearTimeout);toyTimers=[]}
+function toyTransform(id){
+  const el=document.getElementById('toy-'+id);if(!el)return;
+  clearToys();
+  const bot=BOTS.find(b=>b.id===id);
+  const label=document.getElementById('mode-'+id);
+  const btn=document.getElementById('btn-'+id);
+  const toRobot=!el.classList.contains('s5');
+  if(toRobot){
+    el.className='bot';
+    for(let k=1;k<=5;k++)toyTimers.push(setTimeout(()=>{
+      el.classList.add('s'+k);
+      if(label)label.textContent=k<5?`變形中 ${k} / 5`:'機甲模式';
+      if(k<5)SFX.step();else{SFX.transform();sparkle(el);if(btn)btn.textContent='變回車輛';speak(bot.name+'變形完成')}
+    },(k-1)*280));
+  }else{
+    for(let k=5;k>=1;k--)toyTimers.push(setTimeout(()=>{
+      el.classList.remove('s'+k);
+      if(label)label.textContent=k>1?`收合中 ${k-1} / 5`:'車輛模式';
+      if(k===1){SFX.step();if(btn)btn.textContent='變形！'}
+    },(5-k)*220));
+  }
+}
+function renderCollection(){
+  ensureCollection();clearToys();
+  const got=BOTS.filter((b,i)=>unlocked(i));
+  const totalPlays=Object.values(save.collection).reduce((a,c)=>a+(c.plays||0),0);
+  app.innerHTML=header()+`
+  <div class="collhead">
+    <div>
+      <h1>機甲收藏庫</h1>
+      <p class="lede">這些是你贏來的機甲。點一下任何一台，它就會在你面前變形。</p>
+    </div>
+    <div class="collstats">
+      <div class="stat"><b>${got.length} / ${BOTS.length}</b><span>已收藏</span></div>
+      <div class="stat"><b>${save.stars}</b><span>累積星星</span></div>
+      <div class="stat"><b>${totalPlays}</b><span>出擊次數</span></div>
+    </div>
+  </div>
+  <div class="shelf">${BOTS.map((b,i)=>{
+    const lk=!unlocked(i);const c=save.collection[b.id]||{};
+    if(lk)return `<div class="trophy-card locked"><div class="silhouette">${miniSVG(b)}</div>
+      <div class="tinfo"><b>？？？</b><small>再完成 ${i-save.completed} 次任務就能得到</small></div>
+      <div class="tlock">🔒</div></div>`;
+    return `<div class="trophy-card">
+      <div class="tstage"><div class="bot" id="toy-${b.id}">${botSVG(b)}</div></div>
+      <div class="tinfo">
+        <div class="tname"><b>${b.name}</b><span class="tstars">${'⭐'.repeat(c.stars||0)}</span></div>
+        <small>${b.tag}・${b.blurb}</small>
+        <div class="tmeta"><span>🗓 ${c.at||'—'} 得到</span><span>🚀 出擊 ${c.plays||0} 次</span><span>⚡ 能量 ${c.energy||0}</span></div>
+      </div>
+      <div class="tacts">
+        <button class="bigbtn ghost small" id="btn-${b.id}" data-toy="${b.id}">變形！</button>
+        <span class="tmode" id="mode-${b.id}">車輛模式</span>
+      </div></div>`}).join('')}</div>
+  <div class="go"><button class="bigbtn" data-act="home">回機庫出擊</button></div>`;
 }
 
 function startRound(){
@@ -833,7 +1221,7 @@ function optHTML(o,k){
 }
 function renderPlay(){
   const q=g.qs[g.i];const t=TIERS[g.tier];const s=stageOf();const n=ROUNDN();
-  const subjName=SUBJECTS.find(x=>x.id===q.subj).name;
+  const subjName=ALLSUBJ.find(x=>x.id===q.subj).name;
   const pics=q.opts[0].pic;
   app.innerHTML=header()+`<div class="stage ${t.kid?'kid':''} t${g.tier}">
     <div class="hangar">
@@ -899,7 +1287,11 @@ function finish(){
   const done=kid||g.ok>=5;let unlockedNew=null;
   save.rounds++;
   if(done){save.completed++;if(save.completed<BOTS.length)unlockedNew=BOTS[save.completed];}
-  save.stars+=stars;save.best[g.bot.id]=Math.max(save.best[g.bot.id]||0,stars);persist();
+  save.stars+=stars;save.best[g.bot.id]=Math.max(save.best[g.bot.id]||0,stars);
+  const c=save.collection[g.bot.id]=save.collection[g.bot.id]||{at:today(),plays:0,stars:0,energy:0};
+  c.plays++;c.stars=Math.max(c.stars,stars);c.energy+=g.energy;
+  if(unlockedNew)save.collection[unlockedNew.id]={at:today(),plays:0,stars:0,energy:0};
+  persist();ensureCollection();
   if(stars>=2)SFX.fanfare();else if(done)SFX.transform();
   const wrong=g.log.filter(l=>!l.ok);
   const title=stars===3?'完美出擊！':stars===2?'表現很棒！':stars===1?'任務完成！':'再試一次，你可以的！';
@@ -916,7 +1308,7 @@ function finish(){
       <div class="starrow" aria-label="${stars} 顆星">${starStr(stars)}</div>
       <div class="nums"><div><b>${g.ok}</b><span>${kid?'一次就答對':'答對題數'}</span></div><div><b>${n-g.ok}</b><span>${kid?'再試一次才對':'答錯題數'}</span></div><div><b>${Math.round(100*g.ok/n)}%</b><span>答對率</span></div></div>
       ${unlockedNew?`<div class="unlock">🔓 解鎖新機甲：${unlockedNew.name}（${unlockedNew.tag}）！回機庫看看。</div>`:''}
-      <div class="acts"><button class="bigbtn" data-act="again">再玩一次</button><button class="bigbtn ghost" data-act="home">回機庫</button></div>
+      <div class="acts"><button class="bigbtn" data-act="again">再玩一次</button><button class="bigbtn ghost" data-act="collection">看收藏庫 🏆</button><button class="bigbtn ghost" data-act="home">回機庫</button></div>
     </div></div>
     ${wrong.length?`<div class="review"><h3>${kid?'這次需要再試一次的題目':'這次答錯的題目'}</h3><ol>${wrong.map(w=>`<li>${esc(w.q).replace(/___/g,'＿＿')} → <b>${esc(w.ans)}</b>${w.why?`　${esc(w.why)}`:''}</li>`).join('')}</ol></div>`:''}`;
   if(done)setTimeout(()=>sparkle(document.getElementById('bot')),400);
@@ -924,19 +1316,24 @@ function finish(){
 }
 
 app.addEventListener('click',e=>{
+  const card=e.target.closest('.trophy-card');
+  if(card&&!e.target.closest('button')&&!card.classList.contains('locked')){
+    const id=card.querySelector('.bot').id.replace('toy-','');toyTransform(id);return}
   const b=e.target.closest('button');if(!b)return;
   if(b.dataset.tier!==undefined){sel.tier=+b.dataset.tier;renderStart();speak(TIERS[sel.tier].name);return}
   if(b.dataset.subj){sel.subj=b.dataset.subj;renderStart();const s=SUBJECTS.find(x=>x.id===sel.subj);if(isKid())speak(s.name+'，'+s.kid);return}
   if(b.dataset.bot){sel.bot=b.dataset.bot;renderStart();if(isKid())speak(BOTS.find(x=>x.id===sel.bot).name);return}
   if(b.dataset.opt!==undefined){answer(+b.dataset.opt);return}
+  if(b.dataset.toy){toyTransform(b.dataset.toy);return}
   const a=b.dataset.act;
   if(a==='start'||a==='again'){SFX.step();startRound()}
   else if(a==='next')next();
-  else if(a==='home'){if(g&&g.timer)clearTimeout(g.timer);g=null;try{speechSynthesis.cancel()}catch(x){}renderStart()}
+  else if(a==='home'){if(g&&g.timer)clearTimeout(g.timer);g=null;clearToys();try{speechSynthesis.cancel()}catch(x){}renderStart()}
+  else if(a==='collection'){if(g&&g.timer)clearTimeout(g.timer);g=null;try{speechSynthesis.cancel()}catch(x){}renderCollection()}
   else if(a==='speak'){readQuestion(g.qs[g.i],true)}
   else if(a==='read'){save.read=!save.read;persist();b.textContent=save.read?'🔊':'🔇';if(!save.read)try{speechSynthesis.cancel()}catch(x){}}
   else if(a==='sound'){save.sound=!save.sound;persist();b.textContent=save.sound?'🎵':'🚫';if(save.sound)SFX.step()}
-  else if(a==='reset'){if(confirm('確定要清除全部進度嗎？')){save={rounds:0,completed:0,stars:0,best:{},subj:{},tier:0,sound:save.sound,read:save.read};persist();renderStart()}}
+  else if(a==='reset'){if(confirm('確定要清除全部進度嗎？')){save={rounds:0,completed:0,stars:0,best:{},subj:{},collection:{},tier:0,sound:save.sound,read:save.read};persist();ensureCollection();renderStart()}}
 });
 document.addEventListener('keydown',e=>{
   if(!g||g.answered)return;const k='1234abcdABCD'.indexOf(e.key);if(k<0)return;const idx=k%4;if(idx<g.qs[g.i].opts.length)answer(idx);
