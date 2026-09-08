@@ -73,7 +73,7 @@ section.pick{background:var(--paper);border-radius:var(--r);padding:16px 18px;ma
 .sub .ico{font-size:1.8rem;line-height:1}
 .sub:hover{transform:translateY(-2px)}
 .sub.on{border-color:var(--hazard);background:#FBF1DC}
-.bots{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.bots{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
 .botcard{border:3px solid var(--line);border-radius:14px;padding:10px 8px 10px;background:var(--paper2);display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;transition:transform .15s,border-color .15s}
 .botcard:hover{transform:translateY(-2px)}
 .botcard.on{border-color:var(--hazard);background:#FBF1DC}
@@ -390,6 +390,21 @@ section.pick{background:var(--paper);border-radius:var(--r);padding:16px 18px;ma
   .collstats .stat{min-width:70px}
 }
 
+/* ---------- 20 台機甲的名冊 ---------- */
+.roster{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px}
+.rost{background:var(--paper2);border-radius:10px;padding:7px 10px;opacity:.5}
+.rost.got{opacity:1;background:var(--butterL)}
+.rn{font-family:var(--fd);font-size:.95rem;display:block}
+.rost small{font-size:.74rem;color:var(--ink2)}
+.bots{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
+
+/* 機庫的聚光燈：讓深色塗裝的機甲也浮得出來 */
+.hangar .bot::before,.tstage .bot::before{content:"";position:absolute;left:50%;top:52%;width:118%;aspect-ratio:1/.86;
+  transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;z-index:-2;
+  background:radial-gradient(ellipse at center,rgba(255,247,232,.20) 0%,rgba(255,247,232,.09) 42%,rgba(255,247,232,0) 72%)}
+.hangar .bot,.tstage .bot{isolation:isolate}
+.hangar .bot svg,.tstage .bot svg{filter:drop-shadow(0 0 1.5px rgba(255,250,240,.55)) drop-shadow(0 6px 10px rgba(0,0,0,.45))}
+
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition-duration:.01ms!important}
 }
@@ -425,12 +440,42 @@ section.pick{background:var(--paper);border-radius:var(--r);padding:16px 18px;ma
 <script>
 /* ================= 資料 ================= */
 const BOTS=[
-  {id:'flash',   name:'閃電', type:'car',   c1:'#F0BF52', c2:'#33302D', c3:'#FFFDF8', tag:'黃色跑車', star:0, blurb:'跑得最快的偵察兵，最喜歡算數。'},
-  {id:'ironpeak',name:'鐵岳', type:'truck', c1:'#D2503C', c2:'#4A6FC4', c3:'#CFC7BD', tag:'紅藍大卡車', star:5, blurb:'隊長，最有力氣，記得每一條路。'},
-  {id:'gale',    name:'疾風', type:'jet',   c1:'#DFDAD2', c2:'#D2503C', c3:'#33302D', tag:'戰鬥機', star:15, blurb:'飛得最高，看得最遠。'},
-  {id:'rotor',   name:'旋翼', type:'heli',  c1:'#6E9A55', c2:'#33302D', c3:'#CBDDBA', tag:'直升機', star:32, blurb:'救援專家，哪裡需要就去哪裡。'},
-  {id:'bulwark', name:'巨盾', type:'tank',  c1:'#B5A47C', c2:'#5C5138', c3:'#E6DCC6', tag:'坦克', star:55, blurb:'最穩的守護者，什麼都擋得住。'},
+  {id:'flash',   name:'閃電', type:'car',      c1:'#F0BF52',c2:'#33302D',c3:'#FFFDF8', tag:'黃色跑車',  star:0,   blurb:'跑得最快的偵察兵，最喜歡算數。'},
+  {id:'ironpeak',name:'鐵岳', type:'truck',    c1:'#D2503C',c2:'#4A6FC4',c3:'#CFC7BD', tag:'紅藍大卡車',star:3,   blurb:'隊長，最有力氣，記得每一條路。'},
+  {id:'siren',   name:'警笛', type:'police',   c1:'#EDE9E1',c2:'#3B4E6B',c3:'#9CC6C0', tag:'警車',     star:7,   blurb:'守護街道的巡邏員，眼睛最尖。'},
+  {id:'blaze',   name:'烈焰', type:'fire',     c1:'#C0503C',c2:'#8E3A2B',c3:'#F2D9D4', tag:'消防車',   star:12,  blurb:'雲梯一伸就能救人，最勇敢。'},
+  {id:'gale',    name:'疾風', type:'jet',      c1:'#DFDAD2',c2:'#D2503C',c3:'#33302D', tag:'戰鬥機',   star:18,  blurb:'飛得最高，看得最遠。'},
+  {id:'medic',   name:'白翼', type:'ambulance',c1:'#F5F1EA',c2:'#C0705C',c3:'#DDE8E4', tag:'救護車',   star:25,  blurb:'跑得又快又穩，照顧每一個人。'},
+  {id:'rotor',   name:'旋翼', type:'heli',     c1:'#6E9A55',c2:'#33302D',c3:'#CBDDBA', tag:'直升機',   star:33,  blurb:'救援專家，哪裡需要就去哪裡。'},
+  {id:'campus',  name:'黃鈴', type:'bus',      c1:'#E4B75C',c2:'#7A6647',c3:'#FFF3D6', tag:'校車',     star:42,  blurb:'載大家上學，記得每個人的名字。'},
+  {id:'digger',  name:'鐵鏟', type:'excavator',c1:'#D8A63C',c2:'#5C5138',c3:'#8A7F78', tag:'挖土機',   star:52,  blurb:'一鏟就是一大口，力氣驚人。'},
+  {id:'bulwark', name:'巨盾', type:'tank',     c1:'#B5A47C',c2:'#5C5138',c3:'#E6DCC6', tag:'坦克',     star:63,  blurb:'最穩的守護者，什麼都擋得住。'},
+  {id:'crane',   name:'高塔', type:'crane',    c1:'#E0A64B',c2:'#6B6259',c3:'#EDE2C9', tag:'吊車',     star:75,  blurb:'手臂伸得最長，什麼都吊得起來。'},
+  {id:'rail',    name:'汽笛', type:'train',    c1:'#5E7186',c2:'#2E3A48',c3:'#DCE4EC', tag:'蒸汽火車', star:90,  blurb:'沿著鐵軌一路向前，從不迷路。'},
+  {id:'dune',    name:'沙塵', type:'buggy',    c1:'#C9A96B',c2:'#7A6647',c3:'#EDE2C9', tag:'沙灘越野車',star:106,blurb:'什麼爛路都能衝過去。'},
+  {id:'harvest', name:'金穗', type:'tractor',  c1:'#8FA878',c2:'#4E5B41',c3:'#E3ECD9', tag:'曳引機',   star:124, blurb:'耕田的好幫手，做事最踏實。'},
+  {id:'recycle', name:'綠循', type:'garbage',  c1:'#6E9A72',c2:'#3F5A45',c3:'#D6E8D8', tag:'回收車',   star:144, blurb:'把用過的東西變成新的，很聰明。'},
+  {id:'wave',    name:'浪花', type:'boat',     c1:'#DDE4E8',c2:'#5B7BA6',c3:'#F0F5F8', tag:'快艇',     star:166, blurb:'劈開浪頭往前衝，最愛大海。'},
+  {id:'circuit', name:'極速', type:'race',     c1:'#C0392B',c2:'#33302D',c3:'#F0BF52', tag:'方程式賽車',star:190, blurb:'全場最快，過彎像貼在地上。'},
+  {id:'bolt',    name:'雷馳', type:'moto',     c1:'#6E7A88',c2:'#E4B75C',c3:'#F0F4F7', tag:'重型機車', star:216, blurb:'兩個輪子就能鑽過任何縫隙。'},
+  {id:'deepsea', name:'深淵', type:'sub',      c1:'#628792',c2:'#2E4756',c3:'#DCEAF0', tag:'潛水艇',   star:244, blurb:'潛到最深的地方，安靜又神秘。'},
+  {id:'orbit',   name:'星軌', type:'shuttle',  c1:'#EFEAE1',c2:'#5B6B7A',c3:'#9CC6C0', tag:'太空梭',   star:275, blurb:'飛出大氣層，看見整顆地球。'},
 ];
+/* 十種通用塗裝，任何機甲都能套。靠這個小朋友的總出擊次數解鎖。 */
+const PAINT_AT=[0,3,6,10,15,21,28,36,45,55];
+const PAINTS=[
+  {n:'原廠塗裝',stock:true},
+  {n:'夜行', c1:'#3F4C5F',c2:'#E4B75C',c3:'#C9D2DC'},
+  {n:'櫻花', c1:'#E8AFB4',c2:'#6B4F52',c3:'#FBEEF0'},
+  {n:'苔綠', c1:'#8FA878',c2:'#3B4433',c3:'#E3ECD9'},
+  {n:'沙漠', c1:'#C9A96B',c2:'#7A6647',c3:'#EDE2C9'},
+  {n:'極地', c1:'#E8EEF2',c2:'#5B7BA6',c3:'#FFFFFF'},
+  {n:'熔岩', c1:'#A85A42',c2:'#4A2E26',c3:'#E0B49C'},
+  {n:'深海', c1:'#5C7E8C',c2:'#263A46',c3:'#CFE0E8'},
+  {n:'曙光', c1:'#F0D9B5',c2:'#C77B58',c3:'#FFF6E8'},
+  {n:'暗影', c1:'#413B38',c2:'#9CC6C0',c3:'#6B6259'},
+];
+
 /* 裝備庫：武器、護具、背包。解鎖條件綁在「學到什麼」上，
    有些要靠累積答對題數，有些要靠特定科目，這樣孩子才會五科都碰。 */
 const GEAR=[
@@ -456,31 +501,6 @@ const GEAR=[
 const SLOTS={hand:'武器',off:'副手',back:'背部',chest:'胸甲'};
 const totalOK=s=>Object.values(s.subj||{}).reduce((a,x)=>a+(x.ok||0),0);
 const subjOK=(s,k)=>((s.subj||{})[k]||{}).ok||0;
-
-/* 每台機甲有四種塗裝，靠這台自己的出擊次數解鎖，是長期慢慢收集的那一層 */
-const PAINT_AT=[0,6,15,30];
-const PAINTS={
-  flash:[ {n:'原廠塗裝',c1:'#F0BF52',c2:'#33302D',c3:'#FFFDF8'},
-          {n:'夜行',   c1:'#4A5A6E',c2:'#E4B75C',c3:'#C9D2DC'},
-          {n:'櫻花',   c1:'#E8AFB4',c2:'#6B4F52',c3:'#FBEEF0'},
-          {n:'苔綠',   c1:'#8FA878',c2:'#33302D',c3:'#E3ECD9'} ],
-  ironpeak:[{n:'原廠塗裝',c1:'#D2503C',c2:'#4A6FC4',c3:'#CFC7BD'},
-          {n:'沙漠',   c1:'#C9A96B',c2:'#7A6647',c3:'#EDE2C9'},
-          {n:'消防',   c1:'#C0392B',c2:'#33302D',c3:'#F2D9D4'},
-          {n:'極地',   c1:'#DDE4E8',c2:'#5B7BA6',c3:'#FFFFFF'} ],
-  gale:[  {n:'原廠塗裝',c1:'#DFDAD2',c2:'#D2503C',c3:'#33302D'},
-          {n:'迷彩',   c1:'#9AA378',c2:'#5C5B3D',c3:'#33302D'},
-          {n:'曙光',   c1:'#F0D9B5',c2:'#C77B58',c3:'#4A403A'},
-          {n:'深海',   c1:'#6E8CA0',c2:'#2E4756',c3:'#CFE0E8'} ],
-  rotor:[ {n:'原廠塗裝',c1:'#6E9A55',c2:'#33302D',c3:'#CBDDBA'},
-          {n:'救援',   c1:'#E4B75C',c2:'#C0392B',c3:'#FFF3D6'},
-          {n:'醫療',   c1:'#F5F1EA',c2:'#C0705C',c3:'#DDE8E4'},
-          {n:'夜鷹',   c1:'#3E4A42',c2:'#7FA88C',c3:'#B9C9BD'} ],
-  bulwark:[{n:'原廠塗裝',c1:'#B5A47C',c2:'#5C5138',c3:'#E6DCC6'},
-          {n:'森林',   c1:'#6B7A55',c2:'#3B4433',c3:'#C2CDAE'},
-          {n:'都市',   c1:'#8E9298',c2:'#4A4D52',c3:'#D5D8DC'},
-          {n:'熔岩',   c1:'#A85A42',c2:'#4A2E26',c3:'#E0B49C'} ],
-};
 
 const TIERS=[
   {id:0,name:'小小駕駛員',age:'3–4 歲',icon:'🐣',opts:3,round:5,kid:true,desc:'聽聲音找圖片：數到 5、比大小、顏色形狀、動物與日常物品'},
@@ -1394,49 +1414,188 @@ function buildRound(subj,tier){
 }
 /* ================= SVG 機甲 ================= */
 function vehicleSVG(b){
-  const {type,c1,c2,c3}=b;const W='#33302D',RIM='#CFC7BD',G='#9CC6C0';
+  const {type,c1,c2,c3}=b;const W='#33302D',RIM='#CFC7BD',G='#9CC6C0',M='#A69C90',D='#6B6259';
   const wheel=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${W}"/><circle cx="${x}" cy="${y}" r="${r*.45}" fill="${RIM}"/>`;
-  if(type==='car')return `
+  const tread=(x,y,w)=>`<rect x="${x}" y="${y}" width="${w}" height="30" rx="15" fill="${W}"/>`+
+    Array.from({length:Math.floor(w/30)},(_,i)=>`<circle cx="${x+20+i*30}" cy="${y+15}" r="9" fill="#8A7F78"/>`).join('');
+  switch(type){
+  case 'car': return `
    <path d="M18 152 L18 132 Q18 122 30 120 L62 114 L86 92 Q92 86 102 86 L150 86 Q160 86 168 92 L196 114 L222 120 Q232 122 232 132 L232 152 Z" fill="${c1}"/>
    <polygon points="94,92 148,92 166,112 80,112" fill="${G}"/>
    <rect x="18" y="134" width="214" height="8" fill="${c2}" opacity=".55"/>
-   <rect x="218" y="124" width="10" height="9" rx="2" fill="#F7E9BC"/>
-   <rect x="22" y="124" width="10" height="9" rx="2" fill="#E23D28"/>
+   <rect x="218" y="124" width="10" height="9" rx="2" fill="#F7E9BC"/><rect x="22" y="124" width="10" height="9" rx="2" fill="#C0705C"/>
    ${wheel(64,154,17)}${wheel(186,154,17)}`;
-  if(type==='truck')return `
-   <rect x="10" y="92" width="130" height="60" rx="4" fill="${c2}"/>
-   <rect x="10" y="118" width="130" height="8" fill="${c3}" opacity=".5"/>
-   <rect x="142" y="80" width="68" height="72" rx="6" fill="${c1}"/>
-   <rect x="204" y="110" width="30" height="42" rx="4" fill="${c1}"/>
-   <rect x="152" y="88" width="50" height="26" rx="3" fill="${G}"/>
-   <rect x="224" y="118" width="10" height="26" rx="2" fill="${RIM}"/>
-   <rect x="144" y="58" width="7" height="24" fill="#A69C90"/>
+  case 'truck': return `
+   <rect x="10" y="92" width="130" height="60" rx="4" fill="${c2}"/><rect x="10" y="118" width="130" height="8" fill="${c3}" opacity=".5"/>
+   <rect x="142" y="80" width="68" height="72" rx="6" fill="${c1}"/><rect x="204" y="110" width="30" height="42" rx="4" fill="${c1}"/>
+   <rect x="152" y="88" width="50" height="26" rx="3" fill="${G}"/><rect x="224" y="118" width="10" height="26" rx="2" fill="${RIM}"/>
+   <rect x="144" y="58" width="7" height="24" fill="${M}"/>
    ${wheel(40,154,15)}${wheel(100,154,15)}${wheel(170,154,15)}${wheel(214,154,15)}`;
-  if(type==='jet')return `
-   <polygon points="90,124 160,124 212,168 56,168" fill="${c2}"/>
-   <polygon points="30,122 52,122 62,84 40,84" fill="${c2}"/>
-   <ellipse cx="122" cy="134" rx="110" ry="15" fill="${c1}"/>
-   <polygon points="216,126 236,134 216,142" fill="${c3}"/>
-   <ellipse cx="180" cy="128" rx="20" ry="8" fill="${G}"/>
-   <rect x="20" y="128" width="30" height="12" rx="3" fill="${c3}"/>`;
-  if(type==='heli')return `
-   <rect x="34" y="94" width="172" height="6" rx="3" fill="${W}"/>
-   <rect x="116" y="100" width="8" height="12" fill="${W}"/>
-   <polygon points="70,128 14,118 14,136 72,146" fill="${c1}"/>
-   <polygon points="14,118 14,98 30,98 30,118" fill="${c2}"/>
-   <ellipse cx="120" cy="136" rx="58" ry="28" fill="${c1}"/>
-   <ellipse cx="150" cy="130" rx="22" ry="16" fill="${G}"/>
+  case 'jet': return `
+   <polygon points="90,124 160,124 212,168 56,168" fill="${c2}"/><polygon points="30,122 52,122 62,84 40,84" fill="${c2}"/>
+   <ellipse cx="122" cy="134" rx="110" ry="15" fill="${c1}"/><polygon points="216,126 236,134 216,142" fill="${c3}"/>
+   <ellipse cx="180" cy="128" rx="20" ry="8" fill="${G}"/><rect x="20" y="128" width="30" height="12" rx="3" fill="${c3}"/>`;
+  case 'heli': return `
+   <rect x="34" y="94" width="172" height="6" rx="3" fill="${W}"/><rect x="116" y="100" width="8" height="12" fill="${W}"/>
+   <polygon points="70,128 14,118 14,136 72,146" fill="${c1}"/><polygon points="14,118 14,98 30,98 30,118" fill="${c2}"/>
+   <ellipse cx="120" cy="136" rx="58" ry="28" fill="${c1}"/><ellipse cx="150" cy="130" rx="22" ry="16" fill="${G}"/>
    <rect x="98" y="128" width="30" height="8" rx="2" fill="${c3}" opacity=".8"/>
-   <rect x="96" y="162" width="6" height="12" fill="${W}"/><rect x="140" y="162" width="6" height="12" fill="${W}"/>
-   <rect x="72" y="172" width="100" height="5" rx="2" fill="${W}"/>`;
-  return `
-   <rect x="24" y="146" width="192" height="34" rx="17" fill="${W}"/>
-   ${[46,76,106,136,166,196].map(x=>`<circle cx="${x}" cy="163" r="10" fill="#9A9084"/>`).join('')}
+   <rect x="96" y="162" width="6" height="12" fill="${W}"/><rect x="140" y="162" width="6" height="12" fill="${W}"/><rect x="72" y="172" width="100" height="5" rx="2" fill="${W}"/>`;
+  case 'tank': return `
+   ${tread(24,146,192)}
    <polygon points="30,146 52,116 198,116 222,146" fill="${c1}"/>
-   <rect x="84" y="90" width="72" height="28" rx="8" fill="${c2}"/>
-   <rect x="150" y="98" width="82" height="9" rx="3" fill="#6B6259"/>
+   <rect x="84" y="90" width="72" height="28" rx="8" fill="${c2}"/><rect x="150" y="98" width="82" height="9" rx="3" fill="${D}"/>
    <rect x="108" y="84" width="22" height="8" rx="3" fill="${c3}"/>`;
+  case 'police': return `
+   <path d="M18 152 L18 132 Q18 122 30 120 L62 114 L86 92 Q92 86 102 86 L150 86 Q160 86 168 92 L196 114 L222 120 Q232 122 232 132 L232 152 Z" fill="${c1}"/>
+   <polygon points="94,92 148,92 166,112 80,112" fill="${G}"/>
+   <rect x="18" y="126" width="214" height="16" fill="${c2}"/>
+   <rect x="96" y="72" width="48" height="14" rx="5" fill="${W}"/><rect x="100" y="75" width="18" height="8" rx="3" fill="#C0705C"/><rect x="122" y="75" width="18" height="8" rx="3" fill="#5B7BA6"/>
+   ${wheel(64,154,17)}${wheel(186,154,17)}`;
+  case 'fire': return `
+   <rect x="12" y="98" width="126" height="54" rx="5" fill="${c1}"/>
+   <rect x="140" y="86" width="66" height="66" rx="6" fill="${c1}"/><rect x="200" y="112" width="32" height="40" rx="4" fill="${c1}"/>
+   <rect x="150" y="94" width="46" height="24" rx="3" fill="${G}"/>
+   <rect x="18" y="112" width="112" height="10" rx="3" fill="${c3}"/>
+   <g transform="rotate(-16 70 92)"><rect x="14" y="82" width="120" height="7" rx="3" fill="${M}"/><rect x="14" y="94" width="120" height="7" rx="3" fill="${M}"/>
+   ${Array.from({length:6},(_,i)=>`<rect x="${26+i*19}" y="82" width="5" height="19" fill="${M}"/>`).join('')}</g>
+   <rect x="152" y="72" width="42" height="12" rx="4" fill="${W}"/><rect x="156" y="75" width="14" height="6" rx="2" fill="#C0705C"/>
+   ${wheel(44,154,15)}${wheel(104,154,15)}${wheel(214,154,15)}`;
+  case 'ambulance': return `
+   <rect x="14" y="90" width="140" height="62" rx="7" fill="${c1}"/>
+   <path d="M156 90 L200 90 Q214 90 220 104 L232 126 L232 152 L156 152 Z" fill="${c1}"/>
+   <rect x="164" y="98" width="46" height="24" rx="4" fill="${G}"/>
+   <rect x="14" y="130" width="140" height="12" fill="${c2}"/>
+   <rect x="70" y="100" width="34" height="10" rx="2" fill="#C0705C"/><rect x="82" y="88" width="10" height="34" rx="2" fill="#C0705C"/>
+   <rect x="96" y="74" width="46" height="13" rx="5" fill="${W}"/><rect x="101" y="77" width="16" height="7" rx="3" fill="#C0705C"/><rect x="121" y="77" width="16" height="7" rx="3" fill="${G}"/>
+   ${wheel(56,154,16)}${wheel(190,154,16)}`;
+  case 'excavator': return `
+   ${tread(20,150,150)}
+   <rect x="34" y="112" width="120" height="38" rx="6" fill="${c1}"/>
+   <rect x="46" y="80" width="62" height="36" rx="6" fill="${c2}"/><rect x="54" y="87" width="46" height="22" rx="3" fill="${G}"/>
+   <rect x="140" y="96" width="12" height="52" rx="6" fill="${c1}" transform="rotate(28 146 122)"/>
+   <rect x="166" y="72" width="12" height="62" rx="6" fill="${c3}" transform="rotate(-34 172 103)"/>
+   <path d="M196 118 Q222 120 224 146 L192 150 Q188 132 190 118 Z" fill="${D}"/>
+   ${Array.from({length:4},(_,i)=>`<polygon points="${196+i*8},148 ${200+i*8},160 ${204+i*8},148" fill="${W}"/>`).join('')}`;
+  case 'crane': return `
+   <rect x="14" y="112" width="128" height="42" rx="5" fill="${c1}"/>
+   <rect x="146" y="98" width="60" height="56" rx="6" fill="${c1}"/><rect x="154" y="105" width="42" height="22" rx="3" fill="${G}"/>
+   <g transform="rotate(-38 74 118)"><rect x="10" y="112" width="140" height="12" rx="4" fill="${c2}"/>
+   ${Array.from({length:7},(_,i)=>`<polygon points="${20+i*18},112 ${32+i*18},124 ${38+i*18},112" fill="${c1}" opacity=".5"/>`).join('')}</g>
+   <rect x="24" y="46" width="4" height="30" fill="${W}"/><path d="M18 76 h16 l-3 12 h-10 Z" fill="${M}"/>
+   ${wheel(44,156,15)}${wheel(100,156,15)}${wheel(176,156,15)}`;
+  case 'train': return `
+   <rect x="20" y="96" width="150" height="58" rx="8" fill="${c1}"/>
+   <path d="M170 96 L206 96 Q220 96 220 110 L220 154 L170 154 Z" fill="${c2}"/>
+   <rect x="180" y="106" width="32" height="22" rx="3" fill="${G}"/>
+   <rect x="14" y="140" width="212" height="14" rx="4" fill="${c2}"/>
+   <rect x="44" y="66" width="26" height="32" rx="4" fill="${W}"/><rect x="38" y="58" width="38" height="12" rx="5" fill="${W}"/>
+   <ellipse cx="57" cy="52" rx="16" ry="8" fill="${c3}" opacity=".65"/><ellipse cx="76" cy="40" rx="11" ry="6" fill="${c3}" opacity=".45"/>
+   <rect x="90" y="106" width="60" height="24" rx="3" fill="${G}" opacity=".85"/>
+   <polygon points="220,142 236,154 220,158" fill="${W}"/>
+   ${wheel(56,158,18)}${wheel(110,158,18)}${wheel(164,158,14)}`;
+  case 'sub': return `
+   <ellipse cx="120" cy="134" rx="106" ry="34" fill="${c1}"/>
+   <rect x="96" y="88" width="46" height="34" rx="8" fill="${c2}"/><rect x="115" y="66" width="7" height="26" fill="${M}"/><rect x="115" y="66" width="20" height="6" rx="3" fill="${M}"/>
+   <circle cx="80" cy="132" r="11" fill="${G}"/><circle cx="118" cy="132" r="11" fill="${G}"/><circle cx="156" cy="132" r="11" fill="${G}"/>
+   <path d="M14 134 L34 116 L34 152 Z" fill="${c3}"/>
+   <g transform="translate(226,134)"><ellipse cx="0" cy="-16" rx="6" ry="16" fill="${D}"/><ellipse cx="0" cy="16" rx="6" ry="16" fill="${D}"/><circle cx="0" cy="0" r="7" fill="${W}"/></g>`;
+  case 'boat': return `
+   <path d="M16 132 L224 132 L200 166 Q196 172 186 172 L54 172 Q44 172 38 166 Z" fill="${c1}"/>
+   <path d="M16 132 L224 132 L224 140 L16 140 Z" fill="${c2}"/>
+   <path d="M74 132 L84 100 Q86 94 94 94 L152 94 Q160 94 164 100 L178 132 Z" fill="${c3}"/>
+   <path d="M96 104 L150 104 L160 126 L88 126 Z" fill="${G}"/>
+   <rect x="118" y="62" width="5" height="32" fill="${M}"/><path d="M123 62 L152 78 L123 88 Z" fill="${c2}"/>
+   <path d="M10 174 q30 10 60 0 q30 -10 60 0 q30 10 60 0 q30 -10 50 0" stroke="${G}" stroke-width="5" fill="none" opacity=".55" stroke-linecap="round"/>`;
+  case 'shuttle': return `
+   <path d="M40 118 Q40 100 66 98 L176 98 Q214 100 226 130 L226 142 Q214 170 176 172 L66 172 Q40 170 40 152 Z" fill="${c1}"/>
+   <polygon points="70,140 24,180 96,172" fill="${c2}"/><polygon points="70,130 24,90 96,98" fill="${c2}"/>
+   <polygon points="46,98 30,52 60,60 66,98" fill="${c3}"/>
+   <ellipse cx="196" cy="126" rx="20" ry="10" fill="${G}"/>
+   <rect x="86" y="126" width="70" height="10" rx="4" fill="${c3}" opacity=".7"/>
+   <g><circle cx="46" cy="118" r="9" fill="${D}"/><circle cx="46" cy="152" r="9" fill="${D}"/>
+   <path d="M38 118 L18 112 L38 126 Z" fill="#E4B75C" opacity=".9"/><path d="M38 145 L18 152 L38 159 Z" fill="#E4B75C" opacity=".9"/></g>`;
+  case 'buggy': return `
+   <rect x="42" y="126" width="152" height="24" rx="8" fill="${c1}"/>
+   <path d="M62 126 L74 86 Q76 80 84 80 L154 80 Q162 80 164 86 L176 126 Z" fill="none" stroke="${c2}" stroke-width="9" stroke-linejoin="round"/>
+   <rect x="88" y="98" width="58" height="26" rx="5" fill="${c3}"/>
+   <rect x="36" y="132" width="20" height="10" rx="4" fill="${c2}"/><rect x="182" y="132" width="22" height="10" rx="4" fill="${c2}"/>
+   <circle cx="66" cy="156" r="26" fill="${W}"/><circle cx="66" cy="156" r="11" fill="${RIM}"/>
+   <circle cx="176" cy="156" r="26" fill="${W}"/><circle cx="176" cy="156" r="11" fill="${RIM}"/>
+   ${Array.from({length:8},(_,i)=>`<rect x="${64+26*Math.cos(i*.785)-2}" y="${154+26*Math.sin(i*.785)-2}" width="6" height="6" rx="1" fill="#8A7F78"/>`).join('')}`;
+  case 'race': return `
+   <path d="M56 140 L184 140 L184 128 Q184 120 172 120 L150 120 L138 108 Q134 104 126 104 L110 104 Q102 104 100 112 L96 120 L68 120 Q56 122 56 132 Z" fill="${c1}"/>
+   <ellipse cx="120" cy="112" rx="16" ry="9" fill="${G}"/>
+   <rect x="14" y="128" width="52" height="12" rx="4" fill="${c2}"/><rect x="10" y="122" width="16" height="24" rx="3" fill="${c2}"/>
+   <rect x="176" y="124" width="52" height="11" rx="4" fill="${c2}"/><rect x="214" y="96" width="14" height="32" rx="3" fill="${c2}"/><rect x="190" y="94" width="46" height="9" rx="3" fill="${c3}"/>
+   <circle cx="76" cy="150" r="20" fill="${W}"/><circle cx="76" cy="150" r="8" fill="${RIM}"/>
+   <circle cx="172" cy="150" r="22" fill="${W}"/><circle cx="172" cy="150" r="9" fill="${RIM}"/>`;
+  case 'bus': return `
+   <rect x="14" y="82" width="212" height="72" rx="10" fill="${c1}"/>
+   <rect x="14" y="130" width="212" height="10" fill="${c2}"/>
+   ${Array.from({length:5},(_,i)=>`<rect x="${26+i*40}" y="92" width="30" height="26" rx="3" fill="${G}"/>`).join('')}
+   <rect x="196" y="92" width="24" height="34" rx="3" fill="${c3}" opacity=".8"/>
+   <rect x="18" y="118" width="10" height="14" rx="2" fill="#F7E9BC"/>
+   ${wheel(58,156,16)}${wheel(178,156,16)}`;
+  case 'garbage': return `
+   <rect x="14" y="88" width="132" height="66" rx="6" fill="${c1}"/>
+   <path d="M14 88 L34 74 L146 74 L146 88 Z" fill="${c2}"/>
+   <rect x="148" y="98" width="58" height="56" rx="6" fill="${c1}"/><rect x="156" y="106" width="40" height="22" rx="3" fill="${G}"/>
+   <rect x="200" y="122" width="28" height="32" rx="4" fill="${c1}"/>
+   <rect x="22" y="102" width="112" height="9" rx="3" fill="${c3}" opacity=".7"/>
+   <g transform="rotate(-20 34 130)"><rect x="6" y="118" width="14" height="46" rx="4" fill="${D}"/><rect x="0" y="112" width="26" height="12" rx="4" fill="${M}"/></g>
+   <circle cx="70" cy="118" r="14" fill="none" stroke="${c3}" stroke-width="4"/><path d="M64 118 l5 6 l9 -12" stroke="${c3}" stroke-width="4" fill="none" stroke-linecap="round"/>
+   ${wheel(48,156,15)}${wheel(106,156,15)}${wheel(184,156,15)}`;
+  case 'tractor': return `
+   <rect x="86" y="98" width="72" height="44" rx="6" fill="${c1}"/>
+   <rect x="94" y="72" width="56" height="32" rx="5" fill="${c2}"/><rect x="101" y="78" width="42" height="20" rx="3" fill="${G}"/>
+   <rect x="46" y="112" width="52" height="24" rx="6" fill="${c1}"/>
+   <rect x="60" y="96" width="8" height="20" rx="3" fill="${M}"/><rect x="55" y="88" width="18" height="9" rx="4" fill="${M}"/>
+   <circle cx="70" cy="146" r="22" fill="${W}"/><circle cx="70" cy="146" r="9" fill="${RIM}"/>
+   <circle cx="168" cy="140" r="38" fill="${W}"/><circle cx="168" cy="140" r="17" fill="${RIM}"/>
+   ${Array.from({length:10},(_,i)=>`<rect x="${166+36*Math.cos(i*.628)-3}" y="${138+36*Math.sin(i*.628)-3}" width="8" height="8" rx="2" fill="#8A7F78"/>`).join('')}
+   <rect x="196" y="118" width="30" height="10" rx="3" fill="${c3}"/>`;
+  case 'moto': return `
+   <circle cx="62" cy="146" r="34" fill="${W}"/><circle cx="62" cy="146" r="14" fill="${RIM}"/>
+   <circle cx="182" cy="146" r="34" fill="${W}"/><circle cx="182" cy="146" r="14" fill="${RIM}"/>
+   <path d="M62 146 L104 108 L152 108 L182 146" stroke="${c1}" stroke-width="12" fill="none" stroke-linecap="round"/>
+   <path d="M96 112 Q120 96 158 102 L172 118 L120 126 Z" fill="${c1}"/>
+   <rect x="112" y="94" width="52" height="16" rx="7" fill="${c2}"/>
+   <path d="M88 106 L74 82 L104 78" stroke="${c2}" stroke-width="8" fill="none" stroke-linecap="round"/>
+   <rect x="60" y="70" width="34" height="9" rx="4" fill="${M}"/>
+   <path d="M72 88 L58 100 L72 106 Z" fill="${c3}"/>
+   <rect x="168" y="120" width="42" height="10" rx="4" fill="${D}"/>`;
+  default: return '';
+  }
 }
+
+/* 每種載具變成機器人之後保留的特徵零件 */
+function accFor(type,c1,c2,c3,W,RIM,G,M,D){
+  switch(type){
+  case 'car': return `<circle cx="72" cy="90" r="13" fill="${W}"/><circle cx="72" cy="90" r="6" fill="${RIM}"/><circle cx="168" cy="90" r="13" fill="${W}"/><circle cx="168" cy="90" r="6" fill="${RIM}"/><rect x="104" y="96" width="32" height="6" rx="2" fill="${c3}"/>`;
+  case 'truck': return `<rect x="66" y="52" width="9" height="32" rx="2" fill="${M}"/><rect x="165" y="52" width="9" height="32" rx="2" fill="${M}"/><rect x="100" y="126" width="40" height="8" rx="2" fill="${RIM}"/>`;
+  case 'jet': return `<polygon points="86,96 24,142 86,132" fill="${c2}"/><polygon points="154,96 216,142 154,132" fill="${c2}"/><rect x="112" y="24" width="16" height="16" rx="3" fill="${c2}"/>`;
+  case 'heli': return `<rect x="44" y="26" width="152" height="6" rx="3" fill="${W}"/><rect x="116" y="30" width="8" height="12" fill="${W}"/><rect x="60" y="150" width="120" height="5" rx="2" fill="${W}"/>`;
+  case 'tank': return `<rect x="172" y="118" width="60" height="11" rx="3" fill="${D}"/><rect x="60" y="124" width="22" height="30" rx="4" fill="${c3}"/><rect x="104" y="128" width="32" height="6" rx="2" fill="${c3}"/>`;
+  case 'police': return `<rect x="96" y="24" width="48" height="14" rx="5" fill="${W}"/><rect x="100" y="27" width="18" height="8" rx="3" fill="#C0705C"/><rect x="122" y="27" width="18" height="8" rx="3" fill="#5B7BA6"/><circle cx="70" cy="92" r="12" fill="${W}"/><circle cx="170" cy="92" r="12" fill="${W}"/>`;
+  case 'fire': return `<g transform="rotate(-40 176 96)"><rect x="140" y="90" width="88" height="6" rx="3" fill="${M}"/><rect x="140" y="100" width="88" height="6" rx="3" fill="${M}"/>${Array.from({length:4},(_,i)=>`<rect x="${152+i*20}" y="90" width="4" height="16" fill="${M}"/>`).join('')}</g><rect x="98" y="24" width="44" height="12" rx="4" fill="${W}"/><rect x="102" y="27" width="16" height="6" rx="2" fill="#C0705C"/>`;
+  case 'ambulance': return `<rect x="100" y="94" width="40" height="11" rx="2" fill="#C0705C"/><rect x="114" y="80" width="12" height="39" rx="2" fill="#C0705C"/><rect x="96" y="24" width="48" height="13" rx="5" fill="${W}"/><rect x="101" y="27" width="16" height="7" rx="3" fill="#C0705C"/><rect x="123" y="27" width="16" height="7" rx="3" fill="${G}"/>`;
+  case 'excavator': return `<g transform="rotate(-30 190 120)"><rect x="176" y="96" width="13" height="56" rx="6" fill="${c3}"/></g><path d="M206 138 Q228 142 228 164 L200 166 Q196 150 198 138 Z" fill="${D}"/><rect x="58" y="128" width="26" height="30" rx="4" fill="${W}"/>`;
+  case 'crane': return `<g transform="rotate(-42 120 70)"><rect x="60" y="64" width="130" height="11" rx="4" fill="${c2}"/>${Array.from({length:5},(_,i)=>`<polygon points="${70+i*22},64 ${80+i*22},75 ${86+i*22},64" fill="${c1}" opacity=".5"/>`).join('')}</g><rect x="176" y="16" width="4" height="26" fill="${W}"/><path d="M170 42 h16 l-3 12 h-10 Z" fill="${M}"/>`;
+  case 'train': return `<rect x="106" y="18" width="28" height="26" rx="4" fill="${W}"/><rect x="100" y="10" width="40" height="11" rx="5" fill="${W}"/><ellipse cx="120" cy="4" rx="17" ry="7" fill="${c3}" opacity=".6"/><rect x="56" y="126" width="128" height="10" rx="4" fill="${c2}"/>`;
+  case 'sub': return `<rect x="116" y="16" width="7" height="28" fill="${M}"/><rect x="116" y="16" width="22" height="6" rx="3" fill="${M}"/><circle cx="76" cy="128" r="10" fill="${G}"/><circle cx="164" cy="128" r="10" fill="${G}"/><g transform="translate(120,236)"><ellipse cx="-14" cy="0" rx="14" ry="5" fill="${D}"/><ellipse cx="14" cy="0" rx="14" ry="5" fill="${D}"/></g>`;
+  case 'boat': return `<rect x="117" y="14" width="5" height="30" fill="${M}"/><path d="M122 14 L152 30 L122 40 Z" fill="${c2}"/><path d="M62 200 q26 9 52 0 q26 -9 52 0" stroke="${G}" stroke-width="5" fill="none" opacity=".6" stroke-linecap="round"/>`;
+  case 'shuttle': return `<polygon points="84,96 30,64 88,60 92,110" fill="${c2}"/><polygon points="156,96 210,64 152,60 148,110" fill="${c2}"/><g><path d="M100 232 L106 254 L112 232 Z" fill="#E4B75C" opacity=".9"/><path d="M128 232 L134 254 L140 232 Z" fill="#E4B75C" opacity=".9"/></g>`;
+  case 'buggy': return `<path d="M78 78 Q86 46 120 46 Q154 46 162 78" stroke="${c2}" stroke-width="9" fill="none" stroke-linecap="round"/><circle cx="66" cy="96" r="17" fill="${W}"/><circle cx="66" cy="96" r="7" fill="${RIM}"/><circle cx="174" cy="96" r="17" fill="${W}"/><circle cx="174" cy="96" r="7" fill="${RIM}"/>`;
+  case 'race': return `<rect x="76" y="66" width="88" height="9" rx="3" fill="${c3}"/><rect x="94" y="50" width="12" height="22" rx="3" fill="${c2}"/><rect x="134" y="50" width="12" height="22" rx="3" fill="${c2}"/><circle cx="68" cy="96" r="14" fill="${W}"/><circle cx="172" cy="96" r="14" fill="${W}"/>`;
+  case 'bus': return `${Array.from({length:3},(_,i)=>`<rect x="${88+i*22}" y="92" width="17" height="16" rx="2" fill="${G}"/>`).join('')}<rect x="60" y="124" width="24" height="28" rx="4" fill="${c3}"/><rect x="156" y="124" width="24" height="28" rx="4" fill="${c3}"/>`;
+  case 'garbage': return `<g transform="rotate(-24 66 118)"><rect x="52" y="104" width="15" height="50" rx="5" fill="${D}"/><rect x="46" y="96" width="28" height="13" rx="5" fill="${M}"/></g><circle cx="120" cy="104" r="15" fill="none" stroke="${c3}" stroke-width="4"/><path d="M113 104 l6 7 l10 -13" stroke="${c3}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+  case 'tractor': return `<circle cx="62" cy="98" r="21" fill="${W}"/><circle cx="62" cy="98" r="9" fill="${RIM}"/><circle cx="178" cy="98" r="21" fill="${W}"/><circle cx="178" cy="98" r="9" fill="${RIM}"/><rect x="112" y="20" width="9" height="24" rx="4" fill="${M}"/><rect x="106" y="12" width="20" height="10" rx="5" fill="${M}"/>`;
+  case 'moto': return `<circle cx="66" cy="94" r="20" fill="${W}"/><circle cx="66" cy="94" r="8" fill="${RIM}"/><circle cx="174" cy="94" r="20" fill="${W}"/><circle cx="174" cy="94" r="8" fill="${RIM}"/><rect x="96" y="34" width="48" height="9" rx="4" fill="${M}"/>`;
+  default: return '';
+  }
+}
+
 /* 裝備畫在機器人身上的座標（robot 是 240x260） */
 function gearSVG(b,ids,layer){
   const G='#9CC6C0',D='#6B6259',M='#8A7F78',DK='#4A433F';
@@ -1480,12 +1639,7 @@ function gearSVG(b,ids,layer){
 function robotSVG(b,gear){
   gear=gear||[];
   const {type,c1,c2,c3}=b;const W='#33302D',RIM='#CFC7BD',G='#9CC6C0';
-  let acc='';
-  if(type==='car')acc=`<circle cx="72" cy="90" r="13" fill="${W}"/><circle cx="72" cy="90" r="6" fill="${RIM}"/><circle cx="168" cy="90" r="13" fill="${W}"/><circle cx="168" cy="90" r="6" fill="${RIM}"/><rect x="104" y="96" width="32" height="6" rx="2" fill="${c3}"/>`;
-  if(type==='truck')acc=`<rect x="66" y="52" width="9" height="32" rx="2" fill="#A69C90"/><rect x="165" y="52" width="9" height="32" rx="2" fill="#A69C90"/><rect x="100" y="126" width="40" height="8" rx="2" fill="${RIM}"/>`;
-  if(type==='jet')acc=`<polygon points="86,96 24,142 86,132" fill="${c2}"/><polygon points="154,96 216,142 154,132" fill="${c2}"/><rect x="112" y="24" width="16" height="16" rx="3" fill="${c2}"/>`;
-  if(type==='heli')acc=`<rect x="44" y="26" width="152" height="6" rx="3" fill="${W}"/><rect x="116" y="30" width="8" height="12" fill="${W}"/><rect x="60" y="150" width="120" height="5" rx="2" fill="${W}"/>`;
-  if(type==='tank')acc=`<rect x="172" y="118" width="60" height="11" rx="3" fill="#6B6259"/><rect x="60" y="124" width="22" height="30" rx="4" fill="${c3}"/><rect x="104" y="128" width="32" height="6" rx="2" fill="${c3}"/>`;
+  const acc=accFor(type,c1,c2,c3,W,RIM,G,'#A69C90','#6B6259');
   return `<g class="robot">
    <g class="p p-acc">${gearSVG(b,gear,'back')}</g>
    <g class="p p-legs">
@@ -1606,11 +1760,12 @@ let g=null;
 const unlocked=i=>save.stars>=BOTS[i].star||i<=(save.grandfather??-1);
 const gotCount=()=>BOTS.filter((b,i)=>unlocked(i)).length;
 const nextLocked=()=>{const i=BOTS.findIndex((b,k)=>!unlocked(k));return i<0?null:{bot:BOTS[i],need:BOTS[i].star-save.stars}};
-/* 塗裝：看這台機甲自己的出擊次數 */
-const paintsOf=id=>PAINTS[id]||[];
-const paintOpen=(id,k)=>((save.collection[id]||{}).plays||0)>=PAINT_AT[k];
-const paintIdx=id=>{const k=(save.paint||{})[id]||0;return paintOpen(id,k)?k:0};
-const skin=b=>{const p=paintsOf(b.id)[paintIdx(b.id)];return p?{...b,c1:p.c1,c2:p.c2,c3:p.c3}:b};
+/* 塗裝：十種通用塗裝，看這個小朋友的總出擊次數 */
+const totalPlays=()=>Object.values(save.collection||{}).reduce((a,c)=>a+(c.plays||0),0);
+const paintOpen=k=>totalPlays()>=PAINT_AT[k];
+const paintIdx=id=>{const k=(save.paint||{})[id]||0;return paintOpen(k)?k:0};
+const paintGot=()=>PAINTS.filter((x,k)=>paintOpen(k)).length;
+const skin=b=>{const p=PAINTS[paintIdx(b.id)];return p&&!p.stock?{...b,c1:p.c1,c2:p.c2,c3:p.c3}:b};
 const gearOpen=id=>{const G=GEAR.find(x=>x.id===id);return !!G&&G.cond(save)};
 const gearOn=botId=>{save.gear=save.gear||{};return (save.gear[botId]||[]).filter(gearOpen)};
 function toggleGear(botId,gid){
@@ -1666,7 +1821,7 @@ function renderStart(){
   </section>
   <section class="pick"><h2><span class="step">3</span>選一台機甲</h2>
     ${(()=>{const nx=nextLocked();return nx?`<p class="toward">再 <b>${nx.need}</b> 顆星就能解鎖 <b>${nx.bot.name}</b>（${nx.bot.tag}）</p>`:''})()}
-    <div class="bots">${BOTS.map((b,i)=>{const lk=!unlocked(i);const st=save.best[b.id]||0;return `<button class="botcard ${sel.bot===b.id?'on':''} ${lk?'locked':''}" data-bot="${b.id}" ${lk?'disabled':''} title="${b.blurb}">
+    <div class="bots">${BOTS.filter((b,i)=>unlocked(i)||i===gotCount()).map((b)=>{const i=BOTS.indexOf(b);const lk=!unlocked(i);const st=save.best[b.id]||0;return `<button class="botcard ${sel.bot===b.id?'on':''} ${lk?'locked':''}" data-bot="${b.id}" ${lk?'disabled':''} title="${b.blurb}">
       <div class="mini">${miniDressed(b)}</div><b>${b.name}</b><small>${b.tag}</small><div class="stars" aria-label="最佳成績 ${st} 顆星">${st?'⭐'.repeat(st):''}</div>
       ${lk?`<div class="lock">🔒<span>${b.star} 顆星</span></div>`:''}</button>`}).join('')}</div>
   </section>
@@ -1804,7 +1959,6 @@ function toyTransform(id){
     },(5-k)*220));
   }
 }
-const paintGot=()=>BOTS.reduce((a,b)=>a+(unlocked(BOTS.indexOf(b))?paintsOf(b.id).filter((x,k)=>paintOpen(b.id,k)).length:0),0);
 function renderCollection(){
   ensureCollection();clearToys();
   const got=BOTS.filter((b,i)=>unlocked(i));
@@ -1817,7 +1971,7 @@ function renderCollection(){
     </div>
     <div class="collstats">
       <div class="stat"><b>${got.length} / ${BOTS.length}</b><span>機甲</span></div>
-      <div class="stat"><b>${paintGot()} / ${BOTS.length*4}</b><span>塗裝</span></div>
+      <div class="stat"><b>${paintGot()} / ${PAINTS.length}</b><span>塗裝</span></div>
       <div class="stat"><b>${GEAR.filter(x=>x.cond(save)).length} / ${GEAR.length}</b><span>裝備</span></div>
       <div class="stat"><b>${save.stars}</b><span>星星</span></div>
     </div>
@@ -1831,7 +1985,7 @@ function renderCollection(){
     </table>
     <p style="margin-top:10px">裝備的條件刻意分散在不同科目，只練一科拿不到全部。</p>
   </div></details>
-  <div class="shelf">${BOTS.map((b,i)=>{
+  <div class="shelf">${BOTS.filter((b,i)=>unlocked(i)||i===gotCount()).map((b)=>{const i=BOTS.indexOf(b);
     const lk=!unlocked(i);const c=save.collection[b.id]||{};
     if(lk)return `<div class="trophy-card locked"><div class="silhouette">${miniSVG(b)}</div>
       <div class="tinfo"><b>？？？</b><small>累積 ${b.star} 顆星就能得到，還差 ${Math.max(0,b.star-save.stars)} 顆</small></div>
@@ -1849,16 +2003,21 @@ function renderCollection(){
       </div>
       <div class="custom">
         <div class="crow"><span class="clab">塗裝</span>
-          <div class="chips">${paintsOf(b.id).map((pt,k)=>{const open=paintOpen(b.id,k);
+          <div class="chips">${PAINTS.map((pt,k)=>{const open=paintOpen(k);
             return `<button class="chip2 ${paintIdx(b.id)===k?'on':''} ${open?'':'lock'}" data-paint="${b.id}:${k}" ${open?'':'disabled'}
-              title="${open?pt.n:'這台出擊 '+PAINT_AT[k]+' 次解鎖'}">
-              <i style="background:${pt.c1};border-color:${pt.c2}"></i>${open?pt.n:'🔒 '+PAINT_AT[k]+' 次'}</button>`}).join('')}</div></div>
+              title="${open?pt.n:'總出擊 '+PAINT_AT[k]+' 次解鎖'}">
+              <i style="background:${pt.stock?b.c1:pt.c1};border-color:${pt.stock?b.c2:pt.c2}"></i>${open?pt.n:'🔒'+PAINT_AT[k]}</button>`}).join('')}</div></div>
         <div class="crow"><span class="clab">裝備</span>
           <div class="chips">${GEAR.map(gr=>{const open=gr.cond(save),on=gearOn(b.id).includes(gr.id);
             return `<button class="chip2 ${on?'on':''} ${open?'':'lock'}" data-gear="${b.id}:${gr.id}" ${open?'':'disabled'}
               title="${open?SLOTS[gr.slot]+'・'+gr.n:gr.how+'（還差 '+Math.max(0,gr.need(save))+'）'}">
               ${gr.icon}${open?gr.n:'🔒'}</button>`}).join('')}</div></div>
       </div></div>`}).join('')}</div>
+  <details class="parents"><summary>看完整的 ${BOTS.length} 台機甲名冊</summary><div class="body">
+    <div class="roster">${BOTS.map((b,i)=>`<div class="rost ${unlocked(i)?'got':''}">
+      <span class="rn">${unlocked(i)?b.name:'？？？'}</span>
+      <small>${unlocked(i)?b.tag:'⭐ '+b.star}</small></div>`).join('')}</div>
+  </div></details>
   <div class="go"><button class="bigbtn" data-act="home">回機庫出擊</button></div>`;
 }
 
@@ -1962,7 +2121,7 @@ function finish(){
   const done=kid||rate>=.5;let unlockedNew=null;
   save.rounds++;if(done)save.completed++;if(stars>=3)save.perfect=(save.perfect||0)+1;
   const hadBots=BOTS.filter((b,i)=>unlocked(i)).map(b=>b.id);
-  const usedId=curMech().id, hadPaints=paintsOf(usedId).filter((x,k)=>paintOpen(usedId,k)).length;
+  const usedId=curMech().id, hadPaints=paintGot();
   save.stars+=stars;save.best[usedId]=Math.max(save.best[usedId]||0,stars);
   const c=save.collection[usedId]=save.collection[usedId]||{at:today(),plays:0,stars:0,energy:0};
   c.plays++;c.stars=Math.max(c.stars,stars);c.energy+=g.ok;
@@ -1972,8 +2131,8 @@ function finish(){
   persist();ensureCollection();
   unlockedNew=BOTS.find((b,i)=>unlocked(i)&&!hadBots.includes(b.id))||null;
   if(unlockedNew)save.collection[unlockedNew.id]={at:today(),plays:0,stars:0,energy:0};
-  const nowPaints=paintsOf(usedId).filter((x,k)=>paintOpen(usedId,k)).length;
-  const newPaint=nowPaints>hadPaints?paintsOf(usedId)[nowPaints-1]:null;
+  const nowPaints=paintGot();
+  const newPaint=nowPaints>hadPaints?PAINTS[nowPaints-1]:null;
   persist();
   if(stars>=2)SFX.fanfare();else if(done)SFX.transform();
   const wrong=g.log.filter(l=>!l.ok);
@@ -1991,7 +2150,7 @@ function finish(){
       <div class="starrow" aria-label="${stars} 顆星">${starStr(stars)}</div>
       <div class="nums"><div><b>${g.ok} / ${n}</b><span>${kid?'一次就答對':'答對題數'}</span></div><div><b>${Math.max(g.cleared,1)}</b><span>變形完成的機甲</span></div><div><b>${Math.round(100*g.ok/n)}%</b><span>答對率</span></div></div>
       ${unlockedNew?`<div class="unlock">🔓 解鎖新機甲：${unlockedNew.name}（${unlockedNew.tag}）！收藏庫看得到。</div>`:''}
-      ${newPaint?`<div class="unlock paint">🎨 ${curMech().name} 解鎖新塗裝：${newPaint.n}！到收藏庫換上看看。</div>`:''}
+      ${newPaint?`<div class="unlock paint">🎨 解鎖新塗裝：${newPaint.n}！任何一台機甲都能換上。</div>`:''}
       ${(()=>{const nx=nextLocked();return nx?`<div class="toward">再 <b>${nx.need}</b> 顆星就能解鎖 <b>${nx.bot.name}</b>（${nx.bot.tag}）</div>`:''})()}
       <div class="acts"><button class="bigbtn" data-act="again">再玩一次</button><button class="bigbtn ghost" data-act="collection">看收藏庫 🏆</button><button class="bigbtn ghost" data-act="home">回機庫</button></div>
     </div></div>
@@ -2068,7 +2227,7 @@ document.addEventListener('keydown',e=>{
 if('speechSynthesis'in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
 
 /* ================= 有新版本時通知使用者 ================= */
-const APP_VERSION='2.4.0';
+const APP_VERSION='2.5.0';
 function showUpdateBanner(apply){
   if(document.getElementById('upbar'))return;
   const bar=document.createElement('div');bar.id='upbar';bar.className='upbar';
