@@ -302,7 +302,13 @@ section.pick{background:var(--paper);border-radius:var(--r);padding:16px 18px;ma
 @media (max-width:480px){
   .bots{grid-template-columns:repeat(2,1fr)}
   .wrap{padding:10px 10px 40px}
-  .logo{font-size:1.1rem}
+  /* 四個工具按鈕之後，標題要縮小才不會擠成兩行 */
+  .top{gap:8px}
+  .logo{font-size:1rem;gap:8px;white-space:nowrap}
+  .logo .badge{width:34px;height:34px;border-radius:9px;font-size:.9rem}
+  .tools{gap:6px}
+  .iconbtn{width:38px;height:38px;border-radius:10px;font-size:1rem}
+  .iconbtn.trophy .cnt{min-width:17px;height:17px;font-size:.65rem}
 }
 </style>
 
