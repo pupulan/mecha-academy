@@ -1384,6 +1384,7 @@ function renderStart(){
   </section>
   <div class="go"><button class="bigbtn" data-act="start">出擊！</button></div>
   <details class="parents"><summary>給爸媽的說明</summary><div class="body">
+    <p style="margin-bottom:10px"><a href="https://pupulan.github.io/mecha-academy/guide.html" target="_blank" rel="noopener" style="color:var(--rose2);font-weight:700">📘 打開完整的家長手冊（圖文版）</a>　可以直接分享給其他家長。</p>
     <p><b>3–6 歲</b>：每次任務 5 題，題目和選項都會念出來，選項以圖片為主，小孩聽完直接點圖。答錯不會扣分，那個選項會變暗，讓孩子再試一次，所以每次任務結束時機甲一定會變形完成。星星依「第一次就答對」的題數計算：5 題三顆星、4 題兩顆星、其他一顆星。每完成一次任務解鎖下一台機甲。</p>
     <p style="margin-top:8px"><b>7–12 歲</b>：每次任務 10 題、四個選項、沒有重試。答對 5 題以上算完成任務，7 題兩顆星，9 題以上三顆星。可以用鍵盤 1–4 或 A–D 作答。</p>
     <p style="margin-top:8px"><b>多人共用一台裝置</b>：左上角的名字可以切換小朋友，最多 6 位，每個人的收藏庫、星星和年齡設定都是分開的。換裝置玩的話，在「誰要玩？」畫面下方有轉移碼和 QR code，掃一下就能把進度複製到另一台。</p>
@@ -1723,7 +1724,7 @@ document.addEventListener('keydown',e=>{
 if('speechSynthesis'in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
 
 /* ================= 有新版本時通知使用者 ================= */
-const APP_VERSION='2.2.0';
+const APP_VERSION='2.2.1';
 function showUpdateBanner(apply){
   if(document.getElementById('upbar'))return;
   const bar=document.createElement('div');bar.id='upbar';bar.className='upbar';
