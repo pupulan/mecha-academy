@@ -368,6 +368,28 @@ section.pick{background:var(--paper);border-radius:var(--r);padding:16px 18px;ma
 .energy .cleared{flex:none;font-family:var(--fn);font-weight:800;font-size:.8rem;color:var(--hazard);margin-left:2px}
 @media (max-width:480px){.rounds{grid-template-columns:repeat(4,1fr);gap:6px}.rnd{padding:10px 4px}.rnd b{font-size:1.35rem}}
 
+/* ---------- 塗裝與裝備 ---------- */
+.custom{border-top:1px solid var(--line);margin-top:10px;padding-top:10px;display:grid;gap:8px}
+.crow{display:grid;grid-template-columns:44px 1fr;gap:8px;align-items:start}
+.clab{font-family:var(--fd);font-size:.82rem;color:var(--ink2);padding-top:5px}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip2{display:inline-flex;align-items:center;gap:4px;font-size:.78rem;padding:4px 9px;border-radius:99px;
+  background:var(--paper2);border:2px solid transparent;line-height:1.3;transition:transform .1s}
+.chip2 i{width:11px;height:11px;border-radius:50%;border:2px solid;display:inline-block;flex:none}
+.chip2:hover:not(:disabled){transform:translateY(-1px)}
+.chip2.on{border-color:var(--rose);background:var(--roseL);font-weight:700}
+.chip2.lock{opacity:.45;cursor:default}
+.toward{background:var(--butterL);border-radius:12px;padding:9px 14px;font-size:.9rem;color:#7A6438;margin-bottom:12px}
+.toward b{font-family:var(--fn);font-size:1.05rem}
+.toward.big{margin:0 0 14px;padding:12px 18px;font-size:.98rem}
+.unlock.paint{background:var(--roseL);border-color:var(--rose2)}
+.collstats{flex-wrap:wrap}
+@media (max-width:820px){
+  .crow{grid-template-columns:1fr;gap:4px}
+  .clab{padding-top:0}
+  .collstats .stat{min-width:70px}
+}
+
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition-duration:.01ms!important}
 }
@@ -403,12 +425,63 @@ section.pick{background:var(--paper);border-radius:var(--r);padding:16px 18px;ma
 <script>
 /* ================= 資料 ================= */
 const BOTS=[
-  {id:'flash',   name:'閃電', type:'car',   c1:'#F0BF52', c2:'#33302D', c3:'#FFFDF8', tag:'黃色跑車', blurb:'跑得最快的偵察兵，最喜歡算數。'},
-  {id:'ironpeak',name:'鐵岳', type:'truck', c1:'#D2503C', c2:'#4A6FC4', c3:'#C9CED6', tag:'紅藍大卡車', blurb:'隊長，最有力氣，記得每一條路。'},
-  {id:'gale',    name:'疾風', type:'jet',   c1:'#DFDAD2', c2:'#D2503C', c3:'#23262B', tag:'戰鬥機', blurb:'飛得最高，看得最遠。'},
-  {id:'rotor',   name:'旋翼', type:'heli',  c1:'#6E9A55', c2:'#33302D', c3:'#CBDDBA', tag:'直升機', blurb:'救援專家，哪裡需要就去哪裡。'},
-  {id:'bulwark', name:'巨盾', type:'tank',  c1:'#B5A47C', c2:'#5C5138', c3:'#E6DCC6', tag:'坦克', blurb:'最穩的守護者，什麼都擋得住。'},
+  {id:'flash',   name:'閃電', type:'car',   c1:'#F0BF52', c2:'#33302D', c3:'#FFFDF8', tag:'黃色跑車', star:0, blurb:'跑得最快的偵察兵，最喜歡算數。'},
+  {id:'ironpeak',name:'鐵岳', type:'truck', c1:'#D2503C', c2:'#4A6FC4', c3:'#CFC7BD', tag:'紅藍大卡車', star:5, blurb:'隊長，最有力氣，記得每一條路。'},
+  {id:'gale',    name:'疾風', type:'jet',   c1:'#DFDAD2', c2:'#D2503C', c3:'#33302D', tag:'戰鬥機', star:15, blurb:'飛得最高，看得最遠。'},
+  {id:'rotor',   name:'旋翼', type:'heli',  c1:'#6E9A55', c2:'#33302D', c3:'#CBDDBA', tag:'直升機', star:32, blurb:'救援專家，哪裡需要就去哪裡。'},
+  {id:'bulwark', name:'巨盾', type:'tank',  c1:'#B5A47C', c2:'#5C5138', c3:'#E6DCC6', tag:'坦克', star:55, blurb:'最穩的守護者，什麼都擋得住。'},
 ];
+/* 裝備庫：武器、護具、背包。解鎖條件綁在「學到什麼」上，
+   有些要靠累積答對題數，有些要靠特定科目，這樣孩子才會五科都碰。 */
+const GEAR=[
+ {id:'blade', n:'能量劍', slot:'hand', icon:'⚔️', how:'累積答對 50 題',
+  cond:s=>totalOK(s)>=50, need:s=>50-totalOK(s)},
+ {id:'shield',n:'圓盾',   slot:'off',  icon:'🛡️', how:'累積答對 120 題',
+  cond:s=>totalOK(s)>=120, need:s=>120-totalOK(s)},
+ {id:'jet',   n:'推進背包',slot:'back', icon:'🚀', how:'累積答對 250 題',
+  cond:s=>totalOK(s)>=250, need:s=>250-totalOK(s)},
+ {id:'cannon',n:'光炮',   slot:'hand', icon:'🔫', how:'數學答對 80 題',
+  cond:s=>subjOK(s,'math')>=80, need:s=>80-subjOK(s,'math')},
+ {id:'hammer',n:'電磁錘', slot:'hand', icon:'🔨', how:'國語答對 80 題',
+  cond:s=>subjOK(s,'zh')>=80, need:s=>80-subjOK(s,'zh')},
+ {id:'radar', n:'探測雷達',slot:'back', icon:'📡', how:'自然常識答對 60 題',
+  cond:s=>subjOK(s,'sci')>=60, need:s=>60-subjOK(s,'sci')},
+ {id:'sonic', n:'音波發射器',slot:'off',icon:'🔊', how:'音樂答對 60 題',
+  cond:s=>subjOK(s,'mus')>=60, need:s=>60-subjOK(s,'mus')},
+ {id:'wing',  n:'導航翼',  slot:'back', icon:'🧭', how:'地理歷史答對 60 題',
+  cond:s=>subjOK(s,'geo')>=60, need:s=>60-subjOK(s,'geo')},
+ {id:'core',  n:'能量核心',slot:'chest',icon:'💠', how:'拿到三顆星 10 次',
+  cond:s=>(s.perfect||0)>=10, need:s=>10-(s.perfect||0)},
+];
+const SLOTS={hand:'武器',off:'副手',back:'背部',chest:'胸甲'};
+const totalOK=s=>Object.values(s.subj||{}).reduce((a,x)=>a+(x.ok||0),0);
+const subjOK=(s,k)=>((s.subj||{})[k]||{}).ok||0;
+
+/* 每台機甲有四種塗裝，靠這台自己的出擊次數解鎖，是長期慢慢收集的那一層 */
+const PAINT_AT=[0,6,15,30];
+const PAINTS={
+  flash:[ {n:'原廠塗裝',c1:'#F0BF52',c2:'#33302D',c3:'#FFFDF8'},
+          {n:'夜行',   c1:'#4A5A6E',c2:'#E4B75C',c3:'#C9D2DC'},
+          {n:'櫻花',   c1:'#E8AFB4',c2:'#6B4F52',c3:'#FBEEF0'},
+          {n:'苔綠',   c1:'#8FA878',c2:'#33302D',c3:'#E3ECD9'} ],
+  ironpeak:[{n:'原廠塗裝',c1:'#D2503C',c2:'#4A6FC4',c3:'#CFC7BD'},
+          {n:'沙漠',   c1:'#C9A96B',c2:'#7A6647',c3:'#EDE2C9'},
+          {n:'消防',   c1:'#C0392B',c2:'#33302D',c3:'#F2D9D4'},
+          {n:'極地',   c1:'#DDE4E8',c2:'#5B7BA6',c3:'#FFFFFF'} ],
+  gale:[  {n:'原廠塗裝',c1:'#DFDAD2',c2:'#D2503C',c3:'#33302D'},
+          {n:'迷彩',   c1:'#9AA378',c2:'#5C5B3D',c3:'#33302D'},
+          {n:'曙光',   c1:'#F0D9B5',c2:'#C77B58',c3:'#4A403A'},
+          {n:'深海',   c1:'#6E8CA0',c2:'#2E4756',c3:'#CFE0E8'} ],
+  rotor:[ {n:'原廠塗裝',c1:'#6E9A55',c2:'#33302D',c3:'#CBDDBA'},
+          {n:'救援',   c1:'#E4B75C',c2:'#C0392B',c3:'#FFF3D6'},
+          {n:'醫療',   c1:'#F5F1EA',c2:'#C0705C',c3:'#DDE8E4'},
+          {n:'夜鷹',   c1:'#3E4A42',c2:'#7FA88C',c3:'#B9C9BD'} ],
+  bulwark:[{n:'原廠塗裝',c1:'#B5A47C',c2:'#5C5138',c3:'#E6DCC6'},
+          {n:'森林',   c1:'#6B7A55',c2:'#3B4433',c3:'#C2CDAE'},
+          {n:'都市',   c1:'#8E9298',c2:'#4A4D52',c3:'#D5D8DC'},
+          {n:'熔岩',   c1:'#A85A42',c2:'#4A2E26',c3:'#E0B49C'} ],
+};
+
 const TIERS=[
   {id:0,name:'小小駕駛員',age:'3–4 歲',icon:'🐣',opts:3,round:5,kid:true,desc:'聽聲音找圖片：數到 5、比大小、顏色形狀、動物與日常物品'},
   {id:1,name:'見習駕駛員',age:'5–6 歲',icon:'🐥',opts:3,round:10,kid:true,desc:'數到 10、10 以內加減、認字與注音、方向節日、台灣和世界'},
@@ -1364,7 +1437,48 @@ function vehicleSVG(b){
    <rect x="150" y="98" width="82" height="9" rx="3" fill="#6B6259"/>
    <rect x="108" y="84" width="22" height="8" rx="3" fill="${c3}"/>`;
 }
-function robotSVG(b){
+/* 裝備畫在機器人身上的座標（robot 是 240x260） */
+function gearSVG(b,ids,layer){
+  const G='#9CC6C0',D='#6B6259',M='#8A7F78',DK='#4A433F';
+  const has=x=>ids.includes(x);
+  let back='',front='';
+  // 背部：畫在身體後面，往兩側露出來才看得到
+  if(has('jet'))back+=`<g><rect x="80" y="82" width="80" height="52" rx="10" fill="${D}"/>
+    <rect x="58" y="92" width="20" height="52" rx="8" fill="${M}"/><rect x="162" y="92" width="20" height="52" rx="8" fill="${M}"/>
+    <path d="M60 144 L68 182 L76 144 Z" fill="${G}" opacity=".9"/><path d="M164 144 L172 182 L180 144 Z" fill="${G}" opacity=".9"/>
+    <path d="M64 144 L68 166 L72 144 Z" fill="#fff" opacity=".75"/><path d="M168 144 L172 166 L176 144 Z" fill="#fff" opacity=".75"/></g>`;
+  // 雷達裝在右肩，避開頭部
+  if(has('radar'))back+=`<g><rect x="170" y="46" width="7" height="46" rx="3" fill="${M}"/>
+    <g transform="rotate(-18 174 42)"><ellipse cx="174" cy="42" rx="26" ry="10" fill="${D}"/>
+    <ellipse cx="174" cy="40" rx="19" ry="6.5" fill="${G}" opacity=".75"/><circle cx="174" cy="35" r="3.5" fill="${b.c3}"/></g></g>`;
+  // 導航翼從背後往上斜出去，不擋手臂
+  if(has('wing'))back+=`<g><path d="M96 92 L24 40 L34 92 L96 116 Z" fill="${b.c2}"/><path d="M144 92 L216 40 L206 92 L144 116 Z" fill="${b.c2}"/>
+    <path d="M94 98 L44 62 L50 94 L94 110 Z" fill="${G}" opacity=".5"/><path d="M146 98 L196 62 L190 94 L146 110 Z" fill="${G}" opacity=".5"/></g>`;
+  // 右手武器
+  if(has('blade'))front+=`<g><rect x="158" y="148" width="26" height="8" rx="3" fill="${M}"/>
+    <rect x="167" y="66" width="10" height="84" rx="4" fill="${G}"/><rect x="169" y="70" width="6" height="76" rx="3" fill="#fff" opacity=".85"/>
+    <rect x="162" y="154" width="18" height="12" rx="4" fill="${DK}"/></g>`;
+  if(has('cannon'))front+=`<g><rect x="158" y="146" width="56" height="22" rx="9" fill="${D}"/>
+    <rect x="164" y="151" width="32" height="6" rx="3" fill="${M}"/>
+    <circle cx="214" cy="157" r="11" fill="${DK}"/><circle cx="214" cy="157" r="6.5" fill="${G}"/></g>`;
+  if(has('hammer'))front+=`<g><rect x="168" y="78" width="9" height="86" rx="3" fill="${M}"/>
+    <rect x="150" y="50" width="52" height="30" rx="7" fill="${DK}"/><rect x="156" y="57" width="40" height="8" rx="3" fill="${G}" opacity=".85"/>
+    <rect x="164" y="158" width="17" height="10" rx="4" fill="${DK}"/></g>`;
+  // 左手副手
+  if(has('shield'))front+=`<g><circle cx="56" cy="140" r="27" fill="${b.c2}"/><circle cx="56" cy="140" r="18" fill="${b.c1}"/>
+    <circle cx="56" cy="140" r="7.5" fill="${G}"/></g>`;
+  if(has('sonic'))front+=`<g><rect x="30" y="116" width="30" height="42" rx="9" fill="${D}"/>
+    <circle cx="45" cy="129" r="7.5" fill="${DK}"/><circle cx="45" cy="147" r="5" fill="${DK}"/>
+    <path d="M22 124 q-9 13 0 26" stroke="${G}" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <path d="M13 118 q-13 19 0 38" stroke="${G}" stroke-width="3" fill="none" opacity=".6" stroke-linecap="round"/></g>`;
+  // 胸甲
+  if(has('core'))front+=`<g><circle cx="120" cy="107" r="16" fill="${DK}"/><circle cx="120" cy="107" r="10.5" fill="${G}"/>
+    <circle cx="120" cy="107" r="5" fill="#fff"/>
+    <path d="M120 86 L127 97 L120 95 L113 97 Z" fill="${G}"/><path d="M120 128 L127 117 L120 119 L113 117 Z" fill="${G}"/></g>`;
+  return layer==='back'?back:front;
+}
+function robotSVG(b,gear){
+  gear=gear||[];
   const {type,c1,c2,c3}=b;const W='#33302D',RIM='#CFC7BD',G='#9CC6C0';
   let acc='';
   if(type==='car')acc=`<circle cx="72" cy="90" r="13" fill="${W}"/><circle cx="72" cy="90" r="6" fill="${RIM}"/><circle cx="168" cy="90" r="13" fill="${W}"/><circle cx="168" cy="90" r="6" fill="${RIM}"/><rect x="104" y="96" width="32" height="6" rx="2" fill="${c3}"/>`;
@@ -1373,6 +1487,7 @@ function robotSVG(b){
   if(type==='heli')acc=`<rect x="44" y="26" width="152" height="6" rx="3" fill="${W}"/><rect x="116" y="30" width="8" height="12" fill="${W}"/><rect x="60" y="150" width="120" height="5" rx="2" fill="${W}"/>`;
   if(type==='tank')acc=`<rect x="172" y="118" width="60" height="11" rx="3" fill="#6B6259"/><rect x="60" y="124" width="22" height="30" rx="4" fill="${c3}"/><rect x="104" y="128" width="32" height="6" rx="2" fill="${c3}"/>`;
   return `<g class="robot">
+   <g class="p p-acc">${gearSVG(b,gear,'back')}</g>
    <g class="p p-legs">
     <rect x="94" y="164" width="24" height="58" rx="6" fill="${c1}"/><rect x="122" y="164" width="24" height="58" rx="6" fill="${c1}"/>
     <rect x="86" y="218" width="34" height="16" rx="5" fill="${c2}"/><rect x="120" y="218" width="34" height="16" rx="5" fill="${c2}"/>
@@ -1401,9 +1516,10 @@ function robotSVG(b){
     <rect x="96" y="46" width="6" height="16" rx="2" fill="${c2}"/><rect x="138" y="46" width="6" height="16" rx="2" fill="${c2}"/>
    </g>
    <g class="p p-acc">${acc}</g>
+   <g class="p p-acc">${gearSVG(b,gear,'front')}</g>
   </g>`;
 }
-const botSVG=b=>`<svg viewBox="0 0 240 260" aria-label="${b.name}機甲"><g class="veh">${vehicleSVG(b)}</g>${robotSVG(b)}</svg>`;
+const botSVG=(b,gear)=>`<svg viewBox="0 0 240 260" aria-label="${b.name}機甲"><g class="veh">${vehicleSVG(b)}</g>${robotSVG(b,gear)}</svg>`;
 const miniSVG=b=>`<svg viewBox="10 60 220 130" aria-hidden="true">${vehicleSVG(b)}</svg>`;
 
 /* ================= 存檔 ================= */
@@ -1423,8 +1539,11 @@ const pickAvatar=()=>{const used=Object.values(DB.profiles).map(p=>p.avatar);ret
 
 /* 收藏庫：每台解鎖的機甲記錄拿到的日期、出過幾次任務、最好成績、累積能量 */
 function ensureCollection(){
-  save.collection=save.collection||{};let changed=false;
-  BOTS.forEach((b,i)=>{if(i<=save.completed&&!save.collection[b.id]){
+  save.collection=save.collection||{};save.paint=save.paint||{};
+  // 舊版是「完成 N 次任務解鎖 N 台」，換成星星制的時候把已經拿到的記下來
+  if(save.grandfather===undefined){save.grandfather=save.completed>0?save.completed:-1}
+  let changed=false;
+  BOTS.forEach((b,i)=>{if((save.stars>=b.star||i<=save.grandfather)&&!save.collection[b.id]){
     save.collection[b.id]={at:today(),plays:0,stars:save.best[b.id]||0,energy:0};changed=true}});
   if(changed)persist();
 }
@@ -1483,7 +1602,31 @@ function readQuestion(q,force){
 const app=document.getElementById('app');
 let sel={tier:save.tier||0,subj:'math',bot:'flash'};
 let g=null;
-const unlocked=i=>i<=save.completed;
+/* 解鎖看累積星星；舊版玩家已經拿到的照樣保留，不會被收回去 */
+const unlocked=i=>save.stars>=BOTS[i].star||i<=(save.grandfather??-1);
+const gotCount=()=>BOTS.filter((b,i)=>unlocked(i)).length;
+const nextLocked=()=>{const i=BOTS.findIndex((b,k)=>!unlocked(k));return i<0?null:{bot:BOTS[i],need:BOTS[i].star-save.stars}};
+/* 塗裝：看這台機甲自己的出擊次數 */
+const paintsOf=id=>PAINTS[id]||[];
+const paintOpen=(id,k)=>((save.collection[id]||{}).plays||0)>=PAINT_AT[k];
+const paintIdx=id=>{const k=(save.paint||{})[id]||0;return paintOpen(id,k)?k:0};
+const skin=b=>{const p=paintsOf(b.id)[paintIdx(b.id)];return p?{...b,c1:p.c1,c2:p.c2,c3:p.c3}:b};
+const gearOpen=id=>{const G=GEAR.find(x=>x.id===id);return !!G&&G.cond(save)};
+const gearOn=botId=>{save.gear=save.gear||{};return (save.gear[botId]||[]).filter(gearOpen)};
+function toggleGear(botId,gid){
+  const G=GEAR.find(x=>x.id===gid);if(!G||!gearOpen(gid))return;
+  save.gear=save.gear||{};const cur=(save.gear[botId]||[]).filter(gearOpen);
+  const i=cur.indexOf(gid);
+  if(i>=0)cur.splice(i,1);
+  else{ // 一個部位只能裝一件
+    const same=cur.find(x=>(GEAR.find(y=>y.id===x)||{}).slot===G.slot);
+    if(same)cur.splice(cur.indexOf(same),1);
+    cur.push(gid);}
+  save.gear[botId]=cur;persist();
+}
+/* 畫出來的樣子＝塗裝＋裝備 */
+const dressed=b=>botSVG(skin(b),gearOn(b.id));
+const miniDressed=b=>miniSVG(skin(b));
 const starStr=n=>'★'.repeat(n)+'<span class="off">'+'★'.repeat(3-n)+'</span>';
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
 const isKid=()=>TIERS[sel.tier].kid;
@@ -1510,7 +1653,7 @@ function renderStart(){
       <h1>答對題目，機甲就會變形！</h1>
       <p class="lede">選一台機甲、選一個想學的東西。每答對一題就補一格能量，五格集滿，車子就會變成機器人。每完成一次任務，就能解鎖新的機甲。</p>
     </div>
-    <div class="art"><div class="bot showrobot" aria-hidden="true">${botSVG(bot)}</div></div>
+    <div class="art"><div class="bot showrobot" aria-hidden="true">${dressed(bot)}</div></div>
   </div>
   <section class="pick"><h2><span class="step">1</span>誰來當駕駛員？</h2>
     <div class="tiers kid">${TIERS.filter(t=>t.kid).map(tierCard).join('')}</div>
@@ -1522,9 +1665,10 @@ function renderStart(){
     <button class="sub wide ${sel.subj==='mix'?'on':''}" data-subj="mix"><span class="ico">${MIX.icon}</span>${MIX.name}<small>${MIX.kid}</small></button>
   </section>
   <section class="pick"><h2><span class="step">3</span>選一台機甲</h2>
+    ${(()=>{const nx=nextLocked();return nx?`<p class="toward">再 <b>${nx.need}</b> 顆星就能解鎖 <b>${nx.bot.name}</b>（${nx.bot.tag}）</p>`:''})()}
     <div class="bots">${BOTS.map((b,i)=>{const lk=!unlocked(i);const st=save.best[b.id]||0;return `<button class="botcard ${sel.bot===b.id?'on':''} ${lk?'locked':''}" data-bot="${b.id}" ${lk?'disabled':''} title="${b.blurb}">
-      <div class="mini">${miniSVG(b)}</div><b>${b.name}</b><small>${b.tag}</small><div class="stars" aria-label="最佳成績 ${st} 顆星">${st?'⭐'.repeat(st):''}</div>
-      ${lk?`<div class="lock">🔒<span>再完成 ${i-save.completed} 次任務</span></div>`:''}</button>`}).join('')}</div>
+      <div class="mini">${miniDressed(b)}</div><b>${b.name}</b><small>${b.tag}</small><div class="stars" aria-label="最佳成績 ${st} 顆星">${st?'⭐'.repeat(st):''}</div>
+      ${lk?`<div class="lock">🔒<span>${b.star} 顆星</span></div>`:''}</button>`}).join('')}</div>
   </section>
   <section class="pick"><h2><span class="step">4</span>這一輪要答幾題？</h2>
     <div class="rounds">${ROUNDS.map(r=>`<button class="rnd ${roundLen(sel.tier)===r?'on':''}" data-round="${r}"><b>${r}</b><small>題</small><span>${Math.ceil(r/5)} 台機甲</span></button>`).join('')}</div>
@@ -1660,6 +1804,7 @@ function toyTransform(id){
     },(5-k)*220));
   }
 }
+const paintGot=()=>BOTS.reduce((a,b)=>a+(unlocked(BOTS.indexOf(b))?paintsOf(b.id).filter((x,k)=>paintOpen(b.id,k)).length:0),0);
 function renderCollection(){
   ensureCollection();clearToys();
   const got=BOTS.filter((b,i)=>unlocked(i));
@@ -1671,18 +1816,28 @@ function renderCollection(){
       <p class="lede">這些是你贏來的機甲。點一下任何一台，它就會在你面前變形。</p>
     </div>
     <div class="collstats">
-      <div class="stat"><b>${got.length} / ${BOTS.length}</b><span>已收藏</span></div>
-      <div class="stat"><b>${save.stars}</b><span>累積星星</span></div>
-      <div class="stat"><b>${totalPlays}</b><span>出擊次數</span></div>
+      <div class="stat"><b>${got.length} / ${BOTS.length}</b><span>機甲</span></div>
+      <div class="stat"><b>${paintGot()} / ${BOTS.length*4}</b><span>塗裝</span></div>
+      <div class="stat"><b>${GEAR.filter(x=>x.cond(save)).length} / ${GEAR.length}</b><span>裝備</span></div>
+      <div class="stat"><b>${save.stars}</b><span>星星</span></div>
     </div>
   </div>
+  ${(()=>{const nx=nextLocked();return nx?`<div class="toward big">再 <b>${nx.need}</b> 顆星就能解鎖 <b>${nx.bot.name}</b>（${nx.bot.tag}）</div>`:'<div class="toward big">五台機甲全部到手了！繼續玩可以收集塗裝和裝備。</div>'})()}
+  <details class="parents"><summary>還沒解鎖的裝備要怎麼拿？</summary><div class="body">
+    <table><tr><th>裝備</th><th>部位</th><th>解鎖條件</th><th>進度</th></tr>
+    ${GEAR.map(gr=>{const ok=gr.cond(save),left=Math.max(0,gr.need(save));
+      return `<tr><th>${gr.icon} ${gr.n}</th><td>${SLOTS[gr.slot]}</td><td>${gr.how}</td>
+        <td>${ok?'<b style="color:var(--good)">已解鎖 ✓</b>':'還差 '+left}</td></tr>`}).join('')}
+    </table>
+    <p style="margin-top:10px">裝備的條件刻意分散在不同科目，只練一科拿不到全部。</p>
+  </div></details>
   <div class="shelf">${BOTS.map((b,i)=>{
     const lk=!unlocked(i);const c=save.collection[b.id]||{};
     if(lk)return `<div class="trophy-card locked"><div class="silhouette">${miniSVG(b)}</div>
-      <div class="tinfo"><b>？？？</b><small>再完成 ${i-save.completed} 次任務就能得到</small></div>
+      <div class="tinfo"><b>？？？</b><small>累積 ${b.star} 顆星就能得到，還差 ${Math.max(0,b.star-save.stars)} 顆</small></div>
       <div class="tlock">🔒</div></div>`;
     return `<div class="trophy-card">
-      <div class="tstage"><div class="bot" id="toy-${b.id}">${botSVG(b)}</div></div>
+      <div class="tstage"><div class="bot" id="toy-${b.id}">${dressed(b)}</div></div>
       <div class="tinfo">
         <div class="tname"><b>${b.name}</b><span class="tstars">${'⭐'.repeat(c.stars||0)}</span></div>
         <small>${b.tag}・${b.blurb}</small>
@@ -1691,6 +1846,18 @@ function renderCollection(){
       <div class="tacts">
         <button class="bigbtn ghost small" id="btn-${b.id}" data-toy="${b.id}">變形！</button>
         <span class="tmode" id="mode-${b.id}">車輛模式</span>
+      </div>
+      <div class="custom">
+        <div class="crow"><span class="clab">塗裝</span>
+          <div class="chips">${paintsOf(b.id).map((pt,k)=>{const open=paintOpen(b.id,k);
+            return `<button class="chip2 ${paintIdx(b.id)===k?'on':''} ${open?'':'lock'}" data-paint="${b.id}:${k}" ${open?'':'disabled'}
+              title="${open?pt.n:'這台出擊 '+PAINT_AT[k]+' 次解鎖'}">
+              <i style="background:${pt.c1};border-color:${pt.c2}"></i>${open?pt.n:'🔒 '+PAINT_AT[k]+' 次'}</button>`}).join('')}</div></div>
+        <div class="crow"><span class="clab">裝備</span>
+          <div class="chips">${GEAR.map(gr=>{const open=gr.cond(save),on=gearOn(b.id).includes(gr.id);
+            return `<button class="chip2 ${on?'on':''} ${open?'':'lock'}" data-gear="${b.id}:${gr.id}" ${open?'':'disabled'}
+              title="${open?SLOTS[gr.slot]+'・'+gr.n:gr.how+'（還差 '+Math.max(0,gr.need(save))+'）'}">
+              ${gr.icon}${open?gr.n:'🔒'}</button>`}).join('')}</div></div>
       </div></div>`}).join('')}</div>
   <div class="go"><button class="bigbtn" data-act="home">回機庫出擊</button></div>`;
 }
@@ -1728,7 +1895,7 @@ function renderPlay(){
     <div class="hangar">
       <div class="nameplate"><b>${bot.name}</b><span>${bot.tag.toUpperCase()}</span></div>
       <div class="mode" id="mode">${modeLabel()}</div>
-      <div class="bot ${Array.from({length:s},(_,k)=>'s'+(k+1)).join(' ')}" id="bot"><div class="glowring"></div>${botSVG(bot)}</div>
+      <div class="bot ${Array.from({length:s},(_,k)=>'s'+(k+1)).join(' ')}" id="bot"><div class="glowring"></div>${dressed(bot)}</div>
       <div class="energy"><span class="lab">ENERGY</span>${[0,1,2,3,4].map(k=>`<i class="cell ${k<s?'on':''}"></i>`).join('')}${g.cleared?`<span class="cleared">✦ ${g.cleared}</span>`:''}</div>
       <div class="lift"></div>
     </div>
@@ -1793,13 +1960,21 @@ function finish(){
   const rate=g.ok/n;
   const stars=kid?(rate>=1?3:rate>=.8?2:1):(rate>=.9?3:rate>=.7?2:rate>=.5?1:0);
   const done=kid||rate>=.5;let unlockedNew=null;
-  save.rounds++;
-  if(done){save.completed++;if(save.completed<BOTS.length)unlockedNew=BOTS[save.completed];}
-  save.stars+=stars;save.best[g.bot.id]=Math.max(save.best[g.bot.id]||0,stars);
-  const c=save.collection[g.bot.id]=save.collection[g.bot.id]||{at:today(),plays:0,stars:0,energy:0};
+  save.rounds++;if(done)save.completed++;if(stars>=3)save.perfect=(save.perfect||0)+1;
+  const hadBots=BOTS.filter((b,i)=>unlocked(i)).map(b=>b.id);
+  const usedId=curMech().id, hadPaints=paintsOf(usedId).filter((x,k)=>paintOpen(usedId,k)).length;
+  save.stars+=stars;save.best[usedId]=Math.max(save.best[usedId]||0,stars);
+  const c=save.collection[usedId]=save.collection[usedId]||{at:today(),plays:0,stars:0,energy:0};
   c.plays++;c.stars=Math.max(c.stars,stars);c.energy+=g.ok;
-  if(unlockedNew)save.collection[unlockedNew.id]={at:today(),plays:0,stars:0,energy:0};
+  // 這一局同時出動的其他機甲也算出擊，塗裝才解得開
+  g.mechs.slice(0,Math.max(1,g.cleared)).forEach(m=>{if(m.id===usedId)return;
+    const x=save.collection[m.id]=save.collection[m.id]||{at:today(),plays:0,stars:0,energy:0};x.plays++});
   persist();ensureCollection();
+  unlockedNew=BOTS.find((b,i)=>unlocked(i)&&!hadBots.includes(b.id))||null;
+  if(unlockedNew)save.collection[unlockedNew.id]={at:today(),plays:0,stars:0,energy:0};
+  const nowPaints=paintsOf(usedId).filter((x,k)=>paintOpen(usedId,k)).length;
+  const newPaint=nowPaints>hadPaints?paintsOf(usedId)[nowPaints-1]:null;
+  persist();
   if(stars>=2)SFX.fanfare();else if(done)SFX.transform();
   const wrong=g.log.filter(l=>!l.ok);
   const title=stars===3?'完美出擊！':stars===2?'表現很棒！':stars===1?'任務完成！':'再試一次，你可以的！';
@@ -1807,7 +1982,7 @@ function finish(){
     <div class="hangar">
       <div class="nameplate"><b>${curMech().name}</b><span>${curMech().tag.toUpperCase()}</span></div>
       <div class="mode">${done?'任務完成 MISSION CLEAR':'任務未完成 TRY AGAIN'}</div>
-      <div class="bot ${g.stage>=CELLS||done?'s1 s2 s3 s4 s5':Array.from({length:g.stage},(_,k)=>'s'+(k+1)).join(' ')}" id="bot"><div class="glowring"></div>${botSVG(curMech())}</div>
+      <div class="bot ${g.stage>=CELLS||done?'s1 s2 s3 s4 s5':Array.from({length:g.stage},(_,k)=>'s'+(k+1)).join(' ')}" id="bot"><div class="glowring"></div>${dressed(curMech())}</div>
       <div class="energy"><span class="lab">ENERGY</span>${[0,1,2,3,4].map(k=>`<i class="cell on"></i>`).join('')}</div>
       <div class="lift"></div>
     </div>
@@ -1815,7 +1990,9 @@ function finish(){
       <h2>${title}</h2>
       <div class="starrow" aria-label="${stars} 顆星">${starStr(stars)}</div>
       <div class="nums"><div><b>${g.ok} / ${n}</b><span>${kid?'一次就答對':'答對題數'}</span></div><div><b>${Math.max(g.cleared,1)}</b><span>變形完成的機甲</span></div><div><b>${Math.round(100*g.ok/n)}%</b><span>答對率</span></div></div>
-      ${unlockedNew?`<div class="unlock">🔓 解鎖新機甲：${unlockedNew.name}（${unlockedNew.tag}）！回機庫看看。</div>`:''}
+      ${unlockedNew?`<div class="unlock">🔓 解鎖新機甲：${unlockedNew.name}（${unlockedNew.tag}）！收藏庫看得到。</div>`:''}
+      ${newPaint?`<div class="unlock paint">🎨 ${curMech().name} 解鎖新塗裝：${newPaint.n}！到收藏庫換上看看。</div>`:''}
+      ${(()=>{const nx=nextLocked();return nx?`<div class="toward">再 <b>${nx.need}</b> 顆星就能解鎖 <b>${nx.bot.name}</b>（${nx.bot.tag}）</div>`:''})()}
       <div class="acts"><button class="bigbtn" data-act="again">再玩一次</button><button class="bigbtn ghost" data-act="collection">看收藏庫 🏆</button><button class="bigbtn ghost" data-act="home">回機庫</button></div>
     </div></div>
     ${wrong.length?`<div class="review"><h3>${kid?'這次需要再試一次的題目':'這次答錯的題目'}</h3><ol>${wrong.map(w=>`<li>${esc(w.q).replace(/___/g,'＿＿')} → <b>${esc(w.ans)}</b>${w.why?`　${esc(w.why)}`:''}</li>`).join('')}</ol></div>`:''}`;
@@ -1833,6 +2010,8 @@ app.addEventListener('click',async e=>{
   if(b.dataset.bot){sel.bot=b.dataset.bot;renderStart();if(isKid())speak(BOTS.find(x=>x.id===sel.bot).name);return}
   if(b.dataset.opt!==undefined){answer(+b.dataset.opt);return}
   if(b.dataset.toy){toyTransform(b.dataset.toy);return}
+  if(b.dataset.paint){const [id,k]=b.dataset.paint.split(':');save.paint=save.paint||{};save.paint[id]=+k;persist();SFX.step();renderCollection();return}
+  if(b.dataset.gear){const [id,gid]=b.dataset.gear.split(':');toggleGear(id,gid);SFX.step();renderCollection();return}
   if(b.dataset.use){useProfile(b.dataset.use);SFX.step();renderStart();return}
   if(b.dataset.round){save.round=+b.dataset.round;persist();SFX.step();renderStart();return}
   if(b.dataset.av){const name=(document.getElementById('newname')||{}).value||'';newAvatar=b.dataset.av;renderProfiles({name});return}
@@ -1889,7 +2068,7 @@ document.addEventListener('keydown',e=>{
 if('speechSynthesis'in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
 
 /* ================= 有新版本時通知使用者 ================= */
-const APP_VERSION='2.3.0';
+const APP_VERSION='2.4.0';
 function showUpdateBanner(apply){
   if(document.getElementById('upbar'))return;
   const bar=document.createElement('div');bar.id='upbar';bar.className='upbar';
