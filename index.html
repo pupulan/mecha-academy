@@ -355,6 +355,19 @@ section.pick{background:var(--paper);border-radius:var(--r);padding:16px 18px;ma
 .kid .hearbtn{width:72px;height:72px;font-size:1.8rem}
 .kid .hearlab{font-size:1.25rem}
 
+/* ---------- 題數選擇 ---------- */
+.rounds{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.rnd{border:3px solid var(--line);border-radius:14px;padding:12px 8px;background:var(--paper2);
+  display:flex;flex-direction:column;align-items:center;gap:1px;transition:transform .15s,border-color .15s}
+.rnd:hover{transform:translateY(-2px)}
+.rnd.on{border-color:var(--hazard);background:#FBF1DC}
+.rnd b{font-family:var(--fn);font-weight:800;font-size:1.7rem;line-height:1.1}
+.rnd small{font-family:var(--fd);font-size:.85rem;color:var(--ink2);margin-top:-4px}
+.rnd span{font-size:.75rem;color:var(--ink2);margin-top:3px}
+.rhint{color:var(--ink2);font-size:.88rem;margin-top:10px;line-height:1.6}
+.energy .cleared{flex:none;font-family:var(--fn);font-weight:800;font-size:.8rem;color:var(--hazard);margin-left:2px}
+@media (max-width:480px){.rounds{grid-template-columns:repeat(4,1fr);gap:6px}.rnd{padding:10px 4px}.rnd b{font-size:1.35rem}}
+
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition-duration:.01ms!important}
 }
@@ -398,7 +411,7 @@ const BOTS=[
 ];
 const TIERS=[
   {id:0,name:'小小駕駛員',age:'3–4 歲',icon:'🐣',opts:3,round:5,kid:true,desc:'聽聲音找圖片：數到 5、比大小、顏色形狀、動物與日常物品'},
-  {id:1,name:'見習駕駛員',age:'5–6 歲',icon:'🐥',opts:3,round:5,kid:true,desc:'數到 10、10 以內加減、認字與注音、方向節日、台灣和世界'},
+  {id:1,name:'見習駕駛員',age:'5–6 歲',icon:'🐥',opts:3,round:10,kid:true,desc:'數到 10、10 以內加減、認字與注音、方向節日、台灣和世界'},
   {id:2,name:'王牌駕駛員',age:'7–9 歲',icon:'🦅',opts:4,round:10,desc:'加減乘除、時間與錢、量詞成語、台灣縣市與歷史人物'},
   {id:3,name:'指揮官',age:'10–12 歲',icon:'🚀',opts:4,round:10,desc:'分數小數、面積百分比、成語修辭、世界地理與歷史順序'},
 ];
@@ -940,11 +953,103 @@ geo2:[
 ],
 };
 
+/* 自然常識補充題 */
+const SCI2={
+t34:[
+ ['哪一個是雞？',[P('🐔','雞'),P('🐷','豬'),P('🐴','馬')]],
+ ['哪一個是蝴蝶？',[P('🦋','蝴蝶'),P('🐝','蜜蜂'),P('🐞','瓢蟲')]],
+ ['哪一個是樹葉？',[P('🍃','樹葉'),P('🌸','花'),P('🍎','蘋果')]],
+ ['哪一個會浮在水上？',[P('🛟','游泳圈'),P('🪨','石頭'),P('🔩','鐵釘')],'輕輕的東西會浮起來。'],
+ ['小魚長大會變成什麼？',['大魚','小鳥','兔子'],'','🐟'],
+ ['蛋裡面會孵出什麼？',[P('🐣','小雞'),P('🌸','花'),P('🚗','車子')]],
+ ['我們用什麼吃東西？',[P('👄','嘴巴'),P('👂','耳朵'),P('👀','眼睛')]],
+ ['天很黑的時候要開什麼？',[P('💡','電燈'),P('🚿','水龍頭'),P('🪑','椅子')]],
+ ['植物要喝什麼才會長大？',[P('💧','水'),P('🥛','牛奶'),P('🧃','果汁')],'植物需要水和陽光。'],
+ ['蜜蜂會做出什麼？',[P('🍯','蜂蜜'),P('🥛','牛奶'),P('🥚','蛋')]],
+ ['貓咪身上有什麼？',['毛','羽毛','鱗片'],'貓咪身上有軟軟的毛。','🐱'],
+ ['魚身上有什麼？',['鱗片','毛','羽毛'],'魚身上有一片一片的鱗片。','🐟'],
+ ['夏天會不會流汗？',['會','不會'],'天氣熱身體會流汗，要多喝水。','☀️'],
+ ['受傷流血要怎麼辦？',[P('🩹','貼 OK 繃'),P('🍬','吃糖果'),P('📺','看電視')]],
+ ['哪一個是月亮？',[P('🌙','月亮'),P('☀️','太陽'),P('⭐','星星')]],
+ ['哪一個是雲？',[P('☁️','雲'),P('🌊','海'),P('⛰️','山')]],
+ ['很吵的時候，耳朵會覺得怎麼樣？',['不舒服','很開心','肚子餓'],'太大聲會傷害耳朵。','👂'],
+ ['蝸牛背上有什麼？',['殼','翅膀','角'],'蝸牛背著自己的殼。','🐌'],
+],
+t56:[
+ ['小狗長大會變成什麼？',['大狗','小貓','小鳥'],'','🐶'],
+ ['蛋裡面孵出來的小雞，身上有什麼？',['絨毛','鱗片','殼'],'','🐥'],
+ ['樹的哪一個部分在土裡？',['根','葉子','花'],'根在土裡吸水。','🌳'],
+ ['花變成什麼以後才有種子？',['果實','葉子','根'],'開花、結果，果實裡有種子。','🌸'],
+ ['太陽可以給我們什麼？',['光和熱','水和土','風和雨'],'','☀️'],
+ ['影子什麼時候會出現？',['有光照到東西的時候','天很黑的時候','下雨的時候'],'光被擋住就有影子。'],
+ ['一天當中，什麼時候影子最短？',['中午','早上','晚上'],'太陽在正上方時影子最短。'],
+ ['水從高的地方會往哪裡流？',['低的地方','高的地方','旁邊'],'水往低處流。','💧'],
+ ['把糖放進水裡會怎麼樣？',['溶解不見了','浮起來','變成石頭'],'糖會溶在水裡。'],
+ ['冰箱可以讓食物怎麼樣？',['放比較久不會壞','長大','變甜'],'低溫可以減慢食物腐壞。','🧊'],
+ ['哪一個動物是用肺呼吸的？',[P('🐬','海豚'),P('🐟','魚'),P('🦐','蝦')],'海豚是哺乳類，要浮上水面換氣。'],
+ ['青蛙用什麼抓蟲子？',['舌頭','手','尾巴'],'青蛙的舌頭又長又黏。','🐸'],
+ ['哪一個是種子？',[P('🌰','栗子'),P('🍃','葉子'),P('🌸','花瓣')]],
+ ['蜘蛛結網是為了什麼？',['抓蟲子吃','睡覺','裝飾'],'','🕸️'],
+ ['刷牙可以預防什麼？',['蛀牙','感冒','近視'],'','🦷'],
+ ['眼睛太靠近螢幕會怎麼樣？',['容易近視','變大','變亮'],'看螢幕要保持距離、多休息。','👀'],
+ ['多吃蔬菜水果對身體？',['很好','不好','沒有差'],'蔬果有維生素和纖維。','🥦'],
+ ['地震來的時候要躲在哪裡？',['桌子下面','窗戶旁邊','電梯裡'],'趴下、掩護、穩住。'],
+ ['風可以做什麼？',['吹動風車發電','讓水結冰','讓天空變黑'],'風力可以發電。','💨'],
+ ['回收的紙可以做成什麼？',['新的紙','玻璃','鐵'],'紙類回收可以再造紙。','♻️'],
+],
+t1:[
+ ['蜜蜂在花朵之間飛來飛去，幫植物做什麼？',['傳播花粉','澆水','施肥','除草'],'授粉之後才能結果。'],
+ ['種子靠什麼傳播到遠方？',['風、水、動物','只有人類','電','聲音'],'蒲公英靠風，椰子靠水。'],
+ ['候鳥為什麼要遷徙？',['找食物和適合的氣候','運動','迷路','比賽'],''],
+ ['變色龍會變色是為了什麼？',['偽裝和溝通','好看','取暖','游泳'],''],
+ ['月亮本身會發光嗎？',['不會，它反射太陽的光','會，像太陽一樣','只有滿月會','只有晚上會'],''],
+ ['流星其實是什麼？',['進入大氣層燃燒的小石塊','掉下來的星星','飛機','雲'],''],
+ ['彩虹是怎麼形成的？',['陽光被水滴折射和反射','雲染上顏色','風吹出來的','太陽發出七種光'],''],
+ ['颱風是在哪裡形成的？',['溫暖的海面上','高山上','沙漠裡','南極'],'需要溫暖的海水提供能量。'],
+ ['地震是什麼造成的？',['地底下的板塊移動','風太大','下太多雨','太陽太熱'],''],
+ ['土壤裡的蚯蚓對植物有什麼幫助？',['鬆土，讓空氣和水進去','把根吃掉','擋住陽光','讓土變硬'],''],
+ ['人體最堅硬的部分是？',['牙齒的琺瑯質','骨頭','指甲','頭髮'],''],
+ ['我們身體裡負責過濾血液的器官是？',['腎臟','心臟','肺','胃'],'腎臟把廢物變成尿。'],
+ ['吃進去的食物先到哪裡？',['胃','小腸','大腸','肺'],'口腔→食道→胃→小腸→大腸。'],
+ ['骨頭的作用是什麼？',['支撐身體、保護器官','消化食物','呼吸','思考'],''],
+ ['蒸發和凝結的差別是？',['蒸發是液體變氣體，凝結是氣體變液體','兩個一樣','蒸發是變冷','凝結是變熱'],''],
+ ['把鹽加進冰裡，冰會怎麼樣？',['融化得比較快','變得更硬','變成石頭','沒有變化'],'鹽會降低冰的熔點。'],
+ ['放大鏡是利用什麼原理？',['光的折射','光的反射','聲音','磁力'],'凸透鏡讓影像放大。'],
+ ['指南針為什麼會指北？',['因為地球有磁場','因為北方比較冷','因為太陽','因為風'],''],
+ ['聲音在真空中可以傳播嗎？',['不行，需要介質','可以','只有大聲才行','只在白天可以'],'太空中是安靜的。'],
+ ['植物的葉子為什麼是綠色的？',['因為含有葉綠素','因為喝了綠色的水','因為土是綠的','因為反射綠光以外的光'],'葉綠素吸收紅光和藍光，反射綠光。'],
+],
+t2:[
+ ['細胞是什麼？',['構成生物體的基本單位','一種細菌','一種病毒','一種礦物'],''],
+ ['人類的遺傳訊息儲存在哪裡？',['DNA','血液','肌肉','脂肪'],''],
+ ['光合作用主要發生在植物的哪個部位？',['葉子','根','花','果實'],'葉子裡的葉綠體。'],
+ ['生態系中能量的最初來源是？',['太陽','土壤','水','空氣'],'植物把光能轉成化學能。'],
+ ['食物鏈越往上，個體數量通常會？',['越少','越多','一樣','無關'],'能量在每一層都會流失。'],
+ ['生物多樣性減少會造成什麼？',['生態系變得脆弱','生態系更穩定','沒有影響','食物變多'],''],
+ ['臭氧層的功能是什麼？',['阻擋紫外線','製造氧氣','降雨','產生風'],''],
+ ['海平面上升主要和什麼有關？',['全球暖化造成冰融化和海水膨脹','月亮引力','地震','颱風'],''],
+ ['再生能源包括下列哪一項？',['太陽能','石油','煤炭','天然氣'],'風力、水力、地熱也是。'],
+ ['密度的定義是？',['質量除以體積','質量乘以體積','體積除以重量','重量加體積'],''],
+ ['物體浮沉的關鍵是什麼？',['物體與液體的密度比較','物體的大小','物體的顏色','物體的形狀'],''],
+ ['摩擦力的方向是？',['和運動方向相反','和運動方向相同','向上','向下'],''],
+ ['地球的重力讓物體往哪個方向掉？',['地心','天空','東方','隨機'],''],
+ ['能量守恆定律是說什麼？',['能量不會消失，只會轉換形式','能量會不斷增加','能量會消失','能量不能轉換'],''],
+ ['並聯電路中拿掉一顆燈泡，其他燈泡會？',['照常亮','全部不亮','更暗','爆掉'],'並聯有多條路徑。'],
+ ['電池的兩端分別叫什麼？',['正極和負極','南極和北極','上極和下極','左極和右極'],''],
+ ['白光通過三稜鏡會發生什麼？',['分散成七彩','消失','變成黑色','變得更亮'],'這叫色散。'],
+ ['凹透鏡和凸透鏡的差別是？',['凹透鏡使光發散，凸透鏡使光聚集','兩個一樣','凹透鏡比較大','凸透鏡比較重'],'近視眼鏡用凹透鏡。'],
+ ['化學變化和物理變化的差別是？',['化學變化產生新物質','化學變化比較快','物理變化看不見','兩個一樣'],'燃燒是化學變化，融化是物理變化。'],
+ ['鐵生鏽是什麼變化？',['化學變化','物理變化','都不是','兩者都是'],'鐵和氧氣結合成新物質。'],
+ ['金星為什麼那麼熱？',['濃厚的二氧化碳造成強烈溫室效應','離太陽最近','有很多火山','自轉太快'],'水星才離太陽最近。'],
+ ['板塊互相擠壓會形成什麼？',['山脈','海洋','沙漠','冰河'],'喜馬拉雅山就是這樣形成的。'],
+],
+};
+
 /* 把補充題併進各科題庫 */
 const BANK={
   zh:[[...KID.zh34,...MORE.zh34],[...KID.zh56,...MORE.zh56],[...OLD.zh[1],...MORE.zh1],[...OLD.zh[2],...MORE.zh2]],
   geo:[[...KID.geo34,...MORE.geo34],[...KID.geo56,...MORE.geo56],[...OLD.geo[1],...MORE.geo1],[...OLD.geo[2],...MORE.geo2]],
-  sci:[SCI.t34,SCI.t56,SCI.t1,SCI.t2],
+  sci:[[...SCI.t34,...SCI2.t34],[...SCI.t56,...SCI2.t56],[...SCI.t1,...SCI2.t1],[...SCI.t2,...SCI2.t2]],
 };
 const BANK_TOTAL=Object.values(BANK).reduce((a,arr)=>a+arr.reduce((b,x)=>b+x.length,0),0);
 
@@ -1159,20 +1264,59 @@ function musicQ(tier){
 }
 
 const norm=o=>typeof o==='string'?{t:o,say:o}:o;
-function fromBank(subj,tier){
-  return shuffle(BANK[subj][tier]).map(x=>mk(x[0],x[1][0],x[1].slice(1),x[2]||'',x[3]||''));
+/* 抽牌式：每個「科目＋年齡」有一副洗好的牌，抽過的不放回，
+   整副抽完才重洗，所以整個題庫跑完一輪之前不會看到重複的題目。牌堆跟著小朋友存檔走。 */
+function deckDraw(subj,tier,n){
+  const key=subj+'-'+tier, bank=BANK[subj][tier], size=bank.length;
+  save.deck=save.deck||{};
+  let d=save.deck[key];
+  if(!d||d.size!==size||!Array.isArray(d.left)){d=save.deck[key]={size,left:shuffle([...Array(size).keys()]),last:-1}}
+  const out=[];const taken=new Set(),stems=new Set();const held=[];let guard=0;
+  while(out.length<n&&guard++<size*4){
+    if(!d.left.length){
+      d.left=shuffle([...Array(size).keys()]);
+      // 重洗之後，避免新的第一題剛好就是上一題
+      if(d.left.length>1&&d.left[0]===d.last){const j=1+Math.floor(Math.random()*(d.left.length-1));[d.left[0],d.left[j]]=[d.left[j],d.left[0]]}
+    }
+    const i=d.left.shift();
+    // 同一輪內不重複，也不出現同樣的問句（例如「這是什麼顏色？」配不同顏色算不同題，但同一輪只出一次）
+    if(taken.has(i)||stems.has(bank[i][0])){held.push(i);continue}
+    taken.add(i);stems.add(bank[i][0]);d.last=i;out.push(i);
+  }
+  d.left.push(...held);            // 這輪擱下的，下一輪再抽
+  while(out.length<n&&held.length)out.push(held.shift());
+  persist();
+  return out.map(i=>bank[i]).map(x=>mk(x[0],x[1][0],x[1].slice(1),x[2]||'',x[3]||''));
 }
+/* 數學和音樂是即時出題，用指紋擋掉短時間內重複出現的同一題 */
+const sigOf=q=>q.q+'|'+(q.vis||'')+'|'+(q.sound?JSON.stringify(q.sound.seq):'')+'|'+q.opts.map(o=>o&&o.t!==undefined?o.t:o).join(',');
+const RECENT_MAX=70;
+function genUnique(subj,tier,gen){
+  const key=subj+'-'+tier;
+  save.recent=save.recent||{};
+  const seen=save.recent[key]=save.recent[key]||[];
+  let q=null;
+  for(let i=0;i<30;i++){const c=gen();if(!seen.includes(sigOf(c))){q=c;break}}
+  if(!q)q=gen();
+  seen.push(sigOf(q));while(seen.length>RECENT_MAX)seen.shift();
+  return q;
+}
+const ROUNDS=[5,10,15,20];
+const roundLen=tier=>save.round&&ROUNDS.includes(save.round)?save.round:TIERS[tier].round;
 function buildRound(subj,tier){
-  const n=TIERS[tier].round;const qs=[];
+  const n=roundLen(tier);const qs=[];
   const tag=(q,id)=>{q.subj=id;return q};
-  if(subj==='math'){while(qs.length<n)qs.push(tag(MATH[tier](),'math'))}
-  else if(subj==='mus'){while(qs.length<n)qs.push(tag(musicQ(tier),'mus'))}
+  if(subj==='math'){while(qs.length<n)qs.push(tag(genUnique('math',tier,()=>MATH[tier]()),'math'))}
+  else if(subj==='mus'){while(qs.length<n)qs.push(tag(genUnique('mus',tier,()=>musicQ(tier)),'mus'))}
   else if(subj==='mix'){
-    const pool={zh:fromBank('zh',tier),sci:fromBank('sci',tier),geo:fromBank('geo',tier)};
-    const order=['math','zh','sci','mus','geo'];
+    const per=Math.ceil(n/5)+1;
+    const pool={zh:deckDraw('zh',tier,per),sci:deckDraw('sci',tier,per),geo:deckDraw('geo',tier,per)};
+    const order=shuffle(['math','zh','sci','mus','geo']);
     for(let i=0;i<n;i++){const k=order[i%5];
-      qs.push(k==='math'?tag(MATH[tier](),'math'):k==='mus'?tag(musicQ(tier),'mus'):tag(pool[k].pop(),k))}
-  }else{const b=fromBank(subj,tier);while(qs.length<n)qs.push(tag(b[qs.length%b.length],subj))}
+      qs.push(k==='math'?tag(genUnique('math',tier,()=>MATH[tier]()),'math')
+            :k==='mus'?tag(genUnique('mus',tier,()=>musicQ(tier)),'mus')
+            :tag(pool[k].shift(),k))}
+  }else{deckDraw(subj,tier,n).forEach(q=>qs.push(tag(q,subj)))}
   return qs.map(q=>{const opts=q.opts.map(norm);const idx=shuffle(opts.map((_,i)=>i));return{...q,opts:idx.map(i=>opts[i]),ans:idx.indexOf(q.ans)}});
 }
 /* ================= SVG 機甲 ================= */
@@ -1382,6 +1526,10 @@ function renderStart(){
       <div class="mini">${miniSVG(b)}</div><b>${b.name}</b><small>${b.tag}</small><div class="stars" aria-label="最佳成績 ${st} 顆星">${st?'⭐'.repeat(st):''}</div>
       ${lk?`<div class="lock">🔒<span>再完成 ${i-save.completed} 次任務</span></div>`:''}</button>`}).join('')}</div>
   </section>
+  <section class="pick"><h2><span class="step">4</span>這一輪要答幾題？</h2>
+    <div class="rounds">${ROUNDS.map(r=>`<button class="rnd ${roundLen(sel.tier)===r?'on':''}" data-round="${r}"><b>${r}</b><small>題</small><span>${Math.ceil(r/5)} 台機甲</span></button>`).join('')}</div>
+    <p class="rhint">每答對 5 題就變形完成一台機甲。選 10 題就會有兩台輪流進機庫，選 20 題就有四台。${save.round?'':`目前用的是「${TIERS[sel.tier].name}」的預設值 ${TIERS[sel.tier].round} 題。`}</p>
+  </section>
   <div class="go"><button class="bigbtn" data-act="start">出擊！</button></div>
   <details class="parents"><summary>給爸媽的說明</summary><div class="body">
     <p style="margin-bottom:10px"><a href="https://pupulan.github.io/mecha-academy/guide.html" target="_blank" rel="noopener" style="color:var(--rose2);font-weight:700">📘 打開完整的家長手冊（圖文版）</a>　可以直接分享給其他家長。</p>
@@ -1547,29 +1695,41 @@ function renderCollection(){
   <div class="go"><button class="bigbtn" data-act="home">回機庫出擊</button></div>`;
 }
 
+const CELLS=5;
 function startRound(){
   const bot=BOTS.find(b=>b.id===sel.bot);
-  g={bot,tier:sel.tier,subj:sel.subj,qs:buildRound(sel.subj,sel.tier),i:0,ok:0,energy:0,retried:false,log:[],answered:false,timer:null};
+  const qs=buildRound(sel.subj,sel.tier);
+  // 每 5 題答對就變形完一台。題數多的時候，後面會換下一台機甲進機庫。
+  const pool=BOTS.filter((b,i)=>unlocked(i));
+  const start=Math.max(0,pool.findIndex(b=>b.id===bot.id));
+  const need=Math.ceil(qs.length/CELLS);
+  const mechs=Array.from({length:need},(_,k)=>pool[(start+k)%pool.length]);
+  g={bot,mechs,slot:0,stage:0,tier:sel.tier,subj:sel.subj,qs,i:0,ok:0,cleared:0,
+     retried:false,log:[],answered:false,pendingSwap:false,timer:null};
   save.tier=sel.tier;persist();
   renderPlay();
 }
-const ROUNDN=()=>TIERS[g.tier].round;
-function stageOf(){return Math.min(5,g.energy)}
-function modeLabel(){const s=stageOf();return s===0?'車輛模式':s<5?`變形中 ${s} / 5`:'機甲模式 READY'}
+const ROUNDN=()=>g.qs.length;
+const curMech=()=>g.mechs[Math.min(g.slot,g.mechs.length-1)];
+function stageOf(){return g.stage}
+function modeLabel(){
+  const s=g.stage, tail=g.mechs.length>1?`　${g.slot+1} / ${g.mechs.length} 台`:'';
+  return (s===0?'車輛模式':s<CELLS?`變形中 ${s} / ${CELLS}`:'機甲模式 READY')+tail;
+}
 function optHTML(o,k){
   if(o.pic)return `<button class="opt pic ${o.group?'group':''} ${o.size||''}" data-opt="${k}" aria-label="${esc(o.say||o.t)}"><span class="emo">${o.t}</span></button>`;
   return `<button class="opt" data-opt="${k}"><span class="key">${'ABCD'[k]}</span><span>${esc(o.t)}</span></button>`;
 }
 function renderPlay(){
-  const q=g.qs[g.i];const t=TIERS[g.tier];const s=stageOf();const n=ROUNDN();
+  const q=g.qs[g.i];const t=TIERS[g.tier];const s=stageOf();const n=ROUNDN();const bot=curMech();
   const subjName=ALLSUBJ.find(x=>x.id===q.subj).name;
   const pics=q.opts[0].pic;
   app.innerHTML=header()+`<div class="stage ${t.kid?'kid':''} t${g.tier}">
     <div class="hangar">
-      <div class="nameplate"><b>${g.bot.name}</b><span>${g.bot.tag.toUpperCase()}</span></div>
+      <div class="nameplate"><b>${bot.name}</b><span>${bot.tag.toUpperCase()}</span></div>
       <div class="mode" id="mode">${modeLabel()}</div>
-      <div class="bot ${Array.from({length:s},(_,k)=>'s'+(k+1)).join(' ')}" id="bot"><div class="glowring"></div>${botSVG(g.bot)}</div>
-      <div class="energy"><span class="lab">ENERGY</span>${[0,1,2,3,4].map(k=>`<i class="cell ${k<s?'on':''}"></i>`).join('')}</div>
+      <div class="bot ${Array.from({length:s},(_,k)=>'s'+(k+1)).join(' ')}" id="bot"><div class="glowring"></div>${botSVG(bot)}</div>
+      <div class="energy"><span class="lab">ENERGY</span>${[0,1,2,3,4].map(k=>`<i class="cell ${k<s?'on':''}"></i>`).join('')}${g.cleared?`<span class="cleared">✦ ${g.cleared}</span>`:''}</div>
       <div class="lift"></div>
     </div>
     <div class="console">
@@ -1599,15 +1759,17 @@ function answer(k){
   g.log.push({q:q.q,ok:firstTry,ans:q.opts[q.ans].say||q.opts[q.ans].t,why:q.why});
   btns.forEach((b,i)=>{b.disabled=true;if(i===q.ans)b.classList.add('right');else if(i===k)b.classList.add('wrong');else b.classList.add('dim')});
   if(ok){
-    if(firstTry)g.ok++;g.energy++;const s=stageOf();const bot=document.getElementById('bot');
-    if(!bot.classList.contains('s'+s)){bot.classList.add('s'+s);document.querySelectorAll('.cell')[s-1]?.classList.add('on');document.getElementById('mode').textContent=modeLabel();
-      if(s===5){SFX.transform();sparkle(bot)}else SFX.step();}
+    if(firstTry)g.ok++;
+    g.stage=Math.min(CELLS,g.stage+1);const s=g.stage;const bot=document.getElementById('bot');
+    if(bot&&!bot.classList.contains('s'+s)){bot.classList.add('s'+s);document.querySelectorAll('.cell')[s-1]?.classList.add('on');
+      if(s===CELLS){g.cleared++;g.pendingSwap=g.slot<g.mechs.length-1;SFX.transform();sparkle(bot)}else SFX.step();
+      const ml=document.getElementById('mode');if(ml)ml.textContent=modeLabel();}
     else SFX.good();
     if(q.subj==='mus')setTimeout(()=>playSeq([['C4',.16],['E4',.16],['G4',.16],['C5',.3]]),260);
     const praise=pick(['答對了！','太棒了！','好厲害！','就是這個！']);
     fb.innerHTML=`<div class="feedback good"><div><b>${praise}</b>${q.why?`<p>${esc(q.why)}</p>`:''}</div><button class="next" data-act="next">下一題 ▶</button></div>`;
     if(kid)speak(s===5?praise+'變形完成！':praise+(q.why||''));
-    g.timer=setTimeout(next,kid?(s===5?3200:(q.why?2600:1600)):(q.why?2600:1500));
+    g.timer=setTimeout(next,kid?(s===CELLS?3200:(q.why?2600:1600)):(s===CELLS?2600:(q.why?2600:1500)));
   }else{
     SFX.bad();
     fb.innerHTML=`<div class="feedback bad"><div><b>再想想！正確答案是「${esc(q.opts[q.ans].say||q.opts[q.ans].t)}」</b>${q.why?`<p>${esc(q.why)}</p>`:''}</div><button class="next" data-act="next">下一題 ▶</button></div>`;
@@ -1616,6 +1778,7 @@ function answer(k){
 function next(){
   clearTimeout(g.timer);g.i++;g.answered=false;g.retried=false;
   if(g.i>=ROUNDN())return finish();
+  if(g.pendingSwap){g.slot++;g.stage=0;g.pendingSwap=false}
   renderPlay();
 }
 function sparkle(host){
@@ -1627,13 +1790,14 @@ function sparkle(host){
 }
 function finish(){
   const kid=TIERS[g.tier].kid;const n=ROUNDN();
-  const stars=kid?(g.ok>=5?3:g.ok>=4?2:1):(g.ok>=9?3:g.ok>=7?2:g.ok>=5?1:0);
-  const done=kid||g.ok>=5;let unlockedNew=null;
+  const rate=g.ok/n;
+  const stars=kid?(rate>=1?3:rate>=.8?2:1):(rate>=.9?3:rate>=.7?2:rate>=.5?1:0);
+  const done=kid||rate>=.5;let unlockedNew=null;
   save.rounds++;
   if(done){save.completed++;if(save.completed<BOTS.length)unlockedNew=BOTS[save.completed];}
   save.stars+=stars;save.best[g.bot.id]=Math.max(save.best[g.bot.id]||0,stars);
   const c=save.collection[g.bot.id]=save.collection[g.bot.id]||{at:today(),plays:0,stars:0,energy:0};
-  c.plays++;c.stars=Math.max(c.stars,stars);c.energy+=g.energy;
+  c.plays++;c.stars=Math.max(c.stars,stars);c.energy+=g.ok;
   if(unlockedNew)save.collection[unlockedNew.id]={at:today(),plays:0,stars:0,energy:0};
   persist();ensureCollection();
   if(stars>=2)SFX.fanfare();else if(done)SFX.transform();
@@ -1641,16 +1805,16 @@ function finish(){
   const title=stars===3?'完美出擊！':stars===2?'表現很棒！':stars===1?'任務完成！':'再試一次，你可以的！';
   app.innerHTML=header()+`<div class="result">
     <div class="hangar">
-      <div class="nameplate"><b>${g.bot.name}</b><span>${g.bot.tag.toUpperCase()}</span></div>
+      <div class="nameplate"><b>${curMech().name}</b><span>${curMech().tag.toUpperCase()}</span></div>
       <div class="mode">${done?'任務完成 MISSION CLEAR':'任務未完成 TRY AGAIN'}</div>
-      <div class="bot ${done?'s1 s2 s3 s4 s5':Array.from({length:stageOf()},(_,k)=>'s'+(k+1)).join(' ')}" id="bot"><div class="glowring"></div>${botSVG(g.bot)}</div>
-      <div class="energy"><span class="lab">ENERGY</span>${[0,1,2,3,4].map(k=>`<i class="cell ${k<(done?5:stageOf())?'on':''}"></i>`).join('')}</div>
+      <div class="bot ${g.stage>=CELLS||done?'s1 s2 s3 s4 s5':Array.from({length:g.stage},(_,k)=>'s'+(k+1)).join(' ')}" id="bot"><div class="glowring"></div>${botSVG(curMech())}</div>
+      <div class="energy"><span class="lab">ENERGY</span>${[0,1,2,3,4].map(k=>`<i class="cell on"></i>`).join('')}</div>
       <div class="lift"></div>
     </div>
     <div class="report">
       <h2>${title}</h2>
       <div class="starrow" aria-label="${stars} 顆星">${starStr(stars)}</div>
-      <div class="nums"><div><b>${g.ok}</b><span>${kid?'一次就答對':'答對題數'}</span></div><div><b>${n-g.ok}</b><span>${kid?'再試一次才對':'答錯題數'}</span></div><div><b>${Math.round(100*g.ok/n)}%</b><span>答對率</span></div></div>
+      <div class="nums"><div><b>${g.ok} / ${n}</b><span>${kid?'一次就答對':'答對題數'}</span></div><div><b>${Math.max(g.cleared,1)}</b><span>變形完成的機甲</span></div><div><b>${Math.round(100*g.ok/n)}%</b><span>答對率</span></div></div>
       ${unlockedNew?`<div class="unlock">🔓 解鎖新機甲：${unlockedNew.name}（${unlockedNew.tag}）！回機庫看看。</div>`:''}
       <div class="acts"><button class="bigbtn" data-act="again">再玩一次</button><button class="bigbtn ghost" data-act="collection">看收藏庫 🏆</button><button class="bigbtn ghost" data-act="home">回機庫</button></div>
     </div></div>
@@ -1670,6 +1834,7 @@ app.addEventListener('click',async e=>{
   if(b.dataset.opt!==undefined){answer(+b.dataset.opt);return}
   if(b.dataset.toy){toyTransform(b.dataset.toy);return}
   if(b.dataset.use){useProfile(b.dataset.use);SFX.step();renderStart();return}
+  if(b.dataset.round){save.round=+b.dataset.round;persist();SFX.step();renderStart();return}
   if(b.dataset.av){const name=(document.getElementById('newname')||{}).value||'';newAvatar=b.dataset.av;renderProfiles({name});return}
   if(b.dataset.del){
     const p=DB.profiles[b.dataset.del];if(!p)return;
@@ -1724,7 +1889,7 @@ document.addEventListener('keydown',e=>{
 if('speechSynthesis'in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
 
 /* ================= 有新版本時通知使用者 ================= */
-const APP_VERSION='2.2.1';
+const APP_VERSION='2.3.0';
 function showUpdateBanner(apply){
   if(document.getElementById('upbar'))return;
   const bar=document.createElement('div');bar.id='upbar';bar.className='upbar';
